@@ -34,4 +34,4 @@
 MakeFile
 
 .DS_Store
-.*
+.vs*
