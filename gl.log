@@ -1,0 +1,9 @@
+GL_LOG_FILE log. local time Sun Sep 10 03:04:58 2017
+
+starting GLFW 3.2.1 Cocoa NSGL chdir menubar retina dynamicrenderer: Intel Iris OpenGL Engine
+version: 4.1 INTEL-10.25.17
+creating shader from res/shaders/vert.glsl...
+shader compiled. index 1
+creating shader from res/shaders/frag.glsl...
+shader compiled. index 2
+created programme 3. attaching shaders 1 and 2...

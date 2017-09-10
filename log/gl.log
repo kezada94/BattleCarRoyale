@@ -1,0 +1,10 @@
+GL_LOG_FILE log. local time Mon Nov  7 10:13:49 2016
+
+starting GLFW 3.3.0 X11 GLX EGL clock_gettime /dev/js Xf86vm sharedrenderer: Gallium 0.4 on AMD RS880
+version: 3.0 Mesa 10.5.9
+creating shader from test_vs.glsl...
+shader compiled. index 1
+creating shader from test_fs.glsl...
+shader compiled. index 2
+created programme 3. attaching shaders 1 and 2...
+program 3 GL_VALIDATE_STATUS = GL_TRUE
