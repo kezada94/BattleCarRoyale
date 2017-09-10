@@ -17,7 +17,7 @@
 #include <time.h>
 #include <string.h>
 #include <assert.h>
-#define GL_LOG_FILE "gl.log"
+#define GL_LOG_FILE "log/gl.log"
 #define MAX_SHADER_LENGTH 262144
 
 /*--------------------------------LOG FUNCTIONS-------------------------------*/
@@ -90,11 +90,13 @@ bool start_gl () {
 
 	/* We must specify 3.2 core if on Apple OS X -- other O/S can specify
 	 anything here. I defined 'APPLE' in the makefile for OS X */
+	 #ifdef __APPLE__
 	glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 1);
 	glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint (GLFW_RESIZABLE, GL_TRUE);
+	#endif
 	/*GLFWmonitor* mon = glfwGetPrimaryMonitor ();
 	const GLFWvidmode* vmode = glfwGetVideoMode (mon);
 	g_window = glfwCreateWindow (

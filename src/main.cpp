@@ -50,8 +50,9 @@ int main(){
 	glCullFace (GL_BACK); // cull back face
 	glFrontFace (GL_CCW); // set counter-clock-wise vertex order to mean the front
 	glClearColor (0.2, 0.2, 0.2, 1.0); // grey background to help spot mistakes
+	#ifdef _WIN32	
 	glViewport (0, 0, g_gl_width, g_gl_height);
-
+	#endif
 	/*-------------------------------CREATE SHADERS-------------------------------*/
 	
 	GLuint shader_programme = create_programme_from_files (
@@ -80,7 +81,7 @@ int main(){
 	};
 		
 	float cam_speed = 3.0f; // 1 unit per second
-	float cam_yaw_speed = 90.0f; // 10 degrees per second
+	float cam_yaw_speed = 0.1f; // 10 degrees per second
 	float cam_pos[] = {0.0f, 0.0f, 5.0f}; // don't start at zero, or we will be too close
 
     glm::vec3 campos(0.0f, 0.0f, 5.0f);
@@ -112,8 +113,11 @@ int main(){
 		_update_fps_counter (g_window);
 		// wipe the drawing surface clear
 		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		#ifdef _WIN32
 		glViewport (0, 0, g_gl_width, g_gl_height);
-		
+		#endif
+
 		glUseProgram (shader_programme);
 		
 		glBindVertexArray(vao);
