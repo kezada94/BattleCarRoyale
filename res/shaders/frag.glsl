@@ -1,4 +1,4 @@
-#version 130
+#version 410
 
 in vec3 normal;
 in vec2 st;
