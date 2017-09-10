@@ -30,7 +30,7 @@
 *.out
 *.app
 
-MakeFile
+Makefile
 
 .DS_Store
 .vs*
