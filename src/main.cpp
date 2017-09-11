@@ -31,17 +31,33 @@
 #define VERTEX_SHADER_FILE "res/shaders/vert.glsl"
 #define FRAGMENT_SHADER_FILE "res/shaders/frag.glsl"
 
-// keep track of window size for things like the viewport and the mouse cursor
-int g_gl_width = 1024;
-int g_gl_height = 720;
+int g_gl_width = 800;
+int g_gl_height = 600;
 GLFWwindow* g_window = NULL;
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void processInput(GLFWwindow *window);
 
+
+// camera
+glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
+
+bool firstMouse = true;
+float yaw   = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+float pitch =  0.0f;
+float lastX =  g_gl_width / 2.0;
+float lastY =  g_gl_height / 2.0;
+float fov   =  45.0f;
+
+// timing
+float deltaTime = 0.0f;	// time between current frame and last frame
+float lastFrame = 0.0f;
 
 int main(){
-
-	/**************************** GLFW CONFIG ************************************/
-
 	restart_gl_log ();
 	start_gl ();
 	glEnable (GL_DEPTH_TEST); // enable depth-testing
@@ -53,99 +69,144 @@ int main(){
 	#ifdef __linux__
 	glViewport (0, 0, g_gl_width, g_gl_height);
 	#endif
-	/*-------------------------------CREATE SHADERS-------------------------------*/
 
+    glfwSetFramebufferSizeCallback(g_window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(g_window, mouse_callback);
+    glfwSetScrollCallback(g_window, scroll_callback);
+    // tell GLFW to capture our mouse
+    glfwSetInputMode(g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    /*-------------------------------CREATE SHADERS-------------------------------*/
 	GLuint shader_programme = create_programme_from_files (
 		VERTEX_SHADER_FILE, FRAGMENT_SHADER_FILE
 	);
 
-	#define ONE_DEG_IN_RAD (2.0 * M_PI) / 360.0 // 0.017444444
-	// input variables
-	float near = 0.1f; // clipping plane
-	float far = 100.0f; // clipping plane
-	float fov = 67.0f * ONE_DEG_IN_RAD; // convert 67 degrees to radians
-	float aspect = (float)g_gl_width / (float)g_gl_height; // aspect ratio
-
-	// matrix components
-	float range = tan (fov * 0.5f) * near;
-	float Sx = (2.0f * near) / (range * aspect + range * aspect);
-	float Sy = near / range;
-	float Sz = -(far + near) / (far - near);
-	float Pz = -(2.0f * far * near) / (far - near);
-
-	GLfloat proj_mat[] = {
-		Sx, 0.0f, 0.0f, 0.0f,
-		0.0f, Sy, 0.0f, 0.0f,
-		0.0f, 0.0f, Sz, -1.0f,
-		0.0f, 0.0f, Pz, 0.0f
-	};
-
-	float cam_speed = 3.0f; // 1 unit per second
-	float cam_yaw_speed = 0.1f; // 10 degrees per second
-	float cam_pos[] = {0.0f, 0.0f, 5.0f}; // don't start at zero, or we will be too close
-
-    glm::vec3 campos(0.0f, 0.0f, 5.0f);
-	float cam_yaw = 0.0f; // y-rotation in degrees
-	glm::mat4 T = glm::translate (glm::mat4 (), glm::vec3 (-cam_pos[0], -cam_pos[1], -cam_pos[2]));
-	glm::mat4 R = glm::rotate (glm::mat4(), -cam_yaw, glm::vec3(0, 1, 0));
-	glm::mat4 view_mat = R * T;
-
+    glm::mat4 projection = glm::perspective(glm::radians(fov), (float)g_gl_width / (float)g_gl_height, 0.1f, 100.0f);
+    glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 	int view_mat_location = glGetUniformLocation (shader_programme, "view");
 	glUseProgram (shader_programme);
-	glUniformMatrix4fv (view_mat_location, 1, GL_FALSE, glm::value_ptr(view_mat));
-
+	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, &view[0][0]);
 	int proj_mat_location = glGetUniformLocation (shader_programme, "proj");
 	glUseProgram (shader_programme);
-	glUniformMatrix4fv (proj_mat_location, 1, GL_FALSE, proj_mat);
+	glUniformMatrix4fv (proj_mat_location, 1, GL_FALSE, &projection[0][0]);
 
 	GLuint vao;
 	int vertex_no;
-	load_mesh("res/meshes/monster_truck3.obj", &vao, &vertex_no);
+	load_mesh("res/meshes/monster_truck4.obj", &vao, &vertex_no);
 
+    // render loop
+    // -----------
+    while (!glfwWindowShouldClose(g_window)){
+        // per-frame time logic
+        // --------------------
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
 
-	while (!glfwWindowShouldClose (g_window)) {
-		static double previous_seconds = glfwGetTime ();
-		double current_seconds = glfwGetTime ();
-		double elapsed_seconds = current_seconds - previous_seconds;
-		previous_seconds = current_seconds;
+        // input
+        // -----
+        processInput(g_window);
 
-		_update_fps_counter (g_window);
-		// wipe the drawing surface clear
-		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // render
+        // ------
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		#ifdef __linux__
-		glViewport (0, 0, g_gl_width, g_gl_height);
-		#endif
-
+        // activate shader
 		glUseProgram (shader_programme);
 
-		glBindVertexArray(vao);
+        // pass projection matrix to shader (note that in this case it could change every frame)
+        projection = glm::perspective(glm::radians(fov), (float)g_gl_width / (float)g_gl_height, 0.1f, 100.0f);
+        glUniformMatrix4fv (proj_mat_location, 1, GL_FALSE, &projection[0][0]);
 
-		glDrawArrays(GL_TRIANGLES, 0, vertex_no);
+        // camera/view transformation
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	    glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, &view[0][0]);
 
+        glBindVertexArray(vao);
+        glDrawArrays(GL_TRIANGLES,0,vertex_no);
 
-
-		// update other events like input handling
-		glfwPollEvents();
-
-		// control keys
-        bool cam_moved = gameplay(cam_speed, elapsed_seconds, cam_pos, &cam_yaw, cam_yaw_speed);
-		// update view matrix
-		if (cam_moved){
-			glm::mat4 T = glm::translate (glm::mat4 (), glm::vec3 (-cam_pos[0], -cam_pos[1], -cam_pos[2])); // cam translation
-			glm::mat4 R = glm::rotate(glm::mat4(),-cam_yaw, glm::vec3(0, 1, 0)); //
-			glm::mat4 view_mat = R * T;
-			glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, value_ptr(view_mat));
-		}
-		if (GLFW_PRESS == glfwGetKey (g_window, GLFW_KEY_ESCAPE)) {
-			glfwSetWindowShouldClose (g_window, 1);
-		}
-		// put the stuff we've been drawing onto the display
-		glfwSwapBuffers (g_window);
-	}
-
-	// close GL context and any other GLFW resources
-	glfwTerminate();
-	return 0;
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // -------------------------------------------------------------------------------
+        glfwSwapBuffers(g_window);
+        glfwPollEvents();
+    }
+    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // ------------------------------------------------------------------
+    glfwTerminate();
+    return 0;
 }
+
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
+void processInput(GLFWwindow *window){
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+
+    float cameraSpeed = 2.5 * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        cameraPos += cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        cameraPos -= cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+}
+
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// ---------------------------------------------------------------------------------------------
+void framebuffer_size_callback(GLFWwindow* window, int width, int height){
+    // make sure the viewport matches the new window dimensions; note that width and
+	// height will be significantly larger than specified on retina displays.
+	#ifdef __linux__
+	glViewport (0, 0, width, height);
+	#endif
+}
+
+// glfw: whenever the mouse moves, this callback is called
+// -------------------------------------------------------
+void mouse_callback(GLFWwindow* window, double xpos, double ypos){
+    if (firstMouse){
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+    lastX = xpos;
+    lastY = ypos;
+
+    float sensitivity = 0.1f; // change this value to your liking
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    // make sure that when pitch is out of bounds, screen doesn't get flipped
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+
+    glm::vec3 front;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(front);
+}
+
+// glfw: whenever the mouse scroll wheel scrolls, this callback is called
+// ----------------------------------------------------------------------
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset){
+    if (fov >= 1.0f && fov <= 45.0f)
+        fov -= yoffset;
+    if (fov <= 1.0f)
+        fov = 1.0f;
+    if (fov >= 45.0f)
+        fov = 45.0f;
+}
+

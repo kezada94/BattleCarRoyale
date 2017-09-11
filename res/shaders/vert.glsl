@@ -1,12 +1,12 @@
-#version 130
+#version 410
 
-//layout(location = 0) in vec3 vertex_position;
-//layout(location = 1) in vec3 vertex_normal;
-//layout(location = 2) in vec2 texture_coord;
+layout(location = 0) in vec3 vertex_position; //
+layout(location = 1) in vec3 vertex_normal;   //* PARA MAC
+layout(location = 2) in vec2 texture_coord;   //
 
-in vec3 vertex_position;
-in vec3 vertex_normal;
-in vec2 texture_coord;
+//n vec3 vertex_position;    //
+//in vec3 vertex_normal;      //* PARA LINUX
+//in vec2 texture_coord;      //
 
 uniform mat4 view, proj;
 
