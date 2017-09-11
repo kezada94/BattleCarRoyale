@@ -35,3 +35,5 @@ res/shaders/vert.glsl
 res/shaders/frag.glsl
 .DS_Store
 .vs*
+bin/prog
+*.log
