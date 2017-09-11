@@ -101,7 +101,7 @@ int main(){
 
 	GLuint vao;
 	int vertex_no;
-	load_mesh("res/meshes/suzanne.obj", &vao, &vertex_no);
+	load_mesh("res/meshes/monster_truck2.obj", &vao, &vertex_no);
 
 
 	while (!glfwWindowShouldClose (g_window)) {

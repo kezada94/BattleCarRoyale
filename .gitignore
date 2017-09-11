@@ -31,7 +31,8 @@
 *.app
 
 Makefile
-res/shaders/vert.glsl
-res/shaders/frag.glsl
+*.glsl
 .DS_Store
 .vs*
+prog
+*.log
