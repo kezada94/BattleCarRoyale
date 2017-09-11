@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 GL_LOG_FILE log. local time Sun Sep 10 21:17:52 2017
+=======
+GL_LOG_FILE log. local time Sun Sep 10 14:45:13 2017
+>>>>>>> bb76ba1a9cca6d0e50c000a5e8f0e1fed55c6a9c
 
-starting GLFW 3.2.1 Cocoa NSGL chdir menubar retina dynamicrenderer: Intel Iris OpenGL Engine
-version: 4.1 INTEL-10.25.17
+starting GLFW 3.2.1 X11 GLX EGL clock_gettime /dev/js Xf86vm sharedrenderer: Gallium 0.4 on AMD ARUBA (DRM 2.50.0 / 4.12.10-15.current, LLVM 4.0.1)
+version: 3.0 Mesa 17.1.8
 creating shader from res/shaders/vert.glsl...
 shader compiled. index 1
 creating shader from res/shaders/frag.glsl...
