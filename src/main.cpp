@@ -8,14 +8,13 @@
 #include <GLFW/glfw3.h>
 
 //GLM
-// Header & Source file
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
-
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 //EVERYTHING ELSE
 #include <stdio.h>
@@ -23,16 +22,20 @@
 #include <assert.h>
 #include <math.h>
 #include <string>
-
 #include "gl_utils.h"
-#include "tools.h"
+#include "game_object.hpp"
+#include <bullet/btBulletDynamicsCommon.h>
+#include "scene.hpp"
 
 #define GL_LOG_FILE "log/gl.log"
 #define VERTEX_SHADER_FILE "res/shaders/vert.glsl"
 #define FRAGMENT_SHADER_FILE "res/shaders/frag.glsl"
 
-int g_gl_width = 800;
-int g_gl_height = 600;
+int g_gl_width = 1366;
+int g_gl_height = 768;
+int isWireframe = false;
+bool isReleased = false;
+
 GLFWwindow* g_window = NULL;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -42,7 +45,7 @@ void processInput(GLFWwindow *window);
 
 
 // camera
-glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 10.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -51,7 +54,7 @@ float yaw   = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 
 float pitch =  0.0f;
 float lastX =  g_gl_width / 2.0;
 float lastY =  g_gl_height / 2.0;
-float fov   =  45.0f;
+float fov   =  68.0f;
 
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -65,9 +68,10 @@ int main(){
 	glEnable (GL_CULL_FACE); // cull face
 	glCullFace (GL_BACK); // cull back face
 	glFrontFace (GL_CCW); // set counter-clock-wise vertex order to mean the front
-	glClearColor (0.2, 0.2, 0.2, 1.0); // grey background to help spot mistakes
+    glClearColor (0.2, 0.2, 0.2, 1.0); // grey background to help spot mistakes
+    
 	#ifdef __linux__
-	glViewport (0, 0, g_gl_width, g_gl_height);
+	    glViewport (0, 0, g_gl_width, g_gl_height);
 	#endif
 
     glfwSetFramebufferSizeCallback(g_window, framebuffer_size_callback);
@@ -81,20 +85,33 @@ int main(){
 		VERTEX_SHADER_FILE, FRAGMENT_SHADER_FILE
 	);
 
-    glm::mat4 projection = glm::perspective(glm::radians(fov), (float)g_gl_width / (float)g_gl_height, 0.1f, 100.0f);
+    Scene* level = new Scene();
+
+    glm::mat4 projection = glm::perspective(glm::radians(fov), (float)g_gl_width / (float)g_gl_height, 0.1f, 1.0f);
     glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-	int view_mat_location = glGetUniformLocation (shader_programme, "view");
-	glUseProgram (shader_programme);
-	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, &view[0][0]);
-	int proj_mat_location = glGetUniformLocation (shader_programme, "proj");
-	glUseProgram (shader_programme);
-	glUniformMatrix4fv (proj_mat_location, 1, GL_FALSE, &projection[0][0]);
+	
+    int model_mat_location  = glGetUniformLocation (shader_programme, "model");
+    
+    
+    //GameObject *truck = new GameObject("res/meshes/suzanne.obj", btScalar(10.), btVector3(0, 5, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    GameObject *piso = new GameObject("res/meshes/floor.obj", btScalar(0), btVector3(0, -10, 0.001f), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    //GameObject *moster = new GameObject("res/meshes/monster_truck4.obj", btScalar(20), btVector3(0, 10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    GameObject *player = new GameObject("res/meshes/suzanne.obj", btScalar(10), btVector3(0, 10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    
+    
+    //level->addGameObject(truck);
+    level->addGameObject(piso);
+    level->addGameObject(player);
 
-	GLuint vao;
-	int vertex_no;
-	load_mesh("res/meshes/monster_truck4.obj", &vao, &vertex_no);
 
+        // activate shader
+		glUseProgram (shader_programme);
+        
+   
+    
+    btTransform trans;
+    
     // render loop
     // -----------
     while (!glfwWindowShouldClose(g_window)){
@@ -104,29 +121,29 @@ int main(){
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+        
+        _update_fps_counter(g_window);
         // input
         // -----
         processInput(g_window);
 
-        // render
-        // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // activate shader
-		glUseProgram (shader_programme);
-
+       
         // pass projection matrix to shader (note that in this case it could change every frame)
         projection = glm::perspective(glm::radians(fov), (float)g_gl_width / (float)g_gl_height, 0.1f, 100.0f);
         glUniformMatrix4fv (proj_mat_location, 1, GL_FALSE, &projection[0][0]);
 
         // camera/view transformation
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-	    glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, &view[0][0]);
+        glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, &view[0][0]);
+ 
+        // render
+        // ------
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES,0,vertex_no);
-
+        level->drawAllGameObjects(model_mat_location);
+        
+		level->stepSimulation(1.f / 60.f, 10);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(g_window);
@@ -135,6 +152,9 @@ int main(){
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
+
+
+    //delete bulletDebugugger;
     return 0;
 }
 
@@ -144,7 +164,7 @@ void processInput(GLFWwindow *window){
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    float cameraSpeed = 2.5 * deltaTime;
+    float cameraSpeed = 10 * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += cameraSpeed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -153,13 +173,26 @@ void processInput(GLFWwindow *window){
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    if (isReleased){
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
+            if (!isWireframe){
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //Draw only lines no fill
+                isWireframe = true;
+            } else {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //Draw only lines no fill
+                isWireframe = false;
+            }   
+            isReleased = false;  
+        }
+    }
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE){
+        isReleased = true;
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height){
-    // make sure the viewport matches the new window dimensions; note that width and
-	// height will be significantly larger than specified on retina displays.
 	#ifdef __linux__
 	glViewport (0, 0, width, height);
 	#endif
@@ -209,4 +242,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset){
     if (fov >= 45.0f)
         fov = 45.0f;
 }
+
+void initBullet();
 
