@@ -1,7 +1,7 @@
 #ifndef SCENE_GAME_OBJECT_LIST_H
 #define SCENE_GAME_OBJECT_LIST_H
 
-#include "game_object.hpp"
+#include "GameObject.hpp"
 
 typedef struct SceneGameObjectLists_node{
     GameObject* obj;

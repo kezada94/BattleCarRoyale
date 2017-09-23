@@ -1,6 +1,6 @@
-#include "scene_game_object_list.hpp"
+#include "SceneGameObjectList.hpp"
 
-SceneGameObjectLists::SceneGameObjectLists() : length(0), list(nullptr) { }
+SceneGameObjectLists::SceneGameObjectLists() : length(0), list(nullptr) {}
 
 SceneGameObjectLists::~SceneGameObjectLists(){
     for(int i=0; i<length; i++){

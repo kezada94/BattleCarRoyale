@@ -6,8 +6,8 @@
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
-#include "scene_game_object_list.hpp"
-#include "game_object.hpp"
+#include "SceneGameObjectList.hpp"
+#include "GameObject.hpp"
 
 class Scene{
 

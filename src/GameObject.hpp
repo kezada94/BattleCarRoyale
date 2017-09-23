@@ -19,13 +19,16 @@ private:
     GLuint vao;
     int vertNumber;
     btRigidBody* rigidBody = nullptr;
-
+    
+protected:
     bool load_mesh (const char* file_name, btConvexHullShape** col);
+    bool load_mesh (const char* file_name);
+    
 public:
-    GameObject(char *path, btScalar mass, btVector3 startPos, btQuaternion startRot);
+    GameObject(const char* path, btScalar masa, btVector3 startPos, btQuaternion startRot);
+    GameObject(const char* path, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll);
     ~GameObject();
 
-    void updateTransform();
     void draw(const GLuint model_mat_location);
     
     //getter
@@ -35,6 +38,8 @@ public:
 
     //setter
     void setRigidBody(btRigidBody* rigid);
+    void setVertNumber(int vertno);
+    void setVao(GLuint vao);
 };
 
 #endif
