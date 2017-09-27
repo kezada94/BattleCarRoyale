@@ -12,7 +12,6 @@
 #include <bullet/btBulletDynamicsCommon.h>
 #include <bullet/BulletCollision/CollisionShapes/btShapeHull.h>
 
-
 class GameObject{
 
 private:
@@ -23,13 +22,15 @@ private:
 protected:
     bool load_mesh (const char* file_name, btConvexHullShape** col);
     bool load_mesh (const char* file_name);
-    
+    bool load_texture (GLuint shaderprog);
 public:
-    GameObject(const char* path, btScalar masa, btVector3 startPos, btQuaternion startRot);
-    GameObject(const char* path, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll);
+    GLuint texture1;
+
+    GameObject(const char* path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot);
+    GameObject(const char* path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll);
     ~GameObject();
 
-    void draw(const GLuint model_mat_location);
+    virtual void draw(const GLuint model_mat_location) = 0;
     
     //getter
     GLuint getVao();

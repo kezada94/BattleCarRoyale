@@ -23,10 +23,11 @@
 #include <math.h>
 #include <string>
 #include "gl_utils.h"
-#include "GameObject.hpp"
 #include <bullet/btBulletDynamicsCommon.h>
 #include "Scene.hpp"
 #include "Camera.hpp"
+#include "StaticGameObject.hpp"
+#include "DynamicGameObject.hpp"
 
 #define GL_LOG_FILE "log/gl.log"
 #define VERTEX_SHADER_FILE "res/shaders/vert.glsl"
@@ -78,11 +79,11 @@ int main(){
     
     camera->init(shader_programme, g_gl_width, g_gl_height, fov);
 
-    GameObject *truck = new GameObject("res/meshes/cilindro.obj", btScalar(10.), btVector3(0, 5, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    GameObject *piso = new GameObject("res/meshes/floor.obj", btScalar(0), btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    DynamicGameObject *truck = new DynamicGameObject("res/meshes/cilindro.obj", shader_programme, btScalar(1), btVector3(0, 5, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    StaticGameObject *piso = new StaticGameObject("res/meshes/floor.obj", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     //GameObject *moster = new GameObject("res/meshes/monster_truck4.obj", btScalar(20), btVector3(0, 10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    GameObject *player = new GameObject("res/meshes/car_chanta.obj", btScalar(10), btVector3(0, -6, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    GameObject *buen = new GameObject("res/meshes/cube.obj", btScalar(10), btVector3(10, 0, 10), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    DynamicGameObject *player = new DynamicGameObject("res/meshes/car_chanta.obj", shader_programme, btScalar(10), btVector3(0, -6, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    StaticGameObject *buen = new StaticGameObject("res/meshes/cube.obj", shader_programme, btVector3(10, 0, 10), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     
     
     level->addGameObject(truck);
@@ -145,8 +146,6 @@ int main(){
     // ------------------------------------------------------------------
     glfwTerminate();
 
-
-    //delete bulletDebugugger;
     return 0;
 }
 

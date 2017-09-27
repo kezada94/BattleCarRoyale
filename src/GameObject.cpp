@@ -1,12 +1,16 @@
 #include "GameObject.hpp"
+#define STB_IMAGE_IMPLEMENTATION
 
-GameObject::GameObject(const char* path, btScalar masa, btVector3 startPos, btQuaternion startRot){
+#include "stb_image.h"
+
+GameObject::GameObject(const char* path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot){
     
     btConvexHullShape* colShape;
 
     if(load_mesh(path, &colShape)==false){
         printf("Error loading %s", path);
     }
+	load_texture(shaderprog);
 
 	btTransform startTransform;
     startTransform.setIdentity();
@@ -24,15 +28,13 @@ GameObject::GameObject(const char* path, btScalar masa, btVector3 startPos, btQu
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(masa, myMotionState, colShape, localInertia);
 	this->rigidBody = new btRigidBody(rbInfo);
-	this->rigidBody->setRestitution(btScalar(1));
-	
 }
-GameObject::GameObject(const char* path, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll){
+GameObject::GameObject(const char* path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll){
     
     if(load_mesh(path)==false){
         printf("Error loading %s", path);
     }
-    
+    load_texture(shaderprog);
     btTransform startTransform;
 	startTransform.setIdentity();
 	
@@ -49,23 +51,12 @@ GameObject::GameObject(const char* path, btScalar masa, btVector3 startPos, btQu
 	this->rigidBody = new btRigidBody(rbInfo);
 }
 GameObject::~GameObject(){
+	printf("hola se llama al destructor de la siguiente clase GAMEOBKECT");
     delete this->rigidBody->getMotionState();
     delete this->rigidBody->getCollisionShape();
     delete this->rigidBody;
 }
 
-void GameObject::draw(const GLuint model_mat_location){
-    btTransform trans;
-    glm::mat4 model;
-    this->rigidBody->getMotionState()->getWorldTransform(trans);
-
-    model = glm::translate(glm::mat4(), glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
-    model = glm::rotate(model, trans.getRotation().getAngle(), glm::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ() ));
-    glUniformMatrix4fv(model_mat_location, 1, GL_FALSE, &model[0][0]);
-
-    glBindVertexArray(this->getVao());
-    glDrawArrays(GL_TRIANGLES, 0, this->getVertNumber()); 
-}
 bool GameObject::load_mesh (const char* file_name, btConvexHullShape** col) {
 	const aiScene* scene = aiImportFile (file_name, aiProcess_Triangulate);
 	if (!scene) {
@@ -122,6 +113,7 @@ bool GameObject::load_mesh (const char* file_name, btConvexHullShape** col) {
 		}
 	}
 	if (mesh->HasTextureCoords (0)) {
+		printf("	%i texture coords\n", vertNumber*2);
 		texcoords = (GLfloat*)malloc (vertNumber * 2 * sizeof (GLfloat));
 		for (int i = 0; i < vertNumber; i++) {
 			const aiVector3D* vt = &(mesh->mTextureCoords[0][i]);
@@ -132,7 +124,7 @@ bool GameObject::load_mesh (const char* file_name, btConvexHullShape** col) {
 	printf("    %i vertices in collider non optimized\n", collider->getNumPoints());
 
     //Código optimización basado en http://www.bulletphysics.org/mediawiki-1.5.8/index.php/BtShapeHull_vertex_reduction_utility
-    //Ligeramente modificado, ya que lo que sale en la wifi esta malo
+    //Ligeramente modificado, ya que lo que sale en la wiki esta malo
 	btShapeHull* hull = new btShapeHull(collider);
 	btScalar margin = collider->getMargin();
 	hull->buildHull(margin);
@@ -308,7 +300,50 @@ bool GameObject::load_mesh (const char* file_name) {
 	
     return true;
 }
+bool GameObject::load_texture (GLuint shaderprog){
 
+	int x, y, n;
+	int force_channels = 4;
+	unsigned char* image_data = stbi_load ("res/textures/default.jpg", &x, &y, &n, force_channels);
+	if (!image_data) {
+	  fprintf (stderr, "ERROR: could not load %s\n", "res/textures/default.jpg");
+	}
+
+	if ((x & (x - 1)) != 0 || (y & (y - 1)) != 0) 
+	  fprintf (stderr, "WARNING: texture %s is not power-of-2 dimensions\n", "res/textures/default.jpg");
+
+	int width_in_bytes = x * 4;
+	unsigned char *top = NULL;
+	unsigned char *bottom = NULL;
+	unsigned char temp = 0;
+	int half_height = y / 2;
+
+	for (int row = 0; row < half_height; row++) {
+		top = image_data + row * width_in_bytes;
+		bottom = image_data + (y - row - 1) * width_in_bytes;
+		for (int col = 0; col < width_in_bytes; col++) { 
+			temp = *top;
+	    	*top = *bottom;
+		    *bottom = temp;
+		    top++;
+		    bottom++;
+	  	}
+	}
+
+	GLuint tex = 0;
+	glGenTextures (1, &tex);
+	glActiveTexture (GL_TEXTURE0);
+	glBindTexture (GL_TEXTURE_2D, tex);
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	int tex_loc = glGetUniformLocation (shaderprog, "basic_texture");
+	glUseProgram (shaderprog);
+	glUniform1i (tex_loc, 0);
+}
 //GETTERS
 int GameObject::getVertNumber(){
     return this->vertNumber;

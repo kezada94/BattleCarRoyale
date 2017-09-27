@@ -1,17 +1,13 @@
 #ifndef CAR_H
 #define CAR_H
 
-#include "GameObject.hpp"
+#include "DynamicGameObject.hpp"
 
-class Car : public GameObject{
+class Car : public DynamicGameObject{
 
 private:
     float health;
-    float horsePower;
-    float steering;
-
     float armour;
-
     bool isAlive;
     
     btRaycastVehicle* car;
@@ -20,16 +16,20 @@ public:
     Car(const char* path, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll);
     ~Car();
 
+    virtual void initialize(btScalar hp, btScalar brake, btScalar sterring) = 0;
+
     void accelerate();
     void brake();
     void reverse();
     void turnLeft();
     void turnRight();
 
-    void fire();
+    virtual void fire() = 0;
 
-    void spawn();
-    void despawn();
+    virtual void spawn() = 0;
+    virtual void despawn() = 0;
+
+    virtual void draw() = 0;
 };
 
 #endif
