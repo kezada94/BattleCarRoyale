@@ -203,7 +203,7 @@ bool GameObject::load_mesh (const char* file_name) {
 	
 	/* get first mesh in file only */
 	const aiMesh* mesh = scene->mMeshes[0];
-	printf ("    %i vertices in \n", mesh->mNumVertices, file_name);
+	printf ("    %i vertices in %s\n", mesh->mNumVertices, file_name);
 	
 	/* pass back number of vertex points in mesh */
 	vertNumber = mesh->mNumVertices;
@@ -318,10 +318,10 @@ bool GameObject::load_texture (GLuint shaderprog, const char* texture_path){
 	unsigned char temp = 0;
 	int half_height = y / 2;
 
-	for (int row = 0; row < half_height; row++) {
+	for(int row = 0; row < half_height; row++) {
 		top = image_data + row * width_in_bytes;
 		bottom = image_data + (y - row - 1) * width_in_bytes;
-		for (int col = 0; col < width_in_bytes; col++) { 
+		for(int col = 0; col < width_in_bytes; col++){ 
 			temp = *top;
 			*top = *bottom;
 			*bottom = temp;
@@ -331,14 +331,14 @@ bool GameObject::load_texture (GLuint shaderprog, const char* texture_path){
 	}
 
 	texture = 0;
-	glGenTextures (1, &texture);
-	glActiveTexture (GL_TEXTURE0);
-	glBindTexture (GL_TEXTURE_2D, texture);
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glGenTextures(1, &texture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	tex_location = glGetUniformLocation (shaderprog, "basic_texture");
 }
