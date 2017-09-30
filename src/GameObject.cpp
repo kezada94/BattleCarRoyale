@@ -321,7 +321,7 @@ bool GameObject::load_texture (GLuint shaderprog, const char* texture_path){
 	for(int row = 0; row < half_height; row++) {
 		top = image_data + row * width_in_bytes;
 		bottom = image_data + (y - row - 1) * width_in_bytes;
-		for(int col = 0; col < width_in_bytes; col++){ 
+		for(int col = 0; col < width_in_bytes; col++){
 			temp = *top;
 			*top = *bottom;
 			*bottom = temp;
@@ -334,7 +334,7 @@ bool GameObject::load_texture (GLuint shaderprog, const char* texture_path){
 	glGenTextures(1, &texture);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
