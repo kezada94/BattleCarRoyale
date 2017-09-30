@@ -26,7 +26,7 @@ void Kombi::initialize(btDiscreteDynamicsWorld* world){
     btVector3 wheelDirection(0.0f, -1.0f, 0.0f);
     btVector3 wheelAxis(1.0f, 0.0f, 0.0f);
     btScalar suspensionRestLength(0.6f);
-    btScalar wheelRadius(1f);
+    btScalar wheelRadius(1.f);
     vehicle->addWheel(btVector3(-2.f, -2.0f, -3.5f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);
     vehicle->addWheel(btVector3(2.f, -2.0f, -3.5f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);
     vehicle->addWheel(btVector3(-2.f, -2.0f, 3.f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);
