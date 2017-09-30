@@ -79,17 +79,19 @@ int main(){
     
     camera->init(shader_programme, g_gl_width, g_gl_height, fov);
 
-    DynamicGameObject *truck = new DynamicGameObject("res/meshes/cilindro.obj", shader_programme, btScalar(1), btVector3(0, 5, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    StaticGameObject *piso = new StaticGameObject("res/meshes/floor.obj", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    DynamicGameObject *player = new DynamicGameObject("res/meshes/kombi3.obj", "res/textures/kombi3.jpg", shader_programme, btScalar(1), btVector3(0, 5, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    DynamicGameObject *rueda = new DynamicGameObject("res/textures/rueda/rueda.obj", "res/textures/rueda/wheel.png", shader_programme, btScalar(2), btVector3(0, 10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    StaticGameObject *piso = new StaticGameObject("res/meshes/floor.obj", "res/textures/default.jpg", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     //GameObject *moster = new GameObject("res/meshes/monster_truck4.obj", btScalar(20), btVector3(0, 10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    DynamicGameObject *player = new DynamicGameObject("res/meshes/car_chanta.obj", shader_programme, btScalar(10), btVector3(0, -6, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    StaticGameObject *buen = new StaticGameObject("res/meshes/cube.obj", shader_programme, btVector3(10, 0, 10), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    //DynamicGameObject *player = new DynamicGameObject("res/meshes/car_chanta.obj", shader_programme, btScalar(10), btVector3(0, -6, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    //StaticGameObject *buen = new StaticGameObject("res/meshes/cube.obj", shader_programme, btVector3(10, 0, 10), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     
     
-    level->addGameObject(truck);
+    //level->addGameObject(truck);
     level->addGameObject(piso);
     level->addGameObject(player);
-    level->addGameObject(buen);
+    level->addGameObject(rueda);
+    //level->addGameObject(buen);
 
 
     camera->setTarget(player);

@@ -1,11 +1,19 @@
-CC=g++
-#SRC=src/enemigo.cpp src/maths_funcs.cpp src/gl_utils.cpp src/main.cpp
+CC=g++ -std=c++11
 SRC=src/*.cpp
-LIBS=-lGLEW -lglfw -lassimp 
 EXEC=bin/prog
-INCLUDE=-I include -I/sw/include -I/usr/local/include 
-FRAMEWORK=-framework OpenGL -framework IOKit -framework CoreVideo -framework Bullet3Common -framework LinearMath -framework BulletCollision -framework BulletDynamics -framework BulletWorldImporter -framework BulletInverseDynamicsUtils
-all: 
-	${CC} ${FRAMEWORK} ${SRC} ${LIBS} -o ${EXEC} ${INCLUDE}
-clear:
-	rm bin/*
+OS := $(shell uname)
+INCLUDE=
+FRAMEWORK=
+ifeq ($(OS),Darwin)
+FLAGS = -D APPLE
+LIBS=-lGLEW -lglfw -lassimp
+INCLUDE=-I include -I/sw/include -I/usr/local/include/bullet
+FRAMEWORK=-framework OpenGL -framework IOKit -framework CoreVideo -framework BulletDynamics -framework LinearMath -framework BulletCollision
+else
+LIBS=-lGL -lGLEW -lglfw -lassimp -I /usr/include/bullet -lBulletDynamics -lBulletCollision -lLinearMath
+endif
+
+all:
+	${CC} ${FLAGS} ${FRAMEWORK} ${SRC} ${LIBS} -o ${EXEC}
+	./bin/prog
+	make clear

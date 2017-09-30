@@ -16,24 +16,27 @@ class GameObject{
 
 private:
     GLuint vao;
+    GLuint texture;
     int vertNumber;
     btRigidBody* rigidBody = nullptr;
     
 protected:
     bool load_mesh (const char* file_name, btConvexHullShape** col);
     bool load_mesh (const char* file_name);
-    bool load_texture (GLuint shaderprog);
+    bool load_texture (GLuint shaderprog, const char* texture_path);
 public:
-    GLuint texture1;
+    GLuint tex_location;
 
-    GameObject(const char* path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot);
-    GameObject(const char* path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll);
+    GameObject(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot);
+    GameObject(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll);
+    
     ~GameObject();
 
     virtual void draw(const GLuint model_mat_location) = 0;
     
     //getter
     GLuint getVao();
+    GLuint getTexture();
     int getVertNumber();  
     btRigidBody* getRigidBody();
 
@@ -41,6 +44,7 @@ public:
     void setRigidBody(btRigidBody* rigid);
     void setVertNumber(int vertno);
     void setVao(GLuint vao);
+    void setTexture(GLuint tex);
 };
 
 #endif

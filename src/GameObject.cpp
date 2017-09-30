@@ -3,14 +3,14 @@
 
 #include "stb_image.h"
 
-GameObject::GameObject(const char* path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot){
+GameObject::GameObject(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot){
     
     btConvexHullShape* colShape;
 
     if(load_mesh(path, &colShape)==false){
         printf("Error loading %s", path);
     }
-	load_texture(shaderprog);
+	load_texture(shaderprog, texture_path);
 
 	btTransform startTransform;
     startTransform.setIdentity();
@@ -29,12 +29,12 @@ GameObject::GameObject(const char* path, GLuint shaderprog, btScalar masa, btVec
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(masa, myMotionState, colShape, localInertia);
 	this->rigidBody = new btRigidBody(rbInfo);
 }
-GameObject::GameObject(const char* path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll){
+GameObject::GameObject(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll){
     
     if(load_mesh(path)==false){
         printf("Error loading %s", path);
     }
-    load_texture(shaderprog);
+    load_texture(shaderprog, texture_path);
     btTransform startTransform;
 	startTransform.setIdentity();
 	
@@ -300,17 +300,17 @@ bool GameObject::load_mesh (const char* file_name) {
 	
     return true;
 }
-bool GameObject::load_texture (GLuint shaderprog){
+bool GameObject::load_texture (GLuint shaderprog, const char* texture_path){
 
 	int x, y, n;
 	int force_channels = 4;
-	unsigned char* image_data = stbi_load ("res/textures/default.jpg", &x, &y, &n, force_channels);
+	unsigned char* image_data = stbi_load (texture_path, &x, &y, &n, force_channels);
 	if (!image_data) {
-	  fprintf (stderr, "ERROR: could not load %s\n", "res/textures/default.jpg");
+		fprintf (stderr, "ERROR: could not load %s\n", texture_path);
 	}
 
 	if ((x & (x - 1)) != 0 || (y & (y - 1)) != 0) 
-	  fprintf (stderr, "WARNING: texture %s is not power-of-2 dimensions\n", "res/textures/default.jpg");
+		fprintf (stderr, "WARNING: texture %s is not power-of-2 dimensions: %i, %i\n", texture_path, x, y);
 
 	int width_in_bytes = x * 4;
 	unsigned char *top = NULL;
@@ -323,26 +323,24 @@ bool GameObject::load_texture (GLuint shaderprog){
 		bottom = image_data + (y - row - 1) * width_in_bytes;
 		for (int col = 0; col < width_in_bytes; col++) { 
 			temp = *top;
-	    	*top = *bottom;
-		    *bottom = temp;
-		    top++;
-		    bottom++;
-	  	}
+			*top = *bottom;
+			*bottom = temp;
+			top++;
+			bottom++;
+		}
 	}
 
-	GLuint tex = 0;
-	glGenTextures (1, &tex);
+	texture = 0;
+	glGenTextures (1, &texture);
 	glActiveTexture (GL_TEXTURE0);
-	glBindTexture (GL_TEXTURE_2D, tex);
+	glBindTexture (GL_TEXTURE_2D, texture);
 	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-	int tex_loc = glGetUniformLocation (shaderprog, "basic_texture");
-	glUseProgram (shaderprog);
-	glUniform1i (tex_loc, 0);
+	tex_location = glGetUniformLocation (shaderprog, "basic_texture");
 }
 //GETTERS
 int GameObject::getVertNumber(){
@@ -350,6 +348,9 @@ int GameObject::getVertNumber(){
 }
 GLuint GameObject::getVao(){
     return this->vao;
+}
+GLuint GameObject::getTexture(){
+    return this->texture;
 }
 btRigidBody* GameObject::getRigidBody(){
     return this->rigidBody;
