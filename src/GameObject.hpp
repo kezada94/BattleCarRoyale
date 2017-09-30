@@ -1,16 +1,7 @@
 #ifndef GAME_OBJECT_H
 #define GAME_OBJECT_H
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/vec3.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <assimp/cimport.h> // C importer
-#include <assimp/scene.h> // collects data
-#include <assimp/postprocess.h> // various extra operations
-#include <bullet/btBulletDynamicsCommon.h>
-#include <bullet/BulletCollision/CollisionShapes/btShapeHull.h>
+#include "Tools.hpp"
 
 class GameObject{
 
@@ -18,12 +9,8 @@ private:
     GLuint vao;
     GLuint texture;
     int vertNumber;
-    btRigidBody* rigidBody = nullptr;
+    btRigidBody* rigidBody;
     
-protected:
-    bool load_mesh (const char* file_name, btConvexHullShape** col);
-    bool load_mesh (const char* file_name);
-    bool load_texture (GLuint shaderprog, const char* texture_path);
 public:
     GLuint tex_location;
 

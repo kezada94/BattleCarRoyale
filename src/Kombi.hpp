@@ -2,15 +2,19 @@
 #define KOMBI_H
 
 #include "Car.hpp"
+#include <cmath>
+
 
 class Kombi : public Car{
-
+private:
+    GLuint wheel_vao;
+    int wheel_vert;
 public:
-    Kombi(btVector3 startPos, btQuaternion startRot);
-    Kombi(btVector3 startPos, btQuaternion startRot, btCollisionShape* coll);
+    Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world);
+    Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world);
     ~Kombi();
 
-    void initialize(btScalar hp, btScalar brake, btScalar sterring);
+    void initialize(btDiscreteDynamicsWorld* world);
 
     void accelerate();
     void brake();
@@ -22,6 +26,8 @@ public:
 
     void spawn();
     void despawn();
+
+    void draw(GLuint model_mat_location);
 };
 
 #endif

@@ -28,6 +28,7 @@
 #include "Camera.hpp"
 #include "StaticGameObject.hpp"
 #include "DynamicGameObject.hpp"
+#include "Kombi.hpp"
 
 #define GL_LOG_FILE "log/gl.log"
 #define VERTEX_SHADER_FILE "res/shaders/vert.glsl"
@@ -85,16 +86,16 @@ int main(){
     //GameObject *moster = new GameObject("res/meshes/monster_truck4.obj", btScalar(20), btVector3(0, 10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     //DynamicGameObject *player = new DynamicGameObject("res/meshes/car_chanta.obj", shader_programme, btScalar(10), btVector3(0, -6, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     //StaticGameObject *buen = new StaticGameObject("res/meshes/cube.obj", shader_programme, btVector3(10, 0, 10), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    Kombi* kombi = new Kombi(btVector3(0, 5, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
     
-    
-    //level->addGameObject(truck);
+    level->addGameObject(kombi);
     level->addGameObject(piso);
-    level->addGameObject(player);
-    level->addGameObject(rueda);
+    //level->addGameObject(player);
+    //level->addGameObject(rueda);
     //level->addGameObject(buen);
 
 
-    camera->setTarget(player);
+    camera->setTarget(kombi);
     // activate shader
             
     // render loop
@@ -107,16 +108,14 @@ int main(){
         lastFrame = currentFrame;
 
         if (glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS){
-            player->getRigidBody()->activate();
-            player->getRigidBody()->applyForce(btVector3(0, 0, -60),btVector3(0,0,1));
+            //player->getRigidBody()->activate();
+            kombi->accelerate();
         } 
         if (glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS){
-            player->getRigidBody()->activate();
-            player->getRigidBody()->applyTorque(btVector3(0, 30, 0));
+            kombi->turnLeft();
         } 
         if (glfwGetKey(g_window, GLFW_KEY_RIGHT) == GLFW_PRESS){
-            player->getRigidBody()->activate();
-            player->getRigidBody()->applyTorque(btVector3(0, -30, 0));
+            kombi->turnRight();
         }
         if (glfwGetKey(g_window, GLFW_KEY_U) == GLFW_PRESS){
             camera->zoomIn();
@@ -131,7 +130,7 @@ int main(){
         processInput(g_window);
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.0f, 0.7f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         

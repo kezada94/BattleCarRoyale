@@ -16,7 +16,7 @@ public:
     Car(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll);
     ~Car();
 
-    virtual void initialize(btScalar hp, btScalar brake, btScalar sterring) = 0;
+    virtual void initialize(btDiscreteDynamicsWorld* world) = 0;
 
     virtual void accelerate() = 0;
     virtual void brake() = 0;
