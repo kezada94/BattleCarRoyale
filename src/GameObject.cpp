@@ -341,6 +341,8 @@ bool GameObject::load_texture (GLuint shaderprog, const char* texture_path){
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	tex_location = glGetUniformLocation (shaderprog, "basic_texture");
+
+	return true;
 }
 //GETTERS
 int GameObject::getVertNumber(){

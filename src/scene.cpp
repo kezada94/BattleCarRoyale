@@ -1,4 +1,4 @@
-#include "scene.hpp"
+#include "Scene.hpp"
 
 Scene::Scene(){
     broadphase = new btDbvtBroadphase();
