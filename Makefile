@@ -14,4 +14,4 @@ LIBS=-lGL -lGLEW -lglfw -lassimp -I /usr/include/bullet -lBulletDynamics -lBulle
 endif
 
 all:
-	${CC} ${FLAGS} ${FRAMEWORK} ${SRC} ${LIBS} -o ${EXEC}
+	${CC} ${FRAMEWORK} ${SRC} ${LIBS} -o ${EXEC}
