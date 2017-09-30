@@ -15,5 +15,3 @@ endif
 
 all:
 	${CC} ${FLAGS} ${FRAMEWORK} ${SRC} ${LIBS} -o ${EXEC}
-	./bin/prog
-	make clear
