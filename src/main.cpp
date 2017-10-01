@@ -40,9 +40,6 @@ int g_gl_height = 768;
 
 
 GLFWwindow* g_window = NULL;
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
@@ -50,20 +47,7 @@ float lastFrame = 0.0f;
 float fov = 66.0f;
 
 int main(){
-	restart_gl_log ();
-	start_gl ();
-	glEnable (GL_DEPTH_TEST); // enable depth-testing
-	glDepthFunc (GL_LESS); // depth-testing interprets a smaller value as "closer"
-	glEnable (GL_CULL_FACE); // cull face
-	glCullFace (GL_BACK); // cull back face
-	glFrontFace (GL_CCW); // set counter-clock-wise vertex order to mean the front
-    glClearColor (0.2, 0.2, 0.2, 1.0); // grey background to help spot mistakes
-    
-	#ifdef __linux__
-	    glViewport (0, 0, g_gl_width, g_gl_height);
-	#endif
-
-    glfwSetFramebufferSizeCallback(g_window, framebuffer_size_callback);
+	init();
 
     /*-------------------------------CREATE SHADERS-------------------------------*/
 	GLuint shader_programme = create_programme_from_files (
@@ -149,13 +133,4 @@ int main(){
     glfwTerminate();
 
     return 0;
-}
-
-
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height){
-	#ifdef __linux__
-	glViewport (0, 0, width, height);
-	#endif
 }

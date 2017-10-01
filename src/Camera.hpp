@@ -36,8 +36,8 @@ private:
     int height;
     float fov;
 
-    float yaw;
-    float pitch;
+    float yaw;//angulo de giro en Z
+    float pitch;//angulo de giro en Y
 
     bool isProjChanged;
     bool isViewChanged;

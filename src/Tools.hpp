@@ -12,9 +12,13 @@
 #include <assimp/postprocess.h> // various extra operations
 #include <bullet/btBulletDynamicsCommon.h>
 #include <bullet/BulletCollision/CollisionShapes/btShapeHull.h>
+#include "gl_utils.h"
+
+
 
 bool load_mesh (const char* file_name, GLuint& vao, int& vert_no, btConvexHullShape** col);
 bool load_mesh (const char* file_name, GLuint& vao, int& vert_no);    
 bool load_texture (GLuint shaderprog, const char* texture_path, GLuint& texture, GLuint tex_location);
-    
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void init();
 #endif

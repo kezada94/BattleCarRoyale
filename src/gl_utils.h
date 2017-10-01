@@ -19,6 +19,7 @@
 #include <GL/glew.h> // include GLEW and new version of GL on Windows
 #include <GLFW/glfw3.h> // GLFW helper library
 
+
 /*------------------------------GLOBAL VARIABLES------------------------------*/
 extern int g_gl_width;
 extern int g_gl_height;
