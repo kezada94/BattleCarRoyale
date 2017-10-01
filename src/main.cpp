@@ -29,6 +29,7 @@
 #include "StaticGameObject.hpp"
 #include "DynamicGameObject.hpp"
 #include "Kombi.hpp"
+#include "InputProcessor.hpp"
 
 #define GL_LOG_FILE "log/gl.log"
 #define VERTEX_SHADER_FILE "res/shaders/vert.glsl"
@@ -36,13 +37,11 @@
 
 int g_gl_width = 1366;
 int g_gl_height = 768;
-int isWireframe = false;
-bool isReleased = false;
+
 
 GLFWwindow* g_window = NULL;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
 
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -78,7 +77,7 @@ int main(){
     
     int model_mat_location  = glGetUniformLocation (shader_programme, "model");
     
-    camera->init(shader_programme, g_gl_width, g_gl_height, fov);
+    camera->init(shader_programme, g_gl_width, g_gl_height, fov, CameraModes::THIRD_PERSON);
 
     DynamicGameObject *player = new DynamicGameObject("res/meshes/kombi3.obj", "res/textures/kombi3.jpg", shader_programme, btScalar(1), btVector3(0, 5, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     DynamicGameObject *rueda = new DynamicGameObject("res/textures/rueda/rueda.obj", "res/textures/rueda/wheel.png", shader_programme, btScalar(2), btVector3(0, 10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
@@ -96,6 +95,8 @@ int main(){
 
 
     camera->setTarget(kombi);
+
+    InputProcessor* processor = new InputProcessor(g_window, camera, kombi);
     // activate shader
             
     // render loop
@@ -106,6 +107,8 @@ int main(){
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+        level->stepSimulation(1.f / 60.f, 10);
+        processor->processInput();
 
         if (glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS){
             //player->getRigidBody()->activate();
@@ -127,7 +130,6 @@ int main(){
         _update_fps_counter(g_window);
         // input
         // -----
-        processInput(g_window);
         // render
         // ------
         glClearColor(0.0f, 0.7f, 1.0f, 1.0f);
@@ -137,7 +139,6 @@ int main(){
         level->drawAllGameObjects(model_mat_location);
         camera->update();
         
-		level->stepSimulation(1.f / 60.f, 10);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(g_window);
@@ -150,27 +151,6 @@ int main(){
     return 0;
 }
 
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window){
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    if (isReleased){
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
-            if (!isWireframe){
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //Draw only lines no fill
-                isWireframe = true;
-            } else {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //Draw only lines no fill
-                isWireframe = false;
-            }   
-            isReleased = false;  
-        }
-    }
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE){
-        isReleased = true;
-    }
-}
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------

@@ -25,12 +25,12 @@ void Kombi::initialize(btDiscreteDynamicsWorld* world){
 
     btVector3 wheelDirection(0.0f, -1.0f, 0.0f);
     btVector3 wheelAxis(1.0f, 0.0f, 0.0f);
-    btScalar suspensionRestLength(0.6f);
+    btScalar suspensionRestLength(0.2f);
     btScalar wheelRadius(1.f);
-    vehicle->addWheel(btVector3(-2.f, -2.0f, -3.5f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);
-    vehicle->addWheel(btVector3(2.f, -2.0f, -3.5f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);
-    vehicle->addWheel(btVector3(-2.f, -2.0f, 3.f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);
-    vehicle->addWheel(btVector3(2.f, -2.0f, 3.f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);
+    vehicle->addWheel(btVector3(-2.f, -1.86f, -3.4f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);
+    vehicle->addWheel(btVector3(2.f, -1.86f, -3.4f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);
+    vehicle->addWheel(btVector3(-2.f, -1.86f, 4.18f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);
+    vehicle->addWheel(btVector3(2.f, -1.86f, 4.18f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);
     
     this->setCar(vehicle);
 }
@@ -75,14 +75,14 @@ void Kombi::brake(){}
 void Kombi::reverse(){}
 void Kombi::turnRight(){
     if (getCar()->getSteeringValue(0)>-1 && getCar()->getSteeringValue(1)>-1){
-        getCar()->setSteeringValue(getCar()->getSteeringValue(0)-0.03f, 0);
-        getCar()->setSteeringValue(getCar()->getSteeringValue(1)-0.03f, 1);
+        getCar()->setSteeringValue(getCar()->getSteeringValue(0)-0.01f, 0);
+        getCar()->setSteeringValue(getCar()->getSteeringValue(1)-0.01f, 1);
     }
 }
 void Kombi::turnLeft(){
-    if (getCar()->getSteeringValue(0)<1 && getCar()->getSteeringValue(0)<1){
-        getCar()->setSteeringValue(getCar()->getSteeringValue(0)+0.03f, 0);
-        getCar()->setSteeringValue(getCar()->getSteeringValue(1)+0.03f, 1);
+    if (getCar()->getSteeringValue(0)<1 && getCar()->getSteeringValue(1)<1){
+        getCar()->setSteeringValue(getCar()->getSteeringValue(0)+0.01f, 0);
+        getCar()->setSteeringValue(getCar()->getSteeringValue(1)+0.01f, 1);
     }
 }
 

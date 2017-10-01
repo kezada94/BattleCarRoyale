@@ -22,47 +22,67 @@ void Camera::getPitchFromQuat(const btQuaternion q1, float& pitch) {
     pitch = atan2(2*q1.y()*q1.w()-2*q1.x()*q1.z() , sqx - sqy - sqz + sqw);
 }
 
-Camera::Camera() : isViewChanged(true), isProjChanged(true), target(nullptr), upOffset(15.0f), up(glm::vec3(0, 1, 0)), farOffset(20.0f), zoomSpeed(0.5f){}
+Camera::Camera() 
+    : isViewChanged(true), 
+    isProjChanged(true), 
+    target(nullptr), 
+    upOffset(15.0f), 
+    up(glm::vec3(0, 1, 0)), 
+    front(glm::vec3(0.0f, 0.0f, -1.0f)),
+    position(glm::vec3(0.0f, 0.0f, 3.0f)),
+    farOffset(20.0f), 
+    zoomSpeed(0.5f){}
 
-void Camera::init(GLuint shaderProg, int width, int height, float fov){
+void Camera::init(GLuint shaderProg, int width, int height, float fov, CameraModes m){
 
     setWidth(width);
     setHeight(height);
     setFOV(fov);
+    setMode(m);
 
     this->viewLocation = glGetUniformLocation (shaderProg, "view");    
     this->projLocation = glGetUniformLocation (shaderProg, "proj");
 
-    glm::mat4 projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 300.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 1000.0f);
     glUniformMatrix4fv (projLocation, 1, GL_FALSE, &projection[0][0]);    
     glm::mat4 view = glm::lookAt(glm::vec3(), glm::vec3(), up);
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
 }
 void Camera::update(){
 
-    if(target == nullptr){
-        printf("Error, target hasn't been set");
-        return;
-    }
-
     if(isProjChanged){
         glm::mat4 projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 100.0f);
         glUniformMatrix4fv (projLocation, 1, GL_FALSE, &projection[0][0]);
         isProjChanged = false;
     }
-
     float angle;    
-    btTransform trans;
+    float camX;
+    float camZ;
+    btTransform trans;    
+    glm::vec3 targetPos;
+    glm::mat4 view; 
 
-    target->getRigidBody()->getMotionState()->getWorldTransform(trans);
-    getPitchFromQuat(trans.getRotation(), angle);
-    
-    glm::vec3 targetPos = glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
+    switch(mode){
+        case CameraModes::THIRD_PERSON:
+            if(target == nullptr){
+                printf("Error, target hasn't been set");
+                return;
+            }
+            target->getRigidBody()->getMotionState()->getWorldTransform(trans);
+            getPitchFromQuat(trans.getRotation(), angle);
+            
+            targetPos = glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
 
-    float camX = sin(angle) * farOffset;
-    float camZ = cos(angle) * farOffset;
-    glm::mat4 view = glm::lookAt(glm::vec3(camX, upOffset ,camZ) + targetPos, targetPos, up);
-    glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
+            camX = sin(angle) * farOffset;
+            camZ = cos(angle) * farOffset;
+            view = glm::lookAt(glm::vec3(camX, upOffset ,camZ) + targetPos, targetPos, up);
+            glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
+            break;
+        case CameraModes::FIRST_PERSON:
+            view = glm::lookAt(position, position + front, up);
+            glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
+            break;
+    }
 
 }
 void Camera::zoomIn(){
@@ -96,6 +116,44 @@ void Camera::setFOV(float fov){
     this->fov = fov;
     this->isProjChanged = true;    
 }
+void Camera::setMode(CameraModes m){
+    this->mode = m;
+}
+void Camera::setPosition(glm::vec3 pos){
+    this->position = pos;
+}
+void Camera::setFront(glm::vec3 fron){
+    this->front = fron;
+}
+void Camera::setUp(glm::vec3 up){
+    this->up = up;
+}
+void Camera::setYaw(float y){
+    this->yaw = y;
+}
+void Camera::setPitch(float p){
+    this->pitch = p;
+}
+
 GameObject* Camera::getTarget(){
     return this->target;
 }
+glm::vec3 Camera::getPosition(){
+    return this->position;
+}
+glm::vec3 Camera::getFront(){
+    return this->front;
+}
+glm::vec3 Camera::getUp(){
+    return this->up;
+}
+float Camera::getYaw(){
+    return this->yaw;
+}
+float Camera::getPitch(){
+    return this->pitch;
+}
+CameraModes Camera::getMode(){
+    return this->mode;
+}
+
