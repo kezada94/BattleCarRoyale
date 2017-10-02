@@ -15,6 +15,8 @@ void StaticGameObject::draw(const GLuint model_mat_location){
         
     model = glm::translate(glm::mat4(), glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
     model = glm::rotate(model, trans.getRotation().getAngle(), glm::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ() ));
+    btVector3 escala = getRigidBody()->getCollisionShape()->getLocalScaling();
+    model = glm::scale(model, glm::vec3(escala.getX(), escala.getY(), escala.getZ()));
     glUniformMatrix4fv(model_mat_location, 1, GL_FALSE, &model[0][0]);
     
     glActiveTexture (GL_TEXTURE0);

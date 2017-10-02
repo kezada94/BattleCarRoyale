@@ -35,11 +35,6 @@ void Kombi::initialize(btDiscreteDynamicsWorld* world){
     this->setCar(vehicle);
 }
 
-void Kombi::accelerate(){
-    this->getCar()->applyEngineForce(200,0);
-    this->getCar()->applyEngineForce(200,1);
-}
-
 void Kombi::draw(GLuint model_mat_location){
     btTransform trans;
     glm::mat4 model;
@@ -71,7 +66,14 @@ void Kombi::draw(GLuint model_mat_location){
     }
 }
 
-void Kombi::brake(){}
+void Kombi::accelerate(){
+    this->getCar()->applyEngineForce(100,0);
+    this->getCar()->applyEngineForce(100,1);
+}
+
+void Kombi::brake(){
+
+}
 void Kombi::reverse(){}
 void Kombi::turnRight(){
     if (getCar()->getSteeringValue(0)>-1 && getCar()->getSteeringValue(1)>-1){

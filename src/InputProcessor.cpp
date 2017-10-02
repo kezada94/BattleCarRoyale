@@ -103,6 +103,23 @@ void InputProcessor::processInput(){
     }
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE){
         isReleased = true;
-}
+    }
+
+    if (glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS){
+        //player->getRigidBody()->activate();
+        player->accelerate();
+    } 
+    if (glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS){
+        player->turnLeft();
+    } 
+    if (glfwGetKey(g_window, GLFW_KEY_RIGHT) == GLFW_PRESS){
+        player->turnRight();
+    }
+    if (glfwGetKey(g_window, GLFW_KEY_U) == GLFW_PRESS){
+        camera->zoomIn();
+    } 
+    if (glfwGetKey(g_window, GLFW_KEY_J) == GLFW_PRESS){
+        camera->zoomOut();
+    }    
     
 }

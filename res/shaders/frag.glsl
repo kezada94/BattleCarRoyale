@@ -1,4 +1,4 @@
-#version 130 //130 linux - 410 mac
+#version 410 //130 linux - 410 mac
 
 in vec3 normal;
 in vec2 st;

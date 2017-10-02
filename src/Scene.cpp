@@ -10,6 +10,7 @@ Scene::Scene(){
     dynamicsWorld->setGravity(btVector3(0,-9.81f,0));
     
     objects = new SceneGameObjectLists();
+
 }
 Scene::~Scene(){
     delete broadphase;
@@ -19,6 +20,7 @@ Scene::~Scene(){
     delete dynamicsWorld;
     delete objects;
 }
+
 void Scene::drawAllGameObjects(const GLuint mat_location){
     GameObject* obj;
     for (int i = 0; i < objects->size(); i++){
@@ -32,6 +34,9 @@ void Scene::drawAllGameObjects(const GLuint mat_location){
     }
 }
 void Scene::addGameObject(GameObject* obj){
+    if(dynamic_cast<Car*>(obj)){
+        cars.push_back(dynamic_cast<Car*>(obj));
+    }
     this->objects->addGameObject(obj);
     this->dynamicsWorld->addRigidBody(obj->getRigidBody());
 }
@@ -41,3 +46,15 @@ void Scene::stepSimulation(float freq, int algo){
 btDiscreteDynamicsWorld* Scene::getDynamicsWorld(){
     return this->dynamicsWorld;
 }
+
+void Scene::setPlayer(Car* play){
+    this->player = play;
+}
+
+Car* Scene::getPlayer(){
+    return this->player;
+}
+CarList Scene::getCars(){
+    return this->cars;
+}
+
