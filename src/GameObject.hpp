@@ -10,6 +10,10 @@ private:
     GLuint texture;
     int vertNumber;
     btRigidBody* rigidBody;
+protected:
+    bool load_mesh (const char* file_name, GLuint& vao, int& vert_no, btConvexHullShape** col);
+    bool load_mesh (const char* file_name, GLuint& vao, int& vert_no);    
+    bool load_texture (GLuint shaderprog, const char* texture_path, GLuint& texture, GLuint tex_location);
     
 public:
     GLuint tex_location;
