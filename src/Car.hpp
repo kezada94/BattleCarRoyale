@@ -9,6 +9,8 @@ private:
     float health;
     float armour;
     bool isAlive;
+    bool turned;
+    bool braked;
     
     btRaycastVehicle* car;
 public:
@@ -32,11 +34,15 @@ public:
     float getHealth();
     float getArmour();
     bool getIsAlive();
+    bool getTurned();
+    bool getBrake();
     btRaycastVehicle* getCar();
 
     void setHealth(float vida);
     void setArmour(float armor);
-    void setIsAlive(float isAliv);
+    void setIsAlive(bool isAliv);
+    void setTurned(bool turn);
+    void setBrake(bool brake);
     void setCar(btRaycastVehicle* car);
 
 };

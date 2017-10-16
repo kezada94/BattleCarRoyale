@@ -13,6 +13,7 @@
 #include "StaticGameObject.hpp"
 #include "DynamicGameObject.hpp"
 #include "Kombi.hpp"
+#include "Patriot.hpp"
 #include "InputProcessor.hpp"
 #include "ILogicProcessor.hpp"
 

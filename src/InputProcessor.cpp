@@ -11,7 +11,6 @@ InputProcessor::InputProcessor(GLFWwindow* win, Camera* cam, Car* player)
     glfwGetWindowSize(window, &lastX, &lastY);
     lastX = lastX / 2;
     lastY = lastY / 2; 
-    printf("x: %i, y: %i\n", lastX, lastY);
     
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
@@ -20,10 +19,8 @@ InputProcessor::~InputProcessor(){}
 void InputProcessor::processMouse(){
     GLdouble xpos, ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
-    printf("x: %f, y: %f\n", xpos, ypos);
     
     if(abs(xpos - lastX) < 2.f && abs(ypos - lastY) < 2.f){
-        printf("no ha cambiado\n");
         return;
     }
 
@@ -107,6 +104,7 @@ void InputProcessor::processInput(){
 
     if (glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS){
         //player->getRigidBody()->activate();
+        //printf("se acelera\n");
         player->accelerate();
     } 
     if (glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS){
@@ -114,6 +112,16 @@ void InputProcessor::processInput(){
     } 
     if (glfwGetKey(g_window, GLFW_KEY_RIGHT) == GLFW_PRESS){
         player->turnRight();
+    }
+    if (glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS){
+        if (player->getCar()->getCurrentSpeedKmHour()>1.f){
+            player->brake();
+        }else{
+            player->reverse();
+        }
+    }
+    if (glfwGetKey(g_window, GLFW_KEY_SPACE) == GLFW_PRESS){
+        player->brake();
     }
     if (glfwGetKey(g_window, GLFW_KEY_U) == GLFW_PRESS){
         camera->zoomIn();

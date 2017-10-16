@@ -1,20 +1,22 @@
-#include "Kombi.hpp"
+#include "Patriot.hpp"
 
-Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world) 
-    : Car("res/KOMBI.obj", "res/kombitextura.png", shaderprog, btScalar(10), startPos, startRot) {
+Patriot::Patriot(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world) 
+    : Car("res/patriot.obj", "res/Ambulance.png", shaderprog, btScalar(80), startPos, startRot) {
         initialize(world);
 
         load_mesh("res/textures/rueda/rueda.obj", wheel_vao, wheel_vert);
     }
 
-Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world)
-    : Car("res/KOMBI.obj", "res/kombitextura.png", shaderprog, btScalar(10), startPos, startRot, coll) {
-        initialize(world);        
+Patriot::Patriot(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world)
+    : Car("res/patriot.obj", "res/Ambulance.png", shaderprog, btScalar(80), startPos, startRot, coll) {
+        initialize(world);    
+        load_mesh("res/textures/rueda/rueda.obj", wheel_vao, wheel_vert);
+        
     }
     
-Kombi::~Kombi(){}
+Patriot::~Patriot(){}
 
-void Kombi::initialize(btDiscreteDynamicsWorld* world){
+void Patriot::initialize(btDiscreteDynamicsWorld* world){
     btRaycastVehicle::btVehicleTuning* tuning = new btRaycastVehicle::btVehicleTuning();
     btVehicleRaycaster* defvehicle = new btDefaultVehicleRaycaster(world);
     getRigidBody()->setActivationState( DISABLE_DEACTIVATION);
@@ -25,29 +27,28 @@ void Kombi::initialize(btDiscreteDynamicsWorld* world){
 
     btVector3 wheelDirection(0.0f, -1.0f, 0.0f);
     btVector3 wheelAxis(1.0f, 0.0f, 0.0f);
-    btScalar suspensionRestLength(0.2f);    //TODO: PARAM
+    btScalar suspensionRestLength(0.3f);    //TODO: PARAM
     btScalar wheelRadius(1.f);              //TOCO: PARAM 
-    vehicle->addWheel(btVector3(-2.f, -1.36f, 4.18f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);//TODO: PARAM
-    vehicle->addWheel(btVector3(2.f, -1.36f, 4.18f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true); //TODO: PARAM
-    vehicle->addWheel(btVector3(2.f, -1.36f, -3.6f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);  //TODO: PARAM
-    vehicle->addWheel(btVector3(-2.f, -1.36f, -3.6f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false); //TODO: PARAM
+    vehicle->addWheel(btVector3(2.37f, -1.f, 6.1f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);  //TODO: PARAM
+    vehicle->addWheel(btVector3(-2.37f, -1.f, 6.1f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true); //TODO: PARAM
+    vehicle->addWheel(btVector3(-2.37f, -1.f, -2.82f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);//TODO: PARAM
+    vehicle->addWheel(btVector3(2.37f, -1.f, -2.82f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false); //TODO: PARAM
     
     this->setCar(vehicle);
 
-    for (int i = 0; i < getCar()->getNumWheels(); i++)
+    /*for (int i = 0; i < getCar()->getNumWheels(); i++)
     {        
         btWheelInfo& wheel = getCar()->getWheelInfo(i);
-        //wheel.m_wheelsDampingRelaxation = 11.7f;    //TODO: PARAM
-        //wheel.m_wheelsDampingCompression = 10.7f;   //TODO: PARAM
-        wheel.m_frictionSlip = btScalar(10000.);     //TODO: PARAM
-        wheel.m_rollInfluence = btScalar(0.f);    //TODO: PARAM
-        //wheel.m_maxSuspensionTravelCm = 15.f;       //TODO: PARAM
-        
-    }
+        wheel.m_wheelsDampingRelaxation = 11.7f;    //TODO: PARAM
+        wheel.m_wheelsDampingCompression = 10.7f;   //TODO: PARAM
+        wheel.m_frictionSlip = btScalar(1000.);     //TODO: PARAM
+        wheel.m_rollInfluence = btScalar(0.05);     //TODO: PARAM
+        wheel.m_maxSuspensionTravelCm = 30.f;       //TODO: PARAM
+    }*/
 }
 
-void Kombi::draw(GLuint model_mat_location){
-   printf("%f\n", getCar()->getCurrentSpeedKmHour());
+void Patriot::draw(GLuint model_mat_location){
+    //printf("La velocidad es: %f\n", getCar()->getCurrentSpeedKmHour());
     if(!getTurned()){
         if(getCar()->getSteeringValue(0) > 0){
             getCar()->setSteeringValue(getCar()->getSteeringValue(0)-0.030f, 0);    //TODO: PARAM
@@ -105,41 +106,39 @@ void Kombi::draw(GLuint model_mat_location){
     }
 }
 
-void Kombi::accelerate(){
-    if(getCar()->getCurrentSpeedKmHour() < 100.f){
-        this->getCar()->applyEngineForce(-25, 0); //TODO: Param
-        this->getCar()->applyEngineForce(-25, 1);
-    }
+void Patriot::accelerate(){
+    getCar()->applyEngineForce(-80,0); //TODO: Param
+    getCar()->applyEngineForce(-80,1);
 }
 
-void Kombi::brake(){
+void Patriot::brake(){
     getCar()->setBrake(btScalar(0.5), 0);   //TODO: PARAM
     getCar()->setBrake(btScalar(0.5), 1);   //TODO: PARAM
     getCar()->setBrake(btScalar(0.5), 2);   //TODO: PARAM
     getCar()->setBrake(btScalar(0.5), 3);   //TODO: PARAM
     setBrake(true);
 }
-void Kombi::reverse(){
-    this->getCar()->applyEngineForce(50,0);    //TODO: Param
-    this->getCar()->applyEngineForce(50,1);    //TODO: PARAM
+void Patriot::reverse(){
+    this->getCar()->applyEngineForce(25,0);    //TODO: Param
+    this->getCar()->applyEngineForce(25,1);    //TODO: PARAM
 }
 
-void Kombi::turnRight(){
+void Patriot::turnRight(){
     if (getCar()->getSteeringValue(0)>-0.4f && getCar()->getSteeringValue(1)>-0.4f){
         getCar()->setSteeringValue(getCar()->getSteeringValue(0)-0.02f, 0); //TODO: Param
         getCar()->setSteeringValue(getCar()->getSteeringValue(1)-0.02f, 1); //TODO: PARAM
     }
     setTurned(true);
 }
-void Kombi::turnLeft(){
+void Patriot::turnLeft(){
     if (getCar()->getSteeringValue(0)<0.4f && getCar()->getSteeringValue(1)<0.4f){
         getCar()->setSteeringValue(getCar()->getSteeringValue(0)+0.02f, 0); //TODO: PARAM
         getCar()->setSteeringValue(getCar()->getSteeringValue(1)+0.02f, 1); //TODO: PARAM
     }
-    setTurned(true);   
+    setTurned(true);  
 }
 
-void Kombi::fire(){}
+void Patriot::fire(){}
 
-void Kombi::spawn(){}
-void Kombi::despawn(){}
+void Patriot::spawn(){}
+void Patriot::despawn(){}

@@ -17,6 +17,12 @@ float Car::getArmour(){
 bool Car::getIsAlive(){
     return this->isAlive;
 }
+bool Car::getTurned(){
+    return this->turned;
+}
+bool Car::getBrake(){
+    return this->braked;
+}
 btRaycastVehicle* Car::getCar(){
     return this->car;
 }
@@ -27,9 +33,16 @@ void Car::setHealth(float vida){
 void Car::setArmour(float armor){
     this->armour = armor;
 }
-void Car::setIsAlive(float isAliv){
+void Car::setIsAlive(bool isAliv){
     this->isAlive = isAliv;
 }
+void Car::setTurned(bool turn){
+    this->turned = turn;
+}
+void Car::setBrake(bool brake){
+    this->braked = brake;
+}
+
 void Car::setCar(btRaycastVehicle* car){
     this->car = car;
 }

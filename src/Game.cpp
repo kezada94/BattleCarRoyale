@@ -24,13 +24,15 @@ void Game::init(){
     DynamicGameObject *mono2 = new DynamicGameObject("res/meshes/suzanne.obj", "res/textures/default.jpg", shader_programme, btScalar(2), btVector3(10, 10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     DynamicGameObject *cilindro = new DynamicGameObject("res/meshes/cilindro.obj", "res/textures/rueda/wheel.png", shader_programme, btScalar(2), btVector3(5, 5, 5), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     StaticGameObject *piso = new StaticGameObject("res/textures/piso/suelo2.obj", "res/textures/piso/what.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    Kombi* kombi = new Kombi(btVector3(0, 5, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
-    
+    Kombi* kombi = new Kombi(btVector3(10, 5, 10), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
+    Patriot* patriot = new Patriot(btVector3(0, 5, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
     enemiesCount = 1;
     
     piso->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(30, 10, 30));
     
     level->addGameObject(kombi);
+    level->addGameObject(patriot);
+
     level->addGameObject(mono1);
     level->addGameObject(mono2);
     level->addGameObject(cilindro);
@@ -53,11 +55,11 @@ void Game::doMainLoop(){
         glClearColor(0.0f, 0.7f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        
+        level->stepSimulation(1.f / 60.f, 10); 
         level->drawAllGameObjects(model_mat_location);
         camera->update();
 
-        level->stepSimulation(1.f / 60.f, 10);        
+               
         glfwSwapBuffers(g_window);
         glfwPollEvents();
     }
