@@ -15,7 +15,8 @@ public:
     ~Patriot();
 
     void initialize(btDiscreteDynamicsWorld* world);
-
+    void updatePhysics();
+    
     void accelerate();
     void brake();
     void reverse();

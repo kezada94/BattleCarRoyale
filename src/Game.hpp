@@ -16,6 +16,11 @@
 #include "Patriot.hpp"
 #include "InputProcessor.hpp"
 #include "ILogicProcessor.hpp"
+#include "GLDebugDrawer.hpp"
+#include <algorithm>
+#include <ostream>
+#include <sstream>
+#include <vector>
 
 #define GL_LOG_FILE "log/gl.log"
 #define VERTEX_SHADER_FILE "res/shaders/vert.glsl"

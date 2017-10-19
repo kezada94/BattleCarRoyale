@@ -46,9 +46,7 @@ void Patriot::initialize(btDiscreteDynamicsWorld* world){
         wheel.m_maxSuspensionTravelCm = 30.f;       //TODO: PARAM
     }*/
 }
-
-void Patriot::draw(GLuint model_mat_location){
-    //printf("La velocidad es: %f\n", getCar()->getCurrentSpeedKmHour());
+void Patriot::updatePhysics(){
     if(!getTurned()){
         if(getCar()->getSteeringValue(0) > 0){
             getCar()->setSteeringValue(getCar()->getSteeringValue(0)-0.030f, 0);    //TODO: PARAM
@@ -76,6 +74,8 @@ void Patriot::draw(GLuint model_mat_location){
     this->getCar()->applyEngineForce(0, 0); //TODO: Param
     this->getCar()->applyEngineForce(0, 1);
 
+}
+void Patriot::draw(GLuint model_mat_location){
     btTransform trans;
     glm::mat4 model;
     this->getRigidBody()->getMotionState()->getWorldTransform(trans);
@@ -116,7 +116,6 @@ void Patriot::brake(){
     getCar()->setBrake(btScalar(0.5), 1);   //TODO: PARAM
     getCar()->setBrake(btScalar(0.5), 2);   //TODO: PARAM
     getCar()->setBrake(btScalar(0.5), 3);   //TODO: PARAM
-    setBrake(true);
 }
 void Patriot::reverse(){
     this->getCar()->applyEngineForce(25,0);    //TODO: Param

@@ -9,8 +9,9 @@
 #include <bullet/btBulletDynamicsCommon.h>
 
 #include "GameObject.hpp"
+#include "GLDebugDrawer.hpp"
 
-#define UP_FAR_RATIO 0.75f
+#define UP_FAR_RATIO 0.5f
 
 enum class CameraModes{
     FIRST_PERSON,
@@ -43,7 +44,12 @@ private:
     bool isViewChanged;
 
     CameraModes mode;
+
+    GLuint shader_programme;
 public:
+
+    GLDebugDrawer* deb; //LAZY
+    
     Camera();
     ~Camera();
 

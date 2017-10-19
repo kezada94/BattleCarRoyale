@@ -20,9 +20,6 @@ bool Car::getIsAlive(){
 bool Car::getTurned(){
     return this->turned;
 }
-bool Car::getBrake(){
-    return this->braked;
-}
 btRaycastVehicle* Car::getCar(){
     return this->car;
 }
@@ -38,9 +35,6 @@ void Car::setIsAlive(bool isAliv){
 }
 void Car::setTurned(bool turn){
     this->turned = turn;
-}
-void Car::setBrake(bool brake){
-    this->braked = brake;
 }
 
 void Car::setCar(btRaycastVehicle* car){

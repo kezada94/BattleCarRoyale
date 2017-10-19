@@ -10,7 +10,6 @@ private:
     float armour;
     bool isAlive;
     bool turned;
-    bool braked;
     
     btRaycastVehicle* car;
 public:
@@ -19,6 +18,7 @@ public:
     ~Car();
 
     virtual void initialize(btDiscreteDynamicsWorld* world) = 0;
+    virtual void updatePhysics() = 0;
 
     virtual void accelerate() = 0;
     virtual void brake() = 0;

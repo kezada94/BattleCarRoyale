@@ -21,17 +21,19 @@ void Camera::getPitchFromQuat(const btQuaternion q1, float& pitch) {
 	}
     pitch = atan2(2*q1.y()*q1.w()-2*q1.x()*q1.z() , sqx - sqy - sqz + sqw);
 }
-
+//btbvtrianglemeshshape
 Camera::Camera() 
     : isViewChanged(true), 
     isProjChanged(true), 
     target(nullptr), 
-    upOffset(15.0f), 
+    upOffset(10.0f), 
     up(glm::vec3(0, 1, 0)), 
     front(glm::vec3(0.0f, 0.0f, -1.0f)),
     position(glm::vec3(0.0f, 0.0f, 3.0f)),
     farOffset(20.0f), 
     zoomSpeed(0.5f){}
+
+Camera::~Camera(){}
 
 void Camera::init(GLuint shaderProg, int width, int height, float fov, CameraModes m){
 
@@ -40,19 +42,25 @@ void Camera::init(GLuint shaderProg, int width, int height, float fov, CameraMod
     setFOV(fov);
     setMode(m);
 
+    this->shader_programme = shaderProg;
     this->viewLocation = glGetUniformLocation (shaderProg, "view");    
     this->projLocation = glGetUniformLocation (shaderProg, "proj");
 
+    glUseProgram(shader_programme);
     glm::mat4 projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 1000.0f);
     glUniformMatrix4fv (projLocation, 1, GL_FALSE, &projection[0][0]);    
+    deb->updateProj(projection);    
+    
     glm::mat4 view = glm::lookAt(glm::vec3(), glm::vec3(), up);
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
+    deb->updateView(view);    
 }
 void Camera::update(){
-
+    glUseProgram(shader_programme);    
     if(isProjChanged){
-        glm::mat4 projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 1000.0f);
         glUniformMatrix4fv (projLocation, 1, GL_FALSE, &projection[0][0]);
+        deb->updateProj(projection); 
         isProjChanged = false;
     }
     float angle;    
@@ -61,7 +69,7 @@ void Camera::update(){
     btTransform trans;    
     glm::vec3 targetPos;
     glm::mat4 view; 
-
+    
     switch(mode){
         case CameraModes::THIRD_PERSON:
             if(target == nullptr){
@@ -77,13 +85,16 @@ void Camera::update(){
             camZ = -cos(angle) * farOffset;
             view = glm::lookAt(glm::vec3(camX, upOffset ,camZ) + targetPos, targetPos, up);
             glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
+            deb->updateView(view);
+            
             break;
         case CameraModes::FIRST_PERSON:
             view = glm::lookAt(position, position + front, up);
             glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
+            deb->updateView(view);
+            
             break;
-    }
-
+    }    
 }
 void Camera::zoomIn(){
     if (farOffset<10){

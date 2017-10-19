@@ -3,9 +3,11 @@
 
 #include "stb_image.h"
 
+GameObject::GameObject(){}
+
 GameObject::GameObject(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot){
     
-    btConvexHullShape* colShape;
+    btCollisionShape* colShape;
 
     if(load_mesh(path, vao, vertNumber, &colShape)==false){
         printf("Error loading %s", path);
@@ -57,7 +59,7 @@ GameObject::~GameObject(){
     delete this->rigidBody;
 }
 
-bool GameObject::load_mesh (const char* file_name, GLuint& vao, int& vert_no, btConvexHullShape** col) {
+bool GameObject::load_mesh (const char* file_name, GLuint& vao, int& vert_no, btCollisionShape** col) {
 	const aiScene* scene = aiImportFile (file_name, aiProcess_Triangulate);
 	if (!scene) {
 		fprintf (stderr, "ERROR: reading mesh %s\n", file_name);

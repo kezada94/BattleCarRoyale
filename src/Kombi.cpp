@@ -9,7 +9,8 @@ Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDis
 
 Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world)
     : Car("res/KOMBI.obj", "res/kombitextura.png", shaderprog, btScalar(10), startPos, startRot, coll) {
-        initialize(world);        
+        initialize(world);     
+        load_mesh("res/textures/rueda/rueda.obj", wheel_vao, wheel_vert);        
     }
     
 Kombi::~Kombi(){}
@@ -25,7 +26,7 @@ void Kombi::initialize(btDiscreteDynamicsWorld* world){
 
     btVector3 wheelDirection(0.0f, -1.0f, 0.0f);
     btVector3 wheelAxis(1.0f, 0.0f, 0.0f);
-    btScalar suspensionRestLength(0.2f);    //TODO: PARAM
+    btScalar suspensionRestLength(0.5f);    //TODO: PARAM
     btScalar wheelRadius(1.f);              //TOCO: PARAM 
     vehicle->addWheel(btVector3(-2.f, -1.36f, 4.18f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);//TODO: PARAM
     vehicle->addWheel(btVector3(2.f, -1.36f, 4.18f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true); //TODO: PARAM
@@ -46,8 +47,7 @@ void Kombi::initialize(btDiscreteDynamicsWorld* world){
     }
 }
 
-void Kombi::draw(GLuint model_mat_location){
-   printf("%f\n", getCar()->getCurrentSpeedKmHour());
+void Kombi::updatePhysics(){
     if(!getTurned()){
         if(getCar()->getSteeringValue(0) > 0){
             getCar()->setSteeringValue(getCar()->getSteeringValue(0)-0.030f, 0);    //TODO: PARAM
@@ -74,7 +74,9 @@ void Kombi::draw(GLuint model_mat_location){
 
     this->getCar()->applyEngineForce(0, 0); //TODO: Param
     this->getCar()->applyEngineForce(0, 1);
+}
 
+void Kombi::draw(GLuint model_mat_location){
     btTransform trans;
     glm::mat4 model;
     this->getRigidBody()->getMotionState()->getWorldTransform(trans);
@@ -107,17 +109,16 @@ void Kombi::draw(GLuint model_mat_location){
 
 void Kombi::accelerate(){
     if(getCar()->getCurrentSpeedKmHour() < 100.f){
-        this->getCar()->applyEngineForce(-25, 0); //TODO: Param
-        this->getCar()->applyEngineForce(-25, 1);
+        this->getCar()->applyEngineForce(-65, 0); //TODO: Param
+        this->getCar()->applyEngineForce(-65, 1);
     }
 }
 
 void Kombi::brake(){
-    getCar()->setBrake(btScalar(0.5), 0);   //TODO: PARAM
-    getCar()->setBrake(btScalar(0.5), 1);   //TODO: PARAM
-    getCar()->setBrake(btScalar(0.5), 2);   //TODO: PARAM
-    getCar()->setBrake(btScalar(0.5), 3);   //TODO: PARAM
-    setBrake(true);
+    getCar()->setBrake(btScalar(3.5), 0);   //TODO: PARAM
+    getCar()->setBrake(btScalar(3.5), 1);   //TODO: PARAM
+    getCar()->setBrake(btScalar(3.5), 2);   //TODO: PARAM
+    getCar()->setBrake(btScalar(3.5), 3);   //TODO: PARAM
 }
 void Kombi::reverse(){
     this->getCar()->applyEngineForce(50,0);    //TODO: Param

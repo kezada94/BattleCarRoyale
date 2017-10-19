@@ -5,19 +5,22 @@
 
 class GameObject{
 
-private:
+protected:
     GLuint vao;
+    GLuint ebo;
     GLuint texture;
     int vertNumber;
+    int indicesNumber;
     btRigidBody* rigidBody;
-protected:
-    bool load_mesh (const char* file_name, GLuint& vao, int& vert_no, btConvexHullShape** col);
+
+    bool load_mesh (const char* file_name, GLuint& vao, int& vert_no, btCollisionShape** col);
     bool load_mesh (const char* file_name, GLuint& vao, int& vert_no);    
     bool load_texture (GLuint shaderprog, const char* texture_path, GLuint& texture, GLuint tex_location);
     
 public:
     GLuint tex_location;
 
+    GameObject();
     GameObject(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot);
     GameObject(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll);
     

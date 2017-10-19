@@ -144,9 +144,9 @@ void _update_fps_counter (GLFWwindow* window) {
 		previous_seconds = current_seconds;
 		double fps = (double)frame_count / elapsed_seconds;
 		char tmp[128];
-		 sprintf (tmp, "Battle Car Royale @ fps: %.2f", fps);
-		 glfwSetWindowTitle (window, tmp);
-		 frame_count = 0;
+		sprintf (tmp, "Battle Car Royale @ fps: %.2f", fps);
+		glfwSetWindowTitle (window, tmp);
+		frame_count = 0;
 	}
 	frame_count++;
 }

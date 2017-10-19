@@ -33,6 +33,12 @@ void Scene::drawAllGameObjects(const GLuint mat_location){
         
     }
 }
+void Scene::updateAllCarsPhysics(){
+    for (int i = 0; i < cars.size(); i++){
+        cars[i]->updatePhysics();
+    }
+}
+
 void Scene::addGameObject(GameObject* obj){
     if(dynamic_cast<Car*>(obj)){
         cars.push_back(dynamic_cast<Car*>(obj));

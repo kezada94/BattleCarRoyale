@@ -33,6 +33,7 @@ public:
     ~Scene();
 
     void drawAllGameObjects(const GLuint mat_location);
+    void updateAllCarsPhysics();
     void addGameObject(GameObject* obj);
     void stepSimulation(float freq, int algo);
 
