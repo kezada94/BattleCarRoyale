@@ -4,67 +4,19 @@
 
 GLDebugDrawer::GLDebugDrawer(){
     shader_programme = create_programme_from_files ("res/shaders/vert_debug.glsl", "res/shaders/frag_debug.glsl");
+    viewLoc = glGetUniformLocation(shader_programme, "view");
+    projLoc = glGetUniformLocation(shader_programme, "projection");
 }
 GLDebugDrawer::~GLDebugDrawer(){}
 
 void GLDebugDrawer::updateView(glm::mat4 viewe){
     this->view = viewe;
-    //glUseProgram (shader_programme);
-    //glUniformMatrix4fv(glGetUniformLocation(shader_programme, "view"), 1, GL_FALSE, glm::value_ptr(view));
 }
 void GLDebugDrawer::updateProj(glm::mat4 proje){
     this->proj = proje;
-    //glUseProgram (shader_programme);
-    //glUniformMatrix4fv(glGetUniformLocation(shader_programme, "projection"), 1, GL_FALSE, glm::value_ptr(proj));
 }
-void GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& color)
-{
+void GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& color){
     lines.push_back(Line(from, to));
-    /*GLfloat vertices[6];
-    vertices[0] = from.getX();
-    vertices[1] = from.getY();
-    vertices[2] = from.getZ();
-
-    vertices[3] = to.getX();
-    vertices[4] = to.getY();
-    vertices[5] = to.getZ();
-    
-    GLuint indices[] = {0,1};
-  
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ebo);
-  
-    glBindVertexArray(vao);
-  
-    //UPLOADING VERTEX
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER,
-                 sizeof(GLfloat) * 6, vertices, GL_STATIC_DRAW);
-    //UPLOADING INDEXES
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 sizeof(GLuint) * 2,
-                 indices,
-                 GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-                          sizeof(GLfloat) * 3, (GLvoid*)0);
-    glBindVertexArray(0);
-  
-  
-    //use program
-    glUseProgram(shader_programme);
-    //use geometry
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ebo);
-    glDrawElements(GL_LINES, 2, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
-  
-    //delete buffers
-    glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
-    glDeleteBuffers(1, &ebo);*/
 }
 void GLDebugDrawer::drawLines(){
     int n = lines.size();
@@ -106,8 +58,8 @@ void GLDebugDrawer::drawLines(){
   
     //use program
     glUseProgram(shader_programme);
-    glUniformMatrix4fv(glGetUniformLocation(shader_programme, "view"), 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(glGetUniformLocation(shader_programme, "projection"), 1, GL_FALSE, glm::value_ptr(proj));
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
 
     //use geometry
     glBindVertexArray(vao);

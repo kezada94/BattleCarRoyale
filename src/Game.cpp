@@ -26,12 +26,8 @@ void Game::init(){
     
     level->getDynamicsWorld()->setDebugDrawer(debug);
 
-    DynamicGameObject *player = new DynamicGameObject("res/meshes/kombi3.obj", "res/textures/kombi3.jpg", shader_programme, btScalar(1), btVector3(0, 5, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    DynamicGameObject *mono1 = new DynamicGameObject("res/meshes/suzanne.obj", "res/textures/default.jpg", shader_programme, btScalar(2), btVector3(0, 10, 10), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    DynamicGameObject *mono2 = new DynamicGameObject("res/meshes/suzanne.obj", "res/textures/default.jpg", shader_programme, btScalar(2), btVector3(10, 10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    DynamicGameObject *cilindro = new DynamicGameObject("res/meshes/cilindro.obj", "res/textures/rueda/wheel.png", shader_programme, btScalar(2), btVector3(5, 5, 5), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     StaticGameObject *piso = new StaticGameObject("res/textures/piso/suelo2.obj", "res/textures/piso/what.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    Kombi* kombi = new Kombi(btVector3(10, 15, 10), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
+    Kombi* kombi = new Kombi(btVector3(10, 12, 10), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
     Patriot* patriot = new Patriot(btVector3(0, 15, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
     enemiesCount = 1;
 
@@ -40,9 +36,6 @@ void Game::init(){
     level->addGameObject(kombi);
     level->addGameObject(patriot);
 
-    level->addGameObject(mono1);
-    level->addGameObject(mono2);
-    level->addGameObject(cilindro);
     level->addGameObject(piso);
     
 
@@ -66,6 +59,7 @@ void Game::doMainLoop(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Dibuja todos los objetos de la escena
         level->drawAllGameObjects(model_mat_location);
+
         // Dibuja todos las figuras colisionadoras de los objetos
         level->getDynamicsWorld()->debugDrawWorld();
         camera->deb->drawLines();

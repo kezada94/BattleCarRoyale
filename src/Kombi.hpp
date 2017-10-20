@@ -7,8 +7,9 @@
 
 class Kombi : public Car{
 private:
-    GLuint wheel_vao;
+    GLuint wheel_vao, wheel_tex, wheel_texLocation;
     int wheel_vert;
+
 public:
     Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world);
     Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world);

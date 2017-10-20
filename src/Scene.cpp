@@ -22,14 +22,14 @@ Scene::~Scene(){
 }
 
 void Scene::drawAllGameObjects(const GLuint mat_location){
-    GameObject* obj;
+    //GameObject* obj;
     for (int i = 0; i < objects->size(); i++){
-        obj = this->objects->get(i);
-        if (obj != nullptr){
-            obj->draw(mat_location);
-        }else{
-            printf("ES NULLLL");
-        }
+        //obj = this->objects->get(i);
+        //if (obj != nullptr){
+            objects->get(i)->draw(mat_location);
+        //}else{
+            //printf("ES NULLLL");
+        //}
         
     }
 }

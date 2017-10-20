@@ -29,7 +29,7 @@ class GLDebugDrawer : public btIDebugDraw
 {
     
     int m_debugMode;
-    GLuint vao, vbo, ebo;
+    GLuint vao, vbo, ebo, viewLoc, projLoc;
     glm::mat4 view;
     glm::mat4 proj;
     std::vector<Line> lines;

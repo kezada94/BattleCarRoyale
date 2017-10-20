@@ -108,14 +108,17 @@ btBvhTriangleMeshShape* StaticGameObject::load_mesh (const char* file_name, GLui
 		}
     }
     if (mesh->HasFaces()) {
+        printf("	%i indices\n", mesh->mNumFaces*3);        
+        printf("	%i faces\n", mesh->mNumFaces);        
 		indices = (int*)malloc (mesh->mNumFaces * 3 * sizeof (int));
 		for (int i = 0; i < mesh->mNumFaces; i++) {
 			indices[3*i] = mesh->mFaces[i].mIndices[0];
 			indices[3*i+1] = mesh->mFaces[i].mIndices[1];
 			indices[3*i+2] = mesh->mFaces[i].mIndices[2];
 		}
-	}
-
+    }
+    
+    // mesh collider shape
     btTriangleIndexVertexArray* collider = new btTriangleIndexVertexArray(
         mesh->mNumFaces,
         indices,
@@ -123,7 +126,7 @@ btBvhTriangleMeshShape* StaticGameObject::load_mesh (const char* file_name, GLui
         this->vertNumber,
         points,
         3*sizeof(GLfloat)
-    );	// mesh collider shape
+    );	
     btBvhTriangleMeshShape* colorado = new btBvhTriangleMeshShape(collider, true, true);
 
 	/* copy mesh data into VBOs */
@@ -139,7 +142,7 @@ btBvhTriangleMeshShape* StaticGameObject::load_mesh (const char* file_name, GLui
 		);
 		glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 		glEnableVertexAttribArray (0);
-		//free (points);
+		//free (points); //no se liberan ya que la clase btBvhTriangleMeshShape no crea una copia
     }
     if (mesh->HasFaces()){
 		glGenBuffers (1, &this->ebo);
@@ -180,9 +183,6 @@ btBvhTriangleMeshShape* StaticGameObject::load_mesh (const char* file_name, GLui
 		glEnableVertexAttribArray (2);
 		free (texcoords);
 	}
-	if (mesh->HasTangentsAndBitangents ()) {
-		// NB: could store/print tangents here
-    }
 	
 	aiReleaseImport (scene);
 	printf ("mesh loaded\n");

@@ -68,7 +68,7 @@ void InputProcessor::processInput(){
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    float cameraSpeed = 0.1f;
+    float cameraSpeed = 0.4f;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera->setPosition( camera->getPosition() + cameraSpeed * camera->getFront());
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -103,8 +103,6 @@ void InputProcessor::processInput(){
     }
 
     if (glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS){
-        //player->getRigidBody()->activate();
-        //printf("se acelera\n");
         player->accelerate();
     } 
     if (glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS){
