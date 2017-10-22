@@ -30,7 +30,6 @@
 *.out
 *.app
 
-*.glsl
 .DS_Store
 .vs*
 *.log
