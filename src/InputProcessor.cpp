@@ -57,10 +57,6 @@ void InputProcessor::processMouse(){
 }
 
 void InputProcessor::processScroll(){
-    /*if (yoffset > 0)
-        camera->zoomIn();
-    else
-        camera->zoomOut();*/
 }
 
 void InputProcessor::processInput(){

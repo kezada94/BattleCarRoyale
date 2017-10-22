@@ -14,6 +14,7 @@
 #include "DynamicGameObject.hpp"
 #include "Kombi.hpp"
 #include "Patriot.hpp"
+#include "MonsterTruck.hpp"
 #include "InputProcessor.hpp"
 #include "ILogicProcessor.hpp"
 #include "GLDebugDrawer.hpp"

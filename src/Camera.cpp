@@ -78,7 +78,13 @@ void Camera::update(){
             }
             target->getRigidBody()->getMotionState()->getWorldTransform(trans);
             getPitchFromQuat(trans.getRotation(), angle);
-            
+            printf("%f\n", angle);
+            /*if (angle > 89.0f)
+                camera->setPitch(89.0f);
+            if (angle < -89.0f)
+                camera->setPitch(-89.0f);
+*/
+
             targetPos = glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
 
             camX = -sin(angle) * farOffset;
