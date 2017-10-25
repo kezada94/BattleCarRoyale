@@ -23,7 +23,7 @@ private:
 public:
     InputProcessor(GLFWwindow* win, Camera* cam, Car* player);
     ~InputProcessor();
-    
+    void iniciaSonido();
     void processMouse();
     void processScroll();
     void processInput();

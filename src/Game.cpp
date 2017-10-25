@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include <iostream>
 
 Game::Game(){
     level = new Scene();
@@ -13,7 +14,6 @@ Game::~Game(){
 }    
 
 void Game::init(){
-
     shader_programme = create_programme_from_files (VERTEX_SHADER_FILE, FRAGMENT_SHADER_FILE);
 	glUseProgram (shader_programme);
     model_mat_location  = glGetUniformLocation (shader_programme, "model");
@@ -47,15 +47,17 @@ void Game::init(){
     level->setPlayer(monster);
 
     inputProcessor = new InputProcessor(g_window, camera, monster);
+    soundManager = new SoundManager();
 }
 void Game::doMainLoop(){
-    glLineWidth(7);
+    //glLineWidth(7);
     glEnable(GL_LINE_SMOOTH);
+    soundManager->musicaFondo();
     while (!glfwWindowShouldClose(g_window)){
 
         checkStatus();
         inputProcessor->processInput();
-
+        
         _update_fps_counter(g_window);
         glClearColor(0.0f, 0.f, 0.f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

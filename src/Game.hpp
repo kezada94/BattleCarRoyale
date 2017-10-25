@@ -18,6 +18,7 @@
 #include "InputProcessor.hpp"
 #include "ILogicProcessor.hpp"
 #include "GLDebugDrawer.hpp"
+#include "SoundManager.hpp"
 #include <algorithm>
 #include <ostream>
 #include <sstream>
@@ -41,6 +42,7 @@ private:
     Scene* level;
     Camera* camera;
     InputProcessor* inputProcessor;
+    SoundManager* soundManager;
 
     GLuint shader_programme;
     int model_mat_location;

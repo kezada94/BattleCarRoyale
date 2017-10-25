@@ -94,26 +94,53 @@ void InputProcessor::processInput(){
             isReleased = false;  
         }
     }
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE){
-        isReleased = true;
-    }
-
-    if (glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS){
-        player->accelerate();
-    } 
-    if (glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS){
-        player->turnLeft();
-    } 
-    if (glfwGetKey(g_window, GLFW_KEY_RIGHT) == GLFW_PRESS){
-        player->turnRight();
-    }
-    if (glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS){
-        if (player->getCar()->getCurrentSpeedKmHour()>1.f){
-            player->brake();
-        }else{
-            player->reverse();
+    //if ( present==1){
+        int count;
+        const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
+        int axesCount;
+        const float *axes = glfwGetJoystickAxes( GLFW_JOYSTICK_1, &axesCount);
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE){
+            isReleased = true;
         }
-    }
+        if ((glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS)||(axes[5]>0 && axes[5]==GLFW_PRESS)){
+            player->accelerate();
+        } 
+        if ((glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS)||(axes[0]<-0.2)){
+            player->turnLeft();
+        } 
+        if ((glfwGetKey(g_window, GLFW_KEY_RIGHT) == GLFW_PRESS)||(axes[0]>0.2)){
+            player->turnRight();
+        }
+        if ((glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS)||(axes[2]>0 && axes[2]==GLFW_PRESS)){
+            if (player->getCar()->getCurrentSpeedKmHour()>1.f){
+                player->brake();
+            }else{
+                player->reverse();
+            }
+        }
+    //}
+    /*else{
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE){
+            isReleased = true;
+        }
+
+        if (glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS){
+            player->accelerate();
+        } 
+        if (glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS){
+            player->turnLeft();
+        } 
+        if (glfwGetKey(g_window, GLFW_KEY_RIGHT) == GLFW_PRESS){
+            player->turnRight();
+        }
+        if (glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS){
+            if (player->getCar()->getCurrentSpeedKmHour()>1.f){
+                player->brake();
+            }else{
+                player->reverse();
+            }
+        }
+    }*/
     if (glfwGetKey(g_window, GLFW_KEY_SPACE) == GLFW_PRESS){
         player->brake();
     }
