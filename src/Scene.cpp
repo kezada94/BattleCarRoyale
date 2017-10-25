@@ -21,8 +21,9 @@ Scene::~Scene(){
     delete objects;
 }
 
-void Scene::drawAllGameObjects(const GLuint mat_location){
+void Scene::drawAllGameObjects(const GLuint mat_location, const GLuint shader){
     //GameObject* obj;
+    glUseProgram(shader);
     for (int i = 0; i < objects->size(); i++){
         //obj = this->objects->get(i);
         //if (obj != nullptr){

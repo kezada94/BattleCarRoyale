@@ -23,6 +23,9 @@ bool Car::getTurned(){
 btRaycastVehicle* Car::getCar(){
     return this->car;
 }
+btDiscreteDynamicsWorld* Car::getWorld(){
+    return this->world;
+}
 
 void Car::setHealth(float vida){
     this->health = vida;
@@ -40,4 +43,8 @@ void Car::setTurned(bool turn){
 void Car::setCar(btRaycastVehicle* car){
     this->car = car;
 }
+void Car::setWorld(btDiscreteDynamicsWorld* world){
+    this->world = world;
+}
+
 

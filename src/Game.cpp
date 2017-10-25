@@ -20,7 +20,7 @@ void Game::init(){
 
     
     GLDebugDrawer* debug = new GLDebugDrawer();
-    debug->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
+    debug->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE );
     camera->deb = debug;
     camera->init(shader_programme, g_gl_width, g_gl_height, fov, CameraModes::THIRD_PERSON);    
     level->getDynamicsWorld()->setDebugDrawer(debug);
@@ -60,13 +60,13 @@ void Game::doMainLoop(){
         glClearColor(0.0f, 0.f, 0.f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Dibuja todos los objetos de la escena
-        level->drawAllGameObjects(model_mat_location);
+        level->drawAllGameObjects(model_mat_location, shader_programme);
 
         // Dibuja todos las figuras colisionadoras de los objetos
-        level->getDynamicsWorld()->debugDrawWorld();
+        //level->getDynamicsWorld()->debugDrawWorld();
         camera->deb->drawLines();
 
-        level->stepSimulation(1.f / 60.f, 10); 
+        level->stepSimulation(1.f / 60.f, 0); 
 
         level->updateAllCarsPhysics();    
         camera->update();
@@ -81,12 +81,15 @@ void Game::checkStatus(){
         loose();
     }
     for (int i=0; i < level->getCars().size(); i++){
-        if (level->getCars().at(i)->getHealth() <= 0){
+        printf("%f\n", level->getCars().at(i)->getHealth());
+        if (level->getCars().at(i)->getHealth() <= 0.0f){
             level->getCars().at(i)->setIsAlive(false);
             level->getCars().at(i)->despawn();
+            //level->
             enemiesCount--;
         }
     }
+    printf("\n\n");
     if(enemiesCount == 0){
         win();
     }

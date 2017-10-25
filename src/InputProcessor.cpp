@@ -64,7 +64,7 @@ void InputProcessor::processInput(){
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    float cameraSpeed = 0.4f;
+    float cameraSpeed = 1.f;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera->setPosition( camera->getPosition() + cameraSpeed * camera->getFront());
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -116,6 +116,9 @@ void InputProcessor::processInput(){
     }
     if (glfwGetKey(g_window, GLFW_KEY_SPACE) == GLFW_PRESS){
         player->brake();
+    }
+    if (glfwGetKey(g_window, GLFW_KEY_K) == GLFW_PRESS){
+        player->fire();
     }
     if (glfwGetKey(g_window, GLFW_KEY_U) == GLFW_PRESS){
         camera->zoomIn();

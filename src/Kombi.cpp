@@ -5,7 +5,10 @@ Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDis
     initialize(world);
 
     load_mesh("res/meshes/WHEEL/RUEDAFIN.obj", wheel_vao, wheel_vert);    
-    load_texture (shaderprog, "res/meshes/WHEEL/ruedastext.jpg", wheel_tex, wheel_texLocation);    
+    load_texture (shaderprog, "res/meshes/WHEEL/ruedastext.jpg", wheel_tex, wheel_texLocation);  
+    
+    setHealth(100.f);
+    
 }
 
 Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world)
@@ -14,18 +17,24 @@ Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCol
     
     load_mesh("res/meshes/WHEEL/RUEDAFIN.obj", wheel_vao, wheel_vert);    
     load_texture (shaderprog, "res/meshes/WHEEL/ruedastext.jpg", wheel_tex, wheel_texLocation);    
+
+    setHealth(100.f);
+    
 }
     
 Kombi::~Kombi(){}
 
 void Kombi::initialize(btDiscreteDynamicsWorld* world){
+    setWorld(world);
+    
     btRaycastVehicle::btVehicleTuning* tuning = new btRaycastVehicle::btVehicleTuning();
     btVehicleRaycaster* defvehicle = new btDefaultVehicleRaycaster(world);
     getRigidBody()->setActivationState( DISABLE_DEACTIVATION);
+    getRigidBody()->setUserPointer(this);    
     btRaycastVehicle* vehicle = new btRaycastVehicle(*tuning, getRigidBody(), defvehicle);
     vehicle->setCoordinateSystem(0, 1, 2);
     
-    world->addVehicle(vehicle);
+    world->addAction(vehicle);
 
     btVector3 wheelDirection(0.0f, -1.0f, 0.0f);
     btVector3 wheelAxis(-1.0f, 0.0f, 0.0f);

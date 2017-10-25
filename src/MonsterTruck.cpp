@@ -6,6 +6,8 @@ MonsterTruck::MonsterTruck(btVector3 startPos, btQuaternion startRot, GLuint sha
 
     load_mesh("res/meshes/truck/wheel.obj", wheel_vao, wheel_vert);    
     load_texture (shaderprog, "res/meshes/truck/monster_tire.jpg", wheel_tex, wheel_texLocation);    
+
+    setHealth(100.f);
 }
 
 MonsterTruck::MonsterTruck(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world)
@@ -13,24 +15,28 @@ MonsterTruck::MonsterTruck(btVector3 startPos, btQuaternion startRot, GLuint sha
     initialize(world);     
     
     load_mesh("res/meshes/truck/wheel.obj", wheel_vao, wheel_vert);    
-    load_texture (shaderprog, "res/meshes/truck/monster_tire.jpg", wheel_tex, wheel_texLocation);    
+    load_texture (shaderprog, "res/meshes/truck/monster_tire.jpg", wheel_tex, wheel_texLocation);   
+    
+    setHealth(100.f);
 }
     
 MonsterTruck::~MonsterTruck(){}
 
 void MonsterTruck::initialize(btDiscreteDynamicsWorld* world){
+    setWorld(world);
     btRaycastVehicle::btVehicleTuning* tuning = new btRaycastVehicle::btVehicleTuning();
     btVehicleRaycaster* defvehicle = new btDefaultVehicleRaycaster(world);
     getRigidBody()->setActivationState( DISABLE_DEACTIVATION);
+    getRigidBody()->setUserPointer(this);
     btRaycastVehicle* vehicle = new btRaycastVehicle(*tuning, getRigidBody(), defvehicle);
     vehicle->setCoordinateSystem(0, 1, 2);
     
-    world->addVehicle(vehicle);
+    world->addAction(vehicle);
 
     btVector3 wheelDirection(0.0f, -1.0f, 0.0f);
     btVector3 wheelAxis(-1.0f, 0.0f, 0.0f);
     btScalar suspensionRestLength(0.2f);    //TODO: PARAM
-    btScalar wheelRadius(2.42f);              //TOCO: PARAM 
+    btScalar wheelRadius(2.f);              //TOCO: PARAM 
     vehicle->addWheel(btVector3(-1.f*2.42f, 0.94f*2.f, 1.98f*2.f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);//TODO: PARAM
     vehicle->addWheel(btVector3(1.f*2.42f, 0.94f*2.f, 1.98f*2.f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true); //TODO: PARAM
     vehicle->addWheel(btVector3(1.f*2.42f, 0.94f*2.f, -2.11f*2.f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);  //TODO: PARAM
@@ -150,7 +156,28 @@ void MonsterTruck::turnLeft(){
     setTurned(true);   
 }
 
-void MonsterTruck::fire(){}
+void MonsterTruck::fire(){
+    btTransform trans;
+    this->getRigidBody()->getMotionState()->getWorldTransform(trans);
+     
+    btVector3 start = trans.getOrigin() + btVector3(0, 5, 0); //TODO: PARAM
+    btQuaternion q = trans.getRotation();
+    btVector3 direction = btVector3(2 * (q.x()*q.z() + q.w()*q.y()), 2 * (q.y()*q.z() - q.w()*q.x()), 1 - 2 * (q.x()*q.x() + q.y()*q.y()));
+    
+    btVector3 end = start + 100*direction;//trans.getRotation(); //TODO: PARAM alcance maximo balas
+
+    getWorld()->getDebugDrawer()->drawLine(start, end, btVector3(0, 0, 0));
+    btCollisionWorld::ClosestRayResultCallback RayCallback(start, end);
+    getWorld()->rayTest(start, end, RayCallback);
+    
+    if(RayCallback.hasHit()) {
+        Car* targ = (Car*)RayCallback.m_collisionObject->getUserPointer();
+        if (targ != nullptr)
+            targ->setHealth(targ->getHealth()-1.0f);
+        else
+            printf("No era naa un auto\n");
+    }
+}
 
 void MonsterTruck::spawn(){}
 void MonsterTruck::despawn(){}

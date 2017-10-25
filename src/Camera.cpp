@@ -69,7 +69,11 @@ void Camera::update(){
     btTransform trans;    
     glm::vec3 targetPos;
     glm::mat4 view; 
-    
+
+    btQuaternion q;
+    glm::vec3 direction;
+    float posx;
+    float posz;
     switch(mode){
         case CameraModes::THIRD_PERSON:
             if(target == nullptr){
@@ -77,15 +81,17 @@ void Camera::update(){
                 return;
             }
             target->getRigidBody()->getMotionState()->getWorldTransform(trans);
-            getPitchFromQuat(trans.getRotation(), angle);
-            
-
+            //getPitchFromQuat(trans.getRotation(), angle);
+            q = trans.getRotation();
+            direction = glm::vec3(2 * (q.x()*q.z() + q.w()*q.y()), 2 * (q.y()*q.z() - q.w()*q.x()), 1 - 2 * (q.x()*q.x() + q.y()*q.y()));
 
             targetPos = glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
-
-            camX = -sin(angle) * farOffset;
-            camZ = -cos(angle) * farOffset;
-            view = glm::lookAt(glm::vec3(camX, upOffset ,camZ) + targetPos, targetPos, up);
+            direction = glm::normalize(direction);
+            posx = targetPos.x - direction.x*farOffset;
+            posz = targetPos.z - direction.z*farOffset;
+            //camX = -sin(angle) * farOffset;
+            //camZ = -cos(angle) * farOffset;
+            view = glm::lookAt(glm::vec3(posx, upOffset+targetPos.y, posz), targetPos, up);
             glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
             deb->updateView(view);
             

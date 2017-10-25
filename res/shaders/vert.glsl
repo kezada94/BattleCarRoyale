@@ -10,11 +10,15 @@ layout(location = 2) in vec2 texture_coord;   //
 
 uniform mat4 view, proj, model;
 
-out vec3 normal;
+out vec3 normalEye;
 out vec2 st;
+out vec3 positionEye;
 
 void main() {
+
 	st = texture_coord;
-	normal = vertex_normal;
+	normalEye = normalize(vec3(view * model * vec4(vertex_normal, 0.0)));
+	positionEye = vec3(view * model * vec4(vertex_position, 1.0));
+
 	gl_Position = proj * view * model * vec4 (vertex_position, 1.0);
 }

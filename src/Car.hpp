@@ -12,6 +12,7 @@ private:
     bool turned;
     
     btRaycastVehicle* car;
+    btDiscreteDynamicsWorld* world;
 public:
     Car(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot);
     Car(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll);
@@ -37,6 +38,8 @@ public:
     bool getTurned();
     bool getBrake();
     btRaycastVehicle* getCar();
+    btDiscreteDynamicsWorld* getWorld();
+        
 
     void setHealth(float vida);
     void setArmour(float armor);
@@ -44,6 +47,8 @@ public:
     void setTurned(bool turn);
     void setBrake(bool brake);
     void setCar(btRaycastVehicle* car);
+    void setWorld(btDiscreteDynamicsWorld* world);
+    
 
 };
 

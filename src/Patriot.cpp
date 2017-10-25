@@ -5,25 +5,33 @@ Patriot::Patriot(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, b
         initialize(world);
 
         load_mesh("res/textures/rueda/rueda.obj", wheel_vao, wheel_vert);
+
+        setHealth(100.f);
+        
     }
 
 Patriot::Patriot(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world)
     : Car("res/patriot.obj", "res/Ambulance.png", shaderprog, btScalar(80), startPos, startRot, coll) {
         initialize(world);    
         load_mesh("res/textures/rueda/rueda.obj", wheel_vao, wheel_vert);
+        setHealth(100.f);
         
     }
     
 Patriot::~Patriot(){}
 
 void Patriot::initialize(btDiscreteDynamicsWorld* world){
+    setWorld(world);
+    
     btRaycastVehicle::btVehicleTuning* tuning = new btRaycastVehicle::btVehicleTuning();
     btVehicleRaycaster* defvehicle = new btDefaultVehicleRaycaster(world);
     getRigidBody()->setActivationState( DISABLE_DEACTIVATION);
+    getRigidBody()->setUserPointer(this);
+    
     btRaycastVehicle* vehicle = new btRaycastVehicle(*tuning, getRigidBody(), defvehicle);
     vehicle->setCoordinateSystem(0, 1, 2);
     
-    world->addVehicle(vehicle);
+    world->addAction(vehicle);
 
     btVector3 wheelDirection(0.0f, -1.0f, 0.0f);
     btVector3 wheelAxis(1.0f, 0.0f, 0.0f);
