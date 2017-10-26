@@ -10,7 +10,6 @@ class MonsterTruck : public Car{
 private:
     GLuint wheel_vao, wheel_tex, wheel_texLocation;
     int wheel_vert;
-    SoundManager* soundManager;
 
 public:
     MonsterTruck(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world);

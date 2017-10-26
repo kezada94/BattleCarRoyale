@@ -2,6 +2,7 @@
 #define CAR_H
 
 #include "DynamicGameObject.hpp"
+#include "SoundManager.hpp"
 
 class Car : public DynamicGameObject{
 
@@ -12,11 +13,12 @@ private:
     bool turned;
     
     btRaycastVehicle* car;
+    
 public:
     Car(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot);
     Car(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll);
     ~Car();
-
+    SoundManager* sound;
     virtual void initialize(btDiscreteDynamicsWorld* world) = 0;
     virtual void updatePhysics() = 0;
 
@@ -44,6 +46,7 @@ public:
     void setTurned(bool turn);
     void setBrake(bool brake);
     void setCar(btRaycastVehicle* car);
+    void setSoundManager(SoundManager* sound);
 
 };
 

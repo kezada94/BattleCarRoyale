@@ -40,4 +40,7 @@ void Car::setTurned(bool turn){
 void Car::setCar(btRaycastVehicle* car){
     this->car = car;
 }
+void Car::setSoundManager(SoundManager* sound){
+    this->sound = sound;
+}
 
