@@ -94,7 +94,7 @@ void InputProcessor::processInput(){
             isReleased = false;  
         }
     }
-    //if ( present==1){
+    /*if ( present==1){
         int count;
         const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
         int axesCount;
@@ -119,7 +119,7 @@ void InputProcessor::processInput(){
             }
         }
     //}
-    /*else{
+    /*else{*/
         if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE){
             isReleased = true;
         }
@@ -140,7 +140,7 @@ void InputProcessor::processInput(){
                 player->reverse();
             }
         }
-    }*/
+    
     if (glfwGetKey(g_window, GLFW_KEY_SPACE) == GLFW_PRESS){
         player->brake();
     }

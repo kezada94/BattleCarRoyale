@@ -8,6 +8,7 @@
 #include <string>
 #include "gl_utils.h"
 #include <bullet/btBulletDynamicsCommon.h>
+#include "ParticleManager.hpp"
 #include "Scene.hpp"
 #include "Camera.hpp"
 #include "StaticGameObject.hpp"
@@ -43,6 +44,7 @@ private:
     Camera* camera;
     InputProcessor* inputProcessor;
     SoundManager* soundManager;
+    ParticleManager* particleManager;
 
     GLuint shader_programme;
     int model_mat_location;

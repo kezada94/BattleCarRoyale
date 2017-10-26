@@ -158,12 +158,11 @@ void MonsterTruck::turnLeft(){
 void MonsterTruck::fire(){
     btTransform trans;
     this->getRigidBody()->getMotionState()->getWorldTransform(trans);
-     
     btVector3 start = trans.getOrigin() + btVector3(0, 5, 0); //TODO: PARAM
     btQuaternion q = trans.getRotation();
     btVector3 direction = btVector3(2 * (q.x()*q.z() + q.w()*q.y()), 2 * (q.y()*q.z() - q.w()*q.x()), 1 - 2 * (q.x()*q.x() + q.y()*q.y()));
     
-    btVector3 end = start + 100*direction;//trans.getRotation(); //TODO: PARAM alcance maximo balas
+    btVector3 end = start + 500*direction;//trans.getRotation(); //TODO: PARAM alcance maximo balas
 
     getWorld()->getDebugDrawer()->drawLine(start, end, btVector3(0, 0, 0));
     btCollisionWorld::ClosestRayResultCallback RayCallback(start, end);
@@ -176,6 +175,15 @@ void MonsterTruck::fire(){
         else
             printf("No era naa un auto\n");
     }
+    btVector3 gunOne = btVector3(3.1f, -0.5f, 3.5f);
+    btVector3 gunTwo = btVector3(-3.1f, -0.5f, 3.5f);
+    //TODO: OPTIMIZE AND INSTANTIATE
+    glm::vec3 gunOne1 = glm::rotate(glm::vec3(gunOne.x(), gunOne.y(), gunOne.z()), trans.getRotation().getAngle(), glm::vec3(trans.getRotation().getAxis().x(), trans.getRotation().getAxis().y(), trans.getRotation().getAxis().z()));
+    glm::vec3 gunTwo2 = glm::rotate(glm::vec3(gunTwo.x(), gunTwo.y(), gunTwo.z()), trans.getRotation().getAngle(), glm::vec3(trans.getRotation().getAxis().x(), trans.getRotation().getAxis().y(), trans.getRotation().getAxis().z()));
+
+    particleManager->genGunshot(btVector3(start.x() + gunOne1.x, start.y() + gunOne1.y, start.z() + gunOne1.z), RayCallback.m_hitPointWorld);
+    particleManager->genGunshot(btVector3(start.x() + gunTwo2.x, start.y() + gunTwo2.y, start.z() + gunTwo2.z), RayCallback.m_hitPointWorld);
+    
 }
 
 void MonsterTruck::spawn(){}

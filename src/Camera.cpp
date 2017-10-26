@@ -47,20 +47,22 @@ void Camera::init(GLuint shaderProg, int width, int height, float fov, CameraMod
     this->projLocation = glGetUniformLocation (shaderProg, "proj");
 
     glUseProgram(shader_programme);
-    glm::mat4 projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 1000.0f);
+    projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 1000.0f);
     glUniformMatrix4fv (projLocation, 1, GL_FALSE, &projection[0][0]);    
-    deb->updateProj(projection);    
-    
-    glm::mat4 view = glm::lookAt(glm::vec3(), glm::vec3(), up);
+    debugDrawer->setProj(&projection);    
+    particleManager->setProj(&projection);
+
+    view = glm::lookAt(glm::vec3(), glm::vec3(), up);
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
-    deb->updateView(view);    
+    debugDrawer->setView(&view);   
+    particleManager->setView(&view);
+    
 }
 void Camera::update(){
     glUseProgram(shader_programme);    
     if(isProjChanged){
-        glm::mat4 projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 1000.0f);
-        glUniformMatrix4fv (projLocation, 1, GL_FALSE, &projection[0][0]);
-        deb->updateProj(projection); 
+        projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 1000.0f);
+        glUniformMatrix4fv (projLocation, 1, GL_FALSE, &projection[0][0]);   
         isProjChanged = false;
     }
     float angle;    
@@ -68,7 +70,6 @@ void Camera::update(){
     float camZ;
     btTransform trans;    
     glm::vec3 targetPos;
-    glm::mat4 view; 
 
     btQuaternion q;
     glm::vec3 direction;
@@ -92,15 +93,11 @@ void Camera::update(){
             //camX = -sin(angle) * farOffset;
             //camZ = -cos(angle) * farOffset;
             view = glm::lookAt(glm::vec3(posx, upOffset+targetPos.y, posz), targetPos, up);
-            glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
-            deb->updateView(view);
-            
+            glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);    
             break;
         case CameraModes::FIRST_PERSON:
             view = glm::lookAt(position, position + front, up);
             glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
-            deb->updateView(view);
-            
             break;
     }    
 }

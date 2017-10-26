@@ -12,7 +12,7 @@ protected:
     int vertNumber;
     int indicesNumber;
     btRigidBody* rigidBody;
-
+    
     bool load_mesh (const char* file_name, GLuint& vao, int& vert_no, btCollisionShape** col);
     bool load_mesh (const char* file_name, GLuint& vao, int& vert_no);    
     bool load_texture (GLuint shaderprog, const char* texture_path, GLuint& texture, GLuint tex_location);

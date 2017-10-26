@@ -1,7 +1,8 @@
-#version 130
-//layout (location = 0) in vec3 position;
+#version 410
+layout (location = 0) in vec3 position;
 
-in vec3 position;
+//in vec3 position;
+
 uniform mat4 projection;
 uniform mat4 view;
 

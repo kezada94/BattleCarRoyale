@@ -9,10 +9,10 @@ GLDebugDrawer::GLDebugDrawer(){
 }
 GLDebugDrawer::~GLDebugDrawer(){}
 
-void GLDebugDrawer::updateView(glm::mat4 viewe){
+void GLDebugDrawer::setView(glm::mat4* viewe){
     this->view = viewe;
 }
-void GLDebugDrawer::updateProj(glm::mat4 proje){
+void GLDebugDrawer::setProj(glm::mat4* proje){
     this->proj = proje;
 }
 void GLDebugDrawer::drawLine(const btVector3& from,const btVector3& to,const btVector3& color){
@@ -55,18 +55,18 @@ void GLDebugDrawer::drawLines(){
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
                           sizeof(GLfloat) * 3, (GLvoid*)0);
     glBindVertexArray(0);
-  
+
     //use program
     glUseProgram(shader_programme);
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(*view));
+    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(*proj));
 
     //use geometry
     glBindVertexArray(vao);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glDrawElements(GL_LINES, 2*n, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
-  
+
     //delete buffers
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
@@ -75,14 +75,14 @@ void GLDebugDrawer::drawLines(){
 }
 
 void GLDebugDrawer::setDebugMode(int debugMode){
-   m_debugMode = debugMode;
+    m_debugMode = debugMode;
 }
 
 void GLDebugDrawer::draw3dText(const btVector3& location,const char* textString){
 }
 
 void GLDebugDrawer::reportErrorWarning(const char* warningString){
-   printf(warningString);
+    printf(warningString);
 }
 
 void GLDebugDrawer::drawContactPoint(const btVector3& pointOnB,const btVector3& normalOnB,btScalar distance,int lifeTime,const btVector3& color){}

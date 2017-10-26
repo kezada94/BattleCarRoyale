@@ -21,5 +21,5 @@ void SoundManager::reproducir(int valor){
     }
 }
 void SoundManager::musicaFondo(){
-      fondo->play(AL_TRUE,0.3);
+    fondo->play(AL_TRUE,0.3);
 }

@@ -10,6 +10,7 @@
 
 #include "GameObject.hpp"
 #include "GLDebugDrawer.hpp"
+#include "ParticleManager.hpp"
 
 #define UP_FAR_RATIO 0.5f
 
@@ -25,8 +26,10 @@ private:
     glm::vec3 position; 
     glm::vec3 front;
     glm::vec3 up;
-    
 
+    glm::mat4 projection;
+    glm::mat4 view;
+    
     float upOffset;
     float farOffset;
     float zoomSpeed;
@@ -36,7 +39,6 @@ private:
     int width;
     int height;
     float fov;
-
     float yaw;//angulo de giro en Z
     float pitch;//angulo de giro en Y
 
@@ -47,8 +49,8 @@ private:
 
     GLuint shader_programme;
 public:
-
-    GLDebugDrawer* deb; //LAZY
+    ParticleManager* particleManager;    
+    GLDebugDrawer* debugDrawer; //LAZY
     
     Camera();
     ~Camera();
