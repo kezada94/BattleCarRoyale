@@ -7,7 +7,8 @@ InputProcessor::InputProcessor(GLFWwindow* win, Camera* cam, Car* player)
     firstMouse(true), 
     isReleased(false),
     isWireframe(false){
-
+    buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
+    axes = glfwGetJoystickAxes( GLFW_JOYSTICK_1, &axesCount);
     glfwGetWindowSize(window, &lastX, &lastY);
     lastX = lastX / 2;
     lastY = lastY / 2; 
@@ -94,11 +95,8 @@ void InputProcessor::processInput(){
             isReleased = false;  
         }
     }
-    /*if ( present==1){
-        int count;
-        const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
-        int axesCount;
-        const float *axes = glfwGetJoystickAxes( GLFW_JOYSTICK_1, &axesCount);
+    if (axes != NULL){//Hay joystick
+
         if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE){
             isReleased = true;
         }
@@ -118,8 +116,8 @@ void InputProcessor::processInput(){
                 player->reverse();
             }
         }
-    //}
-    /*else{*/
+    }
+    else{
         if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE){
             isReleased = true;
         }
@@ -140,7 +138,7 @@ void InputProcessor::processInput(){
                 player->reverse();
             }
         }
-    
+    }
     if (glfwGetKey(g_window, GLFW_KEY_SPACE) == GLFW_PRESS){
         player->brake();
     }

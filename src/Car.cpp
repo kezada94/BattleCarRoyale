@@ -47,4 +47,7 @@ void Car::setWorld(btDiscreteDynamicsWorld* world){
     this->world = world;
 }
 
+void Car::setSoundManager(SoundManager* sound){
+    this->sound = sound;
+}
 

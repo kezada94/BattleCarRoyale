@@ -43,7 +43,6 @@ void MonsterTruck::initialize(btDiscreteDynamicsWorld* world){
     vehicle->addWheel(btVector3(-1.f*2.42f, 0.94f*2.f, -2.11f*2.f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false); //TODO: PARAM
     
     this->setCar(vehicle);
-    soundManager = new SoundManager();
     for (int i = 0; i < getCar()->getNumWheels(); i++)
     {        
         btWheelInfo& wheel = getCar()->getWheelInfo(i);
@@ -133,7 +132,7 @@ void MonsterTruck::brake(){
     getCar()->setBrake(btScalar(1.5), 1);   //TODO: PARAM
     getCar()->setBrake(btScalar(1.5), 2);   //TODO: PARAM
     getCar()->setBrake(btScalar(1.5), 3);   //TODO: PARAM
-    soundManager->reproducir(1);
+    sound->reproducir(1);
 }
 void MonsterTruck::reverse(){
     this->getCar()->applyEngineForce(-50,0);    //TODO: Param

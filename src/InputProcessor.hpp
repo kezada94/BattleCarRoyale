@@ -12,6 +12,10 @@ private:
     GLFWwindow* window;
     Camera* camera;
     Car* player;
+    const unsigned char* buttons;
+    const float *axes;
+    int count;
+    int axesCount;    
 
     int lastX;
     int lastY;
