@@ -1,5 +1,13 @@
 #include "ParticleManager.hpp"
 #include "stb_image.h"
+ParticleManager::ParticleManager(){
+    this->shader_programme = create_programme_from_files ("res/shaders/particles.vert", "res/shaders/particles.frag");
+    this->time_location = glGetUniformLocation(this->shader_programme, "elapsed_system_time");
+    this->view_location = glGetUniformLocation(this->shader_programme, "V");
+    this->proj_location = glGetUniformLocation(this->shader_programme, "P");
+
+    load_texture( "res/Droplet.png", &tex );
+}
 
 void ParticleManager::genGunshot(btVector3 from, btVector3 to){
     float velocityDir[3]; 
@@ -76,16 +84,6 @@ void ParticleManager::drawActiveParticles(){
             //deletebuffer
         }
     }
-}
-
-void ParticleManager::setShaderProg(GLuint shader){
-    this->shader_programme = shader;
-    this->time_location = glGetUniformLocation(shader, "elapsed_system_time");
-    this->view_location = glGetUniformLocation(shader, "V");
-    this->proj_location = glGetUniformLocation(shader, "P");
-
-    load_texture( "res/Droplet.png", &tex );
-
 }
 void ParticleManager::setView(glm::mat4* vi){
     this->view  = vi;

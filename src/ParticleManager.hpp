@@ -10,6 +10,7 @@
 #include <glm/fwd.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
+#include "gl_utils.h"
 
 #include <bullet/btBulletDynamicsCommon.h>
 
@@ -35,11 +36,14 @@ private:
 
     std::vector<ParticleSystem*> activeSystems;
 public:
+
+    ParticleManager();
+    ~ParticleManager();
+
     void genGunshot(btVector3 from, btVector3 to);
 
     void drawActiveParticles();
 
-    void setShaderProg(GLuint shader);
     void setView(glm::mat4* vi);
     void setProj(glm::mat4* pro);
 

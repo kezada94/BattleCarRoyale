@@ -1,7 +1,13 @@
 #version 410
-layout (location = 0) in vec3 v_i;
-layout (location = 1) in double start_time;
-layout (location = 2) in vec3 origin;
+layout (location = 0) in vec3 v_i;                  //
+layout (location = 1) in double start_time;         // MAC
+layout (location = 2) in vec3 origin;               //
+
+//in vec3 v_i;                  //
+//in double start_time;         // LINUX
+//in vec3 origin;               //
+
+
 uniform mat4 V, P;
 uniform double elapsed_system_time;
 void main(){
