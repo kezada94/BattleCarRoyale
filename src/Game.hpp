@@ -33,6 +33,10 @@ extern int g_gl_width;
 extern int g_gl_height;
 extern GLFWwindow* g_window;
 
+extern double lastTime;
+extern double deltaTime;
+extern double currentTime;
+
 extern float fov;
 
 //typedef std::vector<Car*> CarList;

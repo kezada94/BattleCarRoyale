@@ -22,29 +22,20 @@ void Game::init(){
     shader_programme = create_programme_from_files (VERTEX_SHADER_FILE, FRAGMENT_SHADER_FILE);
 	glUseProgram (shader_programme);
     model_mat_location  = glGetUniformLocation (shader_programme, "model");
-    printf("HOAL WACHITO\n");
     
     soundManager = new SoundManager();
     particleManager = new ParticleManager();
 
-    GLDebugDrawer* debug = new GLDebugDrawer();
-    printf("HOAL 2\n");
-    
+    GLDebugDrawer* debug = new GLDebugDrawer();    
     debug->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE );
-    printf("HOAL 3\n");
     
     camera->debugDrawer = debug;
-    printf("HOAL 4\n");
-    
     camera->particleManager = particleManager;
-    printf("HOAL 5\n");
     
     camera->init(shader_programme, g_gl_width, g_gl_height, fov, CameraModes::THIRD_PERSON);    
-    printf("HOAL 6\n");
-    
+
     level->getDynamicsWorld()->setDebugDrawer(debug);
-    printf("HOAL 7\n");
-    
+
     //Creacion de objetos de la escena
     StaticGameObject *piso = new StaticGameObject("res/textures/piso/suelo2.obj", "res/textures/piso/what.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     Kombi* kombi = new Kombi(btVector3(10, 24, 10), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
@@ -53,11 +44,9 @@ void Game::init(){
     monster->setSoundManager(soundManager);
     monster->particleManager = particleManager;
     enemiesCount = 1;
-    printf("HOAL 8\n");
     
     piso->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(30, 45, 30));
     monster->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(2.42f, 2, 2));
-    printf("HOAL 9\n");
     
     //Se agregan los objetos la escena
     level->addGameObject(kombi);
@@ -75,12 +64,22 @@ void Game::doMainLoop(){
     //glLineWidth(7);
     glEnable(GL_LINE_SMOOTH);
     soundManager->musicaFondo();
+    int frameCount = 0;
+    
     while (!glfwWindowShouldClose(g_window)){
 
+        currentTime = glfwGetTime();
+        frameCount++;        
+        deltaTime = currentTime - lastTime;
+        if (deltaTime >= 1.0 ){ 
+            // printf and reset timer
+            printf("%f ms\n", 1000.0/double(frameCount));
+            frameCount = 0;
+            lastTime += 1.0;
+        }
         checkStatus();
         inputProcessor->processInput();
         
-        _update_fps_counter(g_window);
         glClearColor(0.0f, 0.f, 0.f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

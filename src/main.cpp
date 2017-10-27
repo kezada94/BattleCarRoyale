@@ -1,5 +1,4 @@
 //ASSIMP
-
 #include <assimp/cimport.h> // C importer
 #include <assimp/scene.h> // collects data
 #include <assimp/postprocess.h> // various extra operations
@@ -21,6 +20,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "stb_image.h"
+
 class Car;
 typedef std::vector<Car*> CarList;
 
@@ -28,11 +28,12 @@ typedef std::vector<Car*> CarList;
 
 int g_gl_width = 1366;
 int g_gl_height = 768;
-
-
 GLFWwindow* g_window = NULL;
-
 float fov = 66.0f;
+
+double lastTime;
+double deltaTime;
+double currentTime;
 
 int main(){
 
@@ -40,6 +41,8 @@ int main(){
     
     Game* juego = new Game();
     juego->init();
+
+    lastTime = glfwGetTime();
     
     juego->doMainLoop();
     glfwTerminate();

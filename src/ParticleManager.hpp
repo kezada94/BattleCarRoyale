@@ -14,6 +14,10 @@
 
 #include <bullet/btBulletDynamicsCommon.h>
 
+extern double lastTime;
+extern double deltaTime;
+extern double currentTime;
+
 class ParticleManager{
 
     typedef struct ParticleSystem{
@@ -32,7 +36,8 @@ private:
     glm::mat4* proj;
 
     const int MAX_PARTICLES = 200;
-    float gunshotSpeed;
+    
+    //ParticleSystem* bullets[MAX_PARTICLES];
 
     std::vector<ParticleSystem*> activeSystems;
 public:

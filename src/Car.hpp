@@ -4,16 +4,23 @@
 #include "DynamicGameObject.hpp"
 #include "SoundManager.hpp"
 
-class Car : public DynamicGameObject{
+extern double lastTime;
+extern double deltaTime;
+extern double currentTime;
 
+class Car : public DynamicGameObject{
 private:
     float health;
     float armour;
+    
     bool isAlive;
     bool turned;
     
     btRaycastVehicle* car;
     btDiscreteDynamicsWorld* world;
+protected:
+    float fireRate;     // (shots/seconds)
+    double lastShot;
     
 public:
     Car(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot);

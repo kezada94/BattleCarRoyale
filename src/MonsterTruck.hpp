@@ -14,7 +14,6 @@ private:
     int wheel_vert;
     SoundManager* soundManager;
     
-
 public:
     ParticleManager* particleManager;
 

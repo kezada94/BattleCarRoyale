@@ -7,11 +7,15 @@ ParticleManager::ParticleManager(){
     this->proj_location = glGetUniformLocation(this->shader_programme, "P");
 
     load_texture( "res/Droplet.png", &tex );
+
+    /*for (int i = 0; i < MAX_PARTICLES; i++){
+        genBullet();
+    }*/
 }
 
 void ParticleManager::genGunshot(btVector3 from, btVector3 to){
     float velocityDir[3]; 
-	double vt = glfwGetTime();
+	double vt = currentTime;
     btVector3 dir = to-from;
     dir = dir.normalized();
     velocityDir[0] = dir.x();		
@@ -26,7 +30,7 @@ void ParticleManager::genGunshot(btVector3 from, btVector3 to){
     GLuint time_vbo;
     glGenBuffers (1, &time_vbo);
     glBindBuffer (GL_ARRAY_BUFFER, time_vbo);
-    glBufferData (GL_ARRAY_BUFFER, sizeof (GL_DOUBLE), &vt, GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, sizeof (GLdouble), &vt, GL_STATIC_DRAW);
 
     GLuint origin_vbo;
     glGenBuffers (1, &origin_vbo);
@@ -63,12 +67,12 @@ void ParticleManager::drawActiveParticles(){
         
         ParticleSystem* p = this->activeSystems.at(i);
         
-        if (glfwGetTime() < p->endTime){
+        if (currentTime < p->endTime){
             glEnable (GL_PROGRAM_POINT_SIZE);
             glActiveTexture( GL_TEXTURE0 );
             glBindTexture( GL_TEXTURE_2D, tex );
             glUseProgram (this->shader_programme);
-            glUniform1d (time_location, glfwGetTime() - p->startTime);
+            glUniform1d (time_location, currentTime - p->startTime);
             glUniformMatrix4fv(view_location, 1, GL_FALSE, glm::value_ptr(*view));
             glUniformMatrix4fv(proj_location, 1, GL_FALSE, glm::value_ptr(*proj));
             

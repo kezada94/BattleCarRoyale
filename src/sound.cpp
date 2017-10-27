@@ -30,7 +30,7 @@ void sound::set_listener(const glm::vec3& o)
 {
 	ALfloat listenerOri[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
 	alListener3f(AL_POSITION, o[0], o[1], o[2]);
-  	alListener3f(AL_VELOCITY, 0, 0, 0);
+	alListener3f(AL_VELOCITY, 0, 0, 0);
 	alListenerfv(AL_ORIENTATION, listenerOri);
 }
 
