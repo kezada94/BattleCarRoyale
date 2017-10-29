@@ -51,11 +51,13 @@ void Camera::init(GLuint shaderProg, int width, int height, float fov, CameraMod
     glUniformMatrix4fv (projLocation, 1, GL_FALSE, &projection[0][0]);    
     debugDrawer->setProj(&projection);    
     particleManager->setProj(&projection);
+    skybox->setProj(&projection);
 
     view = glm::lookAt(glm::vec3(), glm::vec3(), up);
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
     debugDrawer->setView(&view);   
     particleManager->setView(&view);
+    skybox->setView(&view);
     
 }
 void Camera::update(){

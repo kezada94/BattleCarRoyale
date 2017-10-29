@@ -20,6 +20,8 @@
 #include "ILogicProcessor.hpp"
 #include "GLDebugDrawer.hpp"
 #include "SoundManager.hpp"
+#include "Skybox.hpp"
+
 #include <algorithm>
 #include <ostream>
 #include <sstream>
@@ -49,6 +51,7 @@ private:
     InputProcessor* inputProcessor;
     SoundManager* soundManager;
     ParticleManager* particleManager;
+    Skybox* skybox;
 
     GLuint shader_programme;
     int model_mat_location;

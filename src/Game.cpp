@@ -25,12 +25,14 @@ void Game::init(){
     
     soundManager = new SoundManager();
     particleManager = new ParticleManager();
+    skybox = new Skybox();
 
     GLDebugDrawer* debug = new GLDebugDrawer();    
     debug->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE );
     
     camera->debugDrawer = debug;
     camera->particleManager = particleManager;
+    camera->skybox = skybox;
     
     camera->init(shader_programme, g_gl_width, g_gl_height, fov, CameraModes::THIRD_PERSON);    
 
@@ -90,7 +92,7 @@ void Game::doMainLoop(){
         //level->getDynamicsWorld()->debugDrawWorld();
         camera->debugDrawer->drawLines();
 
-
+        skybox->draw();
         level->stepSimulation(1.f / 60.f, 0); 
 
         level->updateAllCarsPhysics();    

@@ -11,6 +11,7 @@
 #include "GameObject.hpp"
 #include "GLDebugDrawer.hpp"
 #include "ParticleManager.hpp"
+#include "Skybox.hpp"
 
 #define UP_FAR_RATIO 0.5f
 
@@ -51,6 +52,7 @@ private:
 public:
     ParticleManager* particleManager;    
     GLDebugDrawer* debugDrawer; //LAZY
+    Skybox* skybox;
     
     Camera();
     ~Camera();
