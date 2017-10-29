@@ -93,7 +93,7 @@ void Game::doMainLoop(){
         //level->getDynamicsWorld()->debugDrawWorld();
         camera->debugDrawer->drawLines();
 
-        level->stepSimulation(1.f / 45.f, 0); 
+        level->stepSimulation(1.f / 50.f, 0); 
 
         level->updateAllCarsPhysics();    
         camera->update();
