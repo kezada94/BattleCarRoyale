@@ -13,7 +13,7 @@ public:
     SoundManager();
     ~SoundManager();
     void musicaFondo();
-    void reproducir(int valor);
+    void reproducir(int valor,ALboolean l, float pit);
     void detener();
 };
 #endif

@@ -44,7 +44,7 @@ void sound::definir_fuente()
 	
 }
 
-void sound::play(ALboolean l,float n)
+void sound::play(ALboolean l,float n,float pit)
 {
 	alutInit(0, NULL);
 	alGetError();
@@ -55,6 +55,10 @@ void sound::play(ALboolean l,float n)
 	alSourcePlay(this->source);
 	alSourcei(this->source, AL_LOOPING, l);
 }
+
+void sound::pit(float pit){
+	alSourcef(this->source,AL_PITCH,pit);
+} 
 
 void sound::stop()
 {

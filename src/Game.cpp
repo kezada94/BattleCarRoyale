@@ -87,7 +87,7 @@ void Game::doMainLoop(){
         level->drawAllGameObjects(model_mat_location, shader_programme);
 
         // Dibuja todos las figuras colisionadoras de los objetos
-        //level->getDynamicsWorld()->debugDrawWorld();
+        level->getDynamicsWorld()->debugDrawWorld();
         camera->debugDrawer->drawLines();
 
 

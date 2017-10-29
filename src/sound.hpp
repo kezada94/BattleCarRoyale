@@ -25,8 +25,9 @@ class sound{
 
         // functions
         bool TEST_ERROR (const char* message);
-        void play(ALboolean l,float n);
+        void play(ALboolean l,float n,float pit);
         void stop();
+        void pit(float pit);
         void limpia_contexto_recursos();
         void set_listener(const glm::vec3& o);
         void definir_fuente();
