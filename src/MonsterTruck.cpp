@@ -114,7 +114,6 @@ void MonsterTruck::draw(GLuint model_mat_location){
         glm::mat4 model2 = glm::toMat4(hele);
         model = glm::translate(glm::mat4(), glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
         
-        //glm::mat4 model2 = glm::rotate(model, -trans.getRotation().getAngle(), glm::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ() ));
         model = model * model2;
         model = glm::scale(model, glm::vec3(escala.getX(), escala.getY(), escala.getZ()));
         glUniformMatrix4fv(model_mat_location, 1, GL_FALSE, &model[0][0]);
@@ -141,6 +140,7 @@ void MonsterTruck::brake(){
     sound->reproducir(1, AL_FALSE, 1.0);
 }
 void MonsterTruck::reverse(){
+    //TODO: ADD LIMIT
     this->getCar()->applyEngineForce(-50,0);    //TODO: Param
     this->getCar()->applyEngineForce(-50,1);    //TODO: PARAM
 }
@@ -168,9 +168,9 @@ void MonsterTruck::fire(){
         btQuaternion q = trans.getRotation();
         btVector3 direction = btVector3(2 * (q.x()*q.z() + q.w()*q.y()), 2 * (q.y()*q.z() - q.w()*q.x()), 1 - 2 * (q.x()*q.x() + q.y()*q.y()));
         
-        btVector3 end = start + 500*direction;//trans.getRotation(); //TODO: PARAM alcance maximo balas
+        btVector3 end = start + 500*direction;//TODO: PARAM alcance maximo balas
 
-        getWorld()->getDebugDrawer()->drawLine(start, end, btVector3(0, 0, 0));
+        //getWorld()->getDebugDrawer()->drawLine(start, end, btVector3(0, 0, 0));
         btCollisionWorld::ClosestRayResultCallback RayCallback(start, end);
         getWorld()->rayTest(start, end, RayCallback);
         
@@ -184,9 +184,13 @@ void MonsterTruck::fire(){
         //TODO: OPTIMIZE AND INSTANTIATE
         glm::vec3 gunOne1 = glm::rotate(glm::vec3(gunOne.x(), gunOne.y(), gunOne.z()), trans.getRotation().getAngle(), glm::vec3(trans.getRotation().getAxis().x(), trans.getRotation().getAxis().y(), trans.getRotation().getAxis().z()));
         glm::vec3 gunTwo2 = glm::rotate(glm::vec3(gunTwo.x(), gunTwo.y(), gunTwo.z()), trans.getRotation().getAngle(), glm::vec3(trans.getRotation().getAxis().x(), trans.getRotation().getAxis().y(), trans.getRotation().getAxis().z()));
-
-        particleManager->genGunshot(btVector3(start.x() + gunOne1.x, start.y() + gunOne1.y, start.z() + gunOne1.z), RayCallback.m_hitPointWorld);
-        particleManager->genGunshot(btVector3(start.x() + gunTwo2.x, start.y() + gunTwo2.y, start.z() + gunTwo2.z), RayCallback.m_hitPointWorld);
+        if (RayCallback.hasHit()){
+            particleManager->genGunshot(btVector3(start.x() + gunOne1.x, start.y() + gunOne1.y, start.z() + gunOne1.z), RayCallback.m_hitPointWorld);
+            particleManager->genGunshot(btVector3(start.x() + gunTwo2.x, start.y() + gunTwo2.y, start.z() + gunTwo2.z), RayCallback.m_hitPointWorld);
+        }else{
+            particleManager->genGunshot(btVector3(start.x() + gunOne1.x, start.y() + gunOne1.y, start.z() + gunOne1.z), end);
+            particleManager->genGunshot(btVector3(start.x() + gunTwo2.x, start.y() + gunTwo2.y, start.z() + gunTwo2.z), end);
+        }
         lastShot = currentTime;
     }
 }

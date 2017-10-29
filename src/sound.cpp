@@ -24,7 +24,11 @@ sound::sound(const char* filename)
 	
 	alGenBuffers(1, &buffer);
 	ALbyte* cha = (ALbyte*)filename;
-	alutLoadWAVFile(cha, &format, &data, &size, &freq);
+	#ifdef __linux__	
+		alutLoadWAVFile(cha, &format, &data, &size, &freq, AL_FALSE);
+	#else
+		alutLoadWAVFile(cha, &format, &data, &size, &freq);
+	#endif
     alBufferData(buffer, format, data, size, freq);
 	alutUnloadWAV(format, data, size, freq);	
 	
