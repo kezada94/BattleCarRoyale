@@ -80,11 +80,10 @@ void MonsterTruck::updatePhysics(){
     getCar()->setBrake(0, 1);
     getCar()->setBrake(0, 2);
     getCar()->setBrake(0, 3);
-    if(getCar()->getCurrentSpeedKmHour()>0){ 
-        sound->reproducir(2,AL_TRUE,(getCar()->getCurrentSpeedKmHour()*0.01)+0.1);
-    }
-    if(getCar()->getCurrentSpeedKmHour()<0){
-        sound->reproducir(2,AL_TRUE,((getCar()->getCurrentSpeedKmHour()*0.01)+0.1)*-1);
+    if(getCar()->getCurrentSpeedKmHour() > 0.f){ 
+        sound->reproducir(2,AL_TRUE,(getCar()->getCurrentSpeedKmHour()*0.01)+0.05);
+    }else if(getCar()->getCurrentSpeedKmHour() < 0.f){
+        sound->reproducir(2,AL_TRUE,((getCar()->getCurrentSpeedKmHour()*0.01)+0.05)*-1);
     }
     this->getCar()->applyEngineForce(0, 0); //TODO: Param
     this->getCar()->applyEngineForce(0, 1);
@@ -129,7 +128,7 @@ void MonsterTruck::draw(GLuint model_mat_location){
     }
 }
 void MonsterTruck::accelerate(){
-    if(getCar()->getCurrentSpeedKmHour() < 100.f){
+    if(getCar()->getCurrentSpeedKmHour() < 150.f){
         this->getCar()->applyEngineForce(85, 0); //TODO: Param
         this->getCar()->applyEngineForce(85, 1);
     }
@@ -139,7 +138,7 @@ void MonsterTruck::brake(){
     getCar()->setBrake(btScalar(1.5), 1);   //TODO: PARAM
     getCar()->setBrake(btScalar(1.5), 2);   //TODO: PARAM
     getCar()->setBrake(btScalar(1.5), 3);   //TODO: PARAM
-    sound->reproducir(1,AL_FALSE,1.0);
+    sound->reproducir(1, AL_FALSE, 1.0);
 }
 void MonsterTruck::reverse(){
     this->getCar()->applyEngineForce(-50,0);    //TODO: Param

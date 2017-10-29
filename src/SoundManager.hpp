@@ -1,7 +1,10 @@
 #ifndef SOUNDMANAGER_H
 #define SOUNDMANAGER_H
 
+#include <AL/al.h>
+#include <AL/alc.h>
 #include "sound.hpp"
+#include "AL/alut.h"
 
 class SoundManager {
 private:

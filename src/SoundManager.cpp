@@ -1,9 +1,13 @@
 #include "SoundManager.hpp"
 SoundManager::SoundManager(){
+
+    alutInit(0, NULL);
+	alGetError();
     freno = new sound((const char*)"audio/frenar.wav");
     acel = new sound((const char*)"audio/acel.wav");
+    fondo = new sound((const char*)"audio/musica.wav");    
     ret = new sound((const char*)"audio/frenar.wav");
-    fondo = new sound((const char*)"audio/musica.wav");
+
 }
 
 void SoundManager::reproducir(int valor,ALboolean l,float pit){

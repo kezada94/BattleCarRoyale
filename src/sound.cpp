@@ -21,9 +21,7 @@ using namespace std;
 sound::sound(const char* filename)
 {
 	this->filename = (char*)filename;
-	alutInit(0, NULL);
-	alGetError();
-
+	
 	alGenBuffers(1, &buffer);
 	ALbyte* cha = (ALbyte*)filename;
 	alutLoadWAVFile(cha, &format, &data, &size, &freq);
@@ -32,7 +30,7 @@ sound::sound(const char* filename)
 	
 	alGenSources(1, &this->source);
 	
-	alSourcef(source,AL_PITCH,1.0f);
+	//
     alSourcef(source,AL_GAIN,1.0f);
     alSourcei(source,AL_BUFFER,buffer);
     alSourcei(source,AL_LOOPING,AL_FALSE);
@@ -58,12 +56,14 @@ void sound::definir_fuente()
 
 void sound::play(ALboolean l,float n,float pit)
 {
-	alSourcePlay(this->source);
+	alSourcef(source, AL_GAIN, n);	
 	alSourcei(this->source, AL_LOOPING, l);
+	alSourcef(source, AL_PITCH, pit);
+	alSourcePlay(this->source);
 }
 
 void sound::pit(float pit){
-	alSourcef(this->source,AL_PITCH,pit);
+	alSourcef(this->source, AL_PITCH, pit);
 } 
 
 void sound::stop()
