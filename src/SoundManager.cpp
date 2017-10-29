@@ -9,9 +9,9 @@ SoundManager::SoundManager(){
 void SoundManager::reproducir(int valor,ALboolean l,float pit){
     acel->pit(pit);
     if(valor==1){
+        acel->stop();
         if(freno->get_source_state() != AL_PLAYING)
         {   
-            acel->stop();
             freno->play(l,0.4,1);
         }
     }
