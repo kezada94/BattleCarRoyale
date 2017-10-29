@@ -28,7 +28,7 @@ void Game::init(){
     skybox = new Skybox();
 
     GLDebugDrawer* debug = new GLDebugDrawer();    
-    debug->setDebugMode(btIDebugDraw::DBG_MAX_DEBUG_DRAW_MODE );
+    debug->setDebugMode(btIDebugDraw::DBG_DrawWireframe );
     
     camera->debugDrawer = debug;
     camera->particleManager = particleManager;
@@ -87,12 +87,12 @@ void Game::doMainLoop(){
 
         // Dibuja todos los objetos de la escena
         level->drawAllGameObjects(model_mat_location, shader_programme);
-
+        skybox->draw();
+        
         // Dibuja todos las figuras colisionadoras de los objetos
-        level->getDynamicsWorld()->debugDrawWorld();
+        //level->getDynamicsWorld()->debugDrawWorld();
         camera->debugDrawer->drawLines();
 
-        skybox->draw();
         level->stepSimulation(1.f / 60.f, 0); 
 
         level->updateAllCarsPhysics();    
@@ -112,7 +112,7 @@ void Game::checkStatus(){
         if (level->getCars().at(i)->getHealth() <= 0.0f){
             level->getCars().at(i)->setIsAlive(false);
             level->getCars().at(i)->despawn();
-            //level->
+            //level->getCars().erase(level->getCars().begin()+i);
             enemiesCount--;
         }
     }

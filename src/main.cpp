@@ -20,7 +20,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "stb_image.h"
-
 class Car;
 typedef std::vector<Car*> CarList;
 

@@ -21,9 +21,21 @@ using namespace std;
 sound::sound(const char* filename)
 {
 	this->filename = (char*)filename;
+	alutInit(0, NULL);
+	alGetError();
 
-	ALboolean enumeration;
-	ALboolean loop = AL_FALSE;
+	alGenBuffers(1, &buffer);
+	ALbyte* cha = (ALbyte*)filename;
+	alutLoadWAVFile(cha, &format, &data, &size, &freq);
+    alBufferData(buffer, format, data, size, freq);
+	alutUnloadWAV(format, data, size, freq);	
+	
+	alGenSources(1, &this->source);
+	
+	alSourcef(source,AL_PITCH,1.0f);
+    alSourcef(source,AL_GAIN,1.0f);
+    alSourcei(source,AL_BUFFER,buffer);
+    alSourcei(source,AL_LOOPING,AL_FALSE);
 }
 
 void sound::set_listener(const glm::vec3& o)
@@ -37,7 +49,7 @@ void sound::set_listener(const glm::vec3& o)
 void sound::definir_fuente()
 {
 	alGenSources((ALuint)1, &source);
-	
+
 	alSourcef(this->source, AL_GAIN, 1);
 	alSource3f(this->source, AL_POSITION, 0, 0, 0);
 	alSource3f(this->source, AL_VELOCITY, 5, 0, 0);
@@ -46,12 +58,6 @@ void sound::definir_fuente()
 
 void sound::play(ALboolean l,float n,float pit)
 {
-	alutInit(0, NULL);
-	alGetError();
-	this->buffer = alutCreateBufferFromFile(this->filename);
-	alGenSources(1, &this->source);
-	alSourcef(this->source, AL_GAIN, n);
-	alSourcei(this->source, AL_BUFFER, this->buffer);
 	alSourcePlay(this->source);
 	alSourcei(this->source, AL_LOOPING, l);
 }
