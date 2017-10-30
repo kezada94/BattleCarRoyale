@@ -39,7 +39,7 @@ public:
     virtual void fire() = 0;
 
     virtual void spawn() = 0;
-    virtual void despawn() = 0;
+    virtual void despawn(btDiscreteDynamicsWorld* world) = 0;
 
     float getHealth();
     float getArmour();

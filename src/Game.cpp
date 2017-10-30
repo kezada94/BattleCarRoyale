@@ -45,7 +45,7 @@ void Game::init(){
     MonsterTruck* monster = new MonsterTruck(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
     monster->setSoundManager(soundManager);
     monster->particleManager = particleManager;
-    enemiesCount = 1;
+    enemiesCount = 2;
     
     piso->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(30, 45, 30));
     monster->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(2.42f, 2, 2));
@@ -65,7 +65,7 @@ void Game::init(){
 void Game::doMainLoop(){
     //glLineWidth(7);
     glEnable(GL_LINE_SMOOTH);
-    soundManager->musicaFondo();
+    //soundManager->musicaFondo();
     int frameCount = 0;
     
     while (!glfwWindowShouldClose(g_window)){
@@ -91,9 +91,9 @@ void Game::doMainLoop(){
         
         // Dibuja todos las figuras colisionadoras de los objetos
         //level->getDynamicsWorld()->debugDrawWorld();
-        camera->debugDrawer->drawLines();
+        //camera->debugDrawer->drawLines();
 
-        level->stepSimulation(1.f / 50.f, 0); 
+        level->stepSimulation(1 / 50.f, 0); 
 
         level->updateAllCarsPhysics();    
         camera->update();
@@ -109,10 +109,10 @@ void Game::checkStatus(){
         loose();
     }
     for (int i=0; i < level->getCars().size(); i++){
-        if (level->getCars().at(i)->getHealth() <= 0.0f){
+        if (level->getCars().at(i)->getHealth() <= 0.0f && level->getCars().at(i)->getIsAlive() == true){
             level->getCars().at(i)->setIsAlive(false);
-            level->getCars().at(i)->despawn();
-            //level->getCars().erase(level->getCars().begin()+i);
+            level->getCars().at(i)->despawn(level->getDynamicsWorld());
+            //level->getCars().erase(level->getCars().begin()+ i);
             enemiesCount--;
         }
     }
@@ -121,9 +121,9 @@ void Game::checkStatus(){
     }
 }
 void Game::win(){
-    //DO WIN
+    printf("GANASTE!!\n");
 }
 void Game::loose(){
-    //DO LOOSE
+    printf("PERDISTE!!\n");
 }
         

@@ -6,7 +6,7 @@ Patriot::Patriot(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, b
 
         load_mesh("res/textures/rueda/rueda.obj", wheel_vao, wheel_vert);
 
-        setHealth(100.f);
+        setHealth(25.f);
         
     }
 
@@ -14,7 +14,7 @@ Patriot::Patriot(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, b
     : Car("res/patriot.obj", "res/Ambulance.png", shaderprog, btScalar(80), startPos, startRot, coll) {
         initialize(world);    
         load_mesh("res/textures/rueda/rueda.obj", wheel_vao, wheel_vert);
-        setHealth(100.f);
+        setHealth(25.f);
         
     }
     
@@ -53,6 +53,8 @@ void Patriot::initialize(btDiscreteDynamicsWorld* world){
         wheel.m_rollInfluence = btScalar(0.05);     //TODO: PARAM
         wheel.m_maxSuspensionTravelCm = 30.f;       //TODO: PARAM
     }*/
+    setIsAlive(true);
+    
 }
 void Patriot::updatePhysics(){
     if(!getTurned()){
@@ -148,4 +150,10 @@ void Patriot::turnLeft(){
 void Patriot::fire(){}
 
 void Patriot::spawn(){}
-void Patriot::despawn(){}
+void Patriot::despawn(btDiscreteDynamicsWorld* world){
+    btCollisionShape* col = getRigidBody()->getCollisionShape();
+    btRigidBody* rb = getRigidBody();
+
+    world->removeCollisionObject(rb);
+
+}

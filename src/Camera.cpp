@@ -26,11 +26,11 @@ Camera::Camera()
     : isViewChanged(true), 
     isProjChanged(true), 
     target(nullptr), 
-    upOffset(10.0f), 
+    upOffset(15.0f), 
     up(glm::vec3(0, 1, 0)), 
     front(glm::vec3(0.0f, 0.0f, -1.0f)),
     position(glm::vec3(0.0f, 0.0f, 3.0f)),
-    farOffset(20.0f), 
+    farOffset(30.0f), 
     zoomSpeed(0.5f){}
 
 Camera::~Camera(){}
@@ -60,6 +60,8 @@ void Camera::init(GLuint shaderProg, int width, int height, float fov, CameraMod
     skybox->setView(&view);
     
 }
+
+
 void Camera::update(){
     glUseProgram(shader_programme);    
     if(isProjChanged){
@@ -72,11 +74,7 @@ void Camera::update(){
     float camZ;
     btTransform trans;    
     glm::vec3 targetPos;
-
-    btQuaternion q;
-    glm::vec3 direction;
-    float posx;
-    float posz;
+    
     switch(mode){
         case CameraModes::THIRD_PERSON:
             if(target == nullptr){
@@ -84,17 +82,14 @@ void Camera::update(){
                 return;
             }
             target->getRigidBody()->getMotionState()->getWorldTransform(trans);
-            //getPitchFromQuat(trans.getRotation(), angle);
-            q = trans.getRotation();
-            direction = glm::vec3(2 * (q.x()*q.z() + q.w()*q.y()), 2 * (q.y()*q.z() - q.w()*q.x()), 1 - 2 * (q.x()*q.x() + q.y()*q.y()));
-
+            getPitchFromQuat(trans.getRotation(), angle);
+            
             targetPos = glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
-            direction = glm::normalize(direction);
-            posx = targetPos.x - direction.x*farOffset;
-            posz = targetPos.z - direction.z*farOffset;
-            //camX = -sin(angle) * farOffset;
-            //camZ = -cos(angle) * farOffset;
-            view = glm::lookAt(glm::vec3(posx, upOffset+targetPos.y, posz), targetPos, up);
+            
+            camX = -sin(angle) * farOffset;
+            camZ = -cos(angle) * farOffset;
+
+            view = glm::lookAt(glm::vec3(camX, upOffset, camZ)+targetPos, targetPos, up);
             glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);    
             break;
         case CameraModes::FIRST_PERSON:
@@ -104,14 +99,14 @@ void Camera::update(){
     }    
 }
 void Camera::zoomIn(){
-    if (farOffset<10){
+    if (farOffset<15){
         return;
     }
     this->farOffset = this->farOffset - zoomSpeed;
     this->upOffset = UP_FAR_RATIO*farOffset;
 }
 void Camera::zoomOut(){
-    if (farOffset>40){
+    if (farOffset>50){
         return;
     }
     this->farOffset = this->farOffset + zoomSpeed;

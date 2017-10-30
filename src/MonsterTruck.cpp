@@ -54,6 +54,8 @@ void MonsterTruck::initialize(btDiscreteDynamicsWorld* world){
         wheel.m_rollInfluence = btScalar(0.f);    //TODO: PARAM
         wheel.m_maxSuspensionTravelCm = 100.f;       //TODO: PARAM
     }
+
+    setIsAlive(true);
 }
 
 void MonsterTruck::updatePhysics(){
@@ -196,4 +198,6 @@ void MonsterTruck::fire(){
 }
 
 void MonsterTruck::spawn(){}
-void MonsterTruck::despawn(){}
+void MonsterTruck::despawn(btDiscreteDynamicsWorld* world){
+
+}

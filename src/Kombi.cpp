@@ -7,7 +7,7 @@ Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDis
     load_mesh("res/meshes/WHEEL/RUEDAFIN.obj", wheel_vao, wheel_vert);    
     load_texture (shaderprog, "res/meshes/WHEEL/ruedastext.jpg", wheel_tex, wheel_texLocation);  
     
-    setHealth(100.f);
+    setHealth(25.f);
     
 }
 
@@ -18,7 +18,7 @@ Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCol
     load_mesh("res/meshes/WHEEL/RUEDAFIN.obj", wheel_vao, wheel_vert);    
     load_texture (shaderprog, "res/meshes/WHEEL/ruedastext.jpg", wheel_tex, wheel_texLocation);    
 
-    setHealth(100.f);
+    setHealth(25.f);
     
 }
     
@@ -57,6 +57,8 @@ void Kombi::initialize(btDiscreteDynamicsWorld* world){
         //wheel.m_maxSuspensionTravelCm = 15.f;       //TODO: PARAM
         
     }
+    setIsAlive(true);
+    
 }
 
 void Kombi::updatePhysics(){
@@ -159,4 +161,9 @@ void Kombi::turnLeft(){
 void Kombi::fire(){}
 
 void Kombi::spawn(){}
-void Kombi::despawn(){}
+void Kombi::despawn(btDiscreteDynamicsWorld* world){
+    btCollisionShape* col = getRigidBody()->getCollisionShape();
+    btRigidBody* rb = getRigidBody();
+
+    world->removeCollisionObject(rb);
+}

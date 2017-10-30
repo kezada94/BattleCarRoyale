@@ -22,16 +22,13 @@ Scene::~Scene(){
 }
 
 void Scene::drawAllGameObjects(const GLuint mat_location, const GLuint shader){
-    //GameObject* obj;
     glUseProgram(shader);
     for (int i = 0; i < objects->size(); i++){
-        //obj = this->objects->get(i);
-        //if (obj != nullptr){
-            objects->get(i)->draw(mat_location);
-        //}else{
-            //printf("ES NULLLL");
-        //}
-        
+        objects->get(i)->draw(mat_location);
+    }
+    for (int i = 0; i < cars.size(); i++){
+        if (cars[i]->getIsAlive())
+            cars[i]->draw(mat_location);
     }
 }
 void Scene::updateAllCarsPhysics(){
@@ -43,12 +40,13 @@ void Scene::updateAllCarsPhysics(){
 void Scene::addGameObject(GameObject* obj){
     if(dynamic_cast<Car*>(obj)){
         cars.push_back(dynamic_cast<Car*>(obj));
+    }else{
+        this->objects->addGameObject(obj);
     }
-    this->objects->addGameObject(obj);
     this->dynamicsWorld->addRigidBody(obj->getRigidBody());
 }
-void Scene::stepSimulation(float freq, int algo){
-    this->dynamicsWorld->stepSimulation(freq, algo);
+void Scene::stepSimulation(float freq, int skips){
+    this->dynamicsWorld->stepSimulation(freq, skips);
 }
 btDiscreteDynamicsWorld* Scene::getDynamicsWorld(){
     return this->dynamicsWorld;

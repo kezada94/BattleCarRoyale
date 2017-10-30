@@ -27,7 +27,7 @@ public:
     void fire();
 
     void spawn();
-    void despawn();
+    void despawn(btDiscreteDynamicsWorld* world);
 
     void draw(GLuint model_mat_location);
 };

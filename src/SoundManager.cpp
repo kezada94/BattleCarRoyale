@@ -13,19 +13,17 @@ SoundManager::SoundManager(){
 void SoundManager::reproducir(int valor,ALboolean l,float pit){
     acel->pit(pit);
     if(valor==1){
-        acel->stop();
+        //acel->stop();
         if(freno->get_source_state() != AL_PLAYING)
         {   
             freno->play(l,0.4,1);
         }
-    }
-    else if(valor==2){
-        if(acel->get_source_state() != AL_PLAYING)
+    } else if(valor==2){
+        if(acel->get_source_state() != AL_PLAYING && freno->get_source_state() != AL_PLAYING)
         {
             acel->play(l,0.6,pit);
         }
-    }
-    else if(valor==3){
+    } else if(valor==3){
         ret->play(AL_FALSE,0.4,1);
     }
 }
