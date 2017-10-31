@@ -1,31 +1,33 @@
 #include "InputProcessor.hpp"
 
-InputProcessor::InputProcessor(GLFWwindow* win, Camera* cam, Car* player) 
-    : window(win), 
-    camera(cam), 
-    player(player), 
-    firstMouse(true), 
-    isReleased(false),
-    isWireframe(false){
-    buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
-    axes = glfwGetJoystickAxes( GLFW_JOYSTICK_1, &axesCount);
+InputProcessor::InputProcessor(GLFWwindow *win, Camera *cam, Car *player)
+    : window(win),
+      camera(cam),
+      player(player),
+      firstMouse(true),
+      isReleased(false),
+      isWireframe(false)
+{
     glfwGetWindowSize(window, &lastX, &lastY);
     lastX = lastX / 2;
-    lastY = lastY / 2; 
-    
+    lastY = lastY / 2;
+
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
-InputProcessor::~InputProcessor(){}
+InputProcessor::~InputProcessor() {}
 
-void InputProcessor::processMouse(){
+void InputProcessor::processMouse()
+{
     GLdouble xpos, ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
-    
-    if(abs(xpos - lastX) < 2.f && abs(ypos - lastY) < 2.f){
+
+    if (abs(xpos - lastX) < 2.f && abs(ypos - lastY) < 2.f)
+    {
         return;
     }
 
-    if (firstMouse){
+    if (firstMouse)
+    {
         lastX = xpos;
         lastY = ypos;
         firstMouse = false;
@@ -57,99 +59,138 @@ void InputProcessor::processMouse(){
     camera->setFront(front);
 }
 
-void InputProcessor::processScroll(){
+void InputProcessor::processScroll()
+{
 }
 
-void InputProcessor::processInput(){
+void InputProcessor::processInput()
+{
+    buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
+    axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
+
     processMouse();
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
     float cameraSpeed = 1.f;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera->setPosition( camera->getPosition() + cameraSpeed * camera->getFront());
+        camera->setPosition(camera->getPosition() + cameraSpeed * camera->getFront());
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera->setPosition( camera->getPosition() - cameraSpeed * camera->getFront());
+        camera->setPosition(camera->getPosition() - cameraSpeed * camera->getFront());
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera->setPosition( camera->getPosition() - glm::normalize(glm::cross(camera->getFront(), camera->getUp())) * cameraSpeed);
+        camera->setPosition(camera->getPosition() - glm::normalize(glm::cross(camera->getFront(), camera->getUp())) * cameraSpeed);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera->setPosition( camera->getPosition() + glm::normalize(glm::cross(camera->getFront(), camera->getUp())) * cameraSpeed);
-    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS){
-        switch(camera->getMode()){
-            case CameraModes::FIRST_PERSON:
-                camera->setMode(CameraModes::THIRD_PERSON);
-                break;
-            case CameraModes::THIRD_PERSON:
-                camera->setMode(CameraModes::FIRST_PERSON);
+        camera->setPosition(camera->getPosition() + glm::normalize(glm::cross(camera->getFront(), camera->getUp())) * cameraSpeed);
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+    {
+        switch (camera->getMode())
+        {
+        case CameraModes::FIRST_PERSON:
+            camera->setMode(CameraModes::THIRD_PERSON);
+            break;
+        case CameraModes::THIRD_PERSON:
+            camera->setMode(CameraModes::FIRST_PERSON);
         }
     }
-    if (isReleased){
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
-            if (!isWireframe){
+    if (isReleased)
+    {
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        {
+            if (!isWireframe)
+            {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //Draw only lines no fill
                 isWireframe = true;
-            } else {
+            }
+            else
+            {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //Draw only lines no fill
                 isWireframe = false;
-            }   
-            isReleased = false;  
+            }
+            isReleased = false;
         }
     }
-    if (axes != NULL){//Hay joystick
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE)
+    {
+        isReleased = true;
+    }
 
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE){
-            isReleased = true;
-        }
-        if ((glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS)||(axes[5]>0 && axes[5]==GLFW_PRESS)){
+    if (axes != nullptr)
+    {
+        if ((glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS) || (axes[5] > 0 && axes[5] == GLFW_PRESS))
+        {
             player->accelerate();
-        } 
-        if ((glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS)||(axes[0]<-0.2)){
+        }
+        if ((glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS) || (axes[0] < -0.2))
+        {
             player->turnLeft();
-        } 
-        if ((glfwGetKey(g_window, GLFW_KEY_RIGHT) == GLFW_PRESS)||(axes[0]>0.2)){
+        }
+        if ((glfwGetKey(g_window, GLFW_KEY_RIGHT) == GLFW_PRESS) || (axes[0] > 0.2))
+        {
             player->turnRight();
         }
-        if ((glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS)||(axes[2]>0 && axes[2]==GLFW_PRESS)){
-            if (player->getCar()->getCurrentSpeedKmHour()>1.f){
+        if ((glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS) || (axes[4] > 0 && axes[4] == GLFW_PRESS))
+        {
+            if (player->getCar()->getCurrentSpeedKmHour() > 1.f)
+            {
                 player->brake();
-            }else{
+            }
+            else
+            {
                 player->reverse();
             }
         }
+        if (glfwGetKey(g_window, GLFW_KEY_K) == GLFW_PRESS || buttons[13] == GLFW_PRESS)
+        {
+            player->fire();
+        }
     }
-    else{
-        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE){
+    else
+    {
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE)
+        {
             isReleased = true;
         }
 
-        if (glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS){
+        if (glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS)
+        {
             player->accelerate();
-        } 
-        if (glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS){
+        }
+        if (glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS)
+        {
             player->turnLeft();
-        } 
-        if (glfwGetKey(g_window, GLFW_KEY_RIGHT) == GLFW_PRESS){
+        }
+        if (glfwGetKey(g_window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        {
             player->turnRight();
         }
-        if (glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS){
-            if (player->getCar()->getCurrentSpeedKmHour()>1.f){
+        if (glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        {
+            if (player->getCar()->getCurrentSpeedKmHour() > 1.f)
+            {
                 player->brake();
-            }else{
+            }
+            else
+            {
                 player->reverse();
             }
         }
+        if (glfwGetKey(g_window, GLFW_KEY_K) == GLFW_PRESS)
+        {
+            player->fire();
+        }
     }
-    if (glfwGetKey(g_window, GLFW_KEY_SPACE) == GLFW_PRESS){
+
+    if (glfwGetKey(g_window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    {
         player->brake();
     }
-    if (glfwGetKey(g_window, GLFW_KEY_K) == GLFW_PRESS){
-        player->fire();
-    }
-    if (glfwGetKey(g_window, GLFW_KEY_U) == GLFW_PRESS){
+
+    if (glfwGetKey(g_window, GLFW_KEY_U) == GLFW_PRESS)
+    {
         camera->zoomIn();
-    } 
-    if (glfwGetKey(g_window, GLFW_KEY_J) == GLFW_PRESS){
+    }
+    if (glfwGetKey(g_window, GLFW_KEY_J) == GLFW_PRESS)
+    {
         camera->zoomOut();
-    }    
-    
+    }
 }

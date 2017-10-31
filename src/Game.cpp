@@ -14,7 +14,8 @@ Game::~Game(){
 }    
 
 void Game::init(){
-    glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);    
+    glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);  
+    glfwSwapInterval(0);  
     glEnable(GL_POINT_SPRITE);
     glEnable(GL_POINT_SMOOTH);
     glEnable(GL_BLEND);
@@ -75,7 +76,7 @@ void Game::doMainLoop(){
         deltaTime = currentTime - lastTime;
         if (deltaTime >= 1.0 ){ 
             // printf and reset timer
-            printf("%f ms\n", 1000.0/double(frameCount));
+            printf("%.2f fps, %f ms\n", frameCount/deltaTime,1000.0/double(frameCount));
             frameCount = 0;
             lastTime += 1.0;
         }
@@ -93,7 +94,7 @@ void Game::doMainLoop(){
         //level->getDynamicsWorld()->debugDrawWorld();
         //camera->debugDrawer->drawLines();
 
-        level->stepSimulation(1 / 50.f, 0); 
+        level->stepSimulation(1 / (frameCount/deltaTime), 0); 
 
         level->updateAllCarsPhysics();    
         camera->update();
@@ -121,7 +122,7 @@ void Game::checkStatus(){
     }
 }
 void Game::win(){
-    printf("GANASTE!!\n");
+    glfwSetWindowShouldClose(g_window, true);
 }
 void Game::loose(){
     printf("PERDISTE!!\n");

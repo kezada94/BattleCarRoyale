@@ -7,12 +7,11 @@ layout (location = 2) in vec3 origin;               //
 //in double start_time;         // LINUX
 //in vec3 origin;               //
 
-
 uniform mat4 V, P;
 uniform double elapsed_system_time;
 void main(){
     double t = elapsed_system_time;
-    dvec3 p = origin + normalize(v_i) * t * 420.f; //speed
+    dvec3 p = origin + normalize(v_i) * t * 420.f; //bullet speed
 
     gl_Position = P * V * vec4 (p, 1.0);
     double size = clamp(5.0/(elapsed_system_time*3), 0, 10);

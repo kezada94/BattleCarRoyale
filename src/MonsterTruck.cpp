@@ -139,7 +139,8 @@ void MonsterTruck::brake(){
     getCar()->setBrake(btScalar(1.5), 1);   //TODO: PARAM
     getCar()->setBrake(btScalar(1.5), 2);   //TODO: PARAM
     getCar()->setBrake(btScalar(1.5), 3);   //TODO: PARAM
-    sound->reproducir(1, AL_FALSE, 1.0);
+    if(getCar()->getCurrentSpeedKmHour() > 100.f)
+        sound->reproducir(1, AL_FALSE, 1.0);
 }
 void MonsterTruck::reverse(){
     //TODO: ADD LIMIT
