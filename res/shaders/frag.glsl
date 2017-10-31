@@ -1,4 +1,4 @@
-#version 410 //130 linux - 410 mac
+#version 130 //130 linux - 410 mac
 
 in vec3 normalEye;
 in vec3 normal;
@@ -16,7 +16,7 @@ uniform mat4 view;
 
 void main() {
 
-	vec3 normal_tan = texture (normal_map, st).rgb;
+	vec3 normal_tan = texture (basic_texture, st).rgb;
 	normal_tan = normalize (normal_tan * 2.0 - 1.0);
 
 	// Diffuse factor done in eye space

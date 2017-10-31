@@ -66,7 +66,7 @@ void Game::init(){
 void Game::doMainLoop(){
     //glLineWidth(7);
     glEnable(GL_LINE_SMOOTH);
-    //soundManager->musicaFondo();
+    soundManager->musicaFondo();
     int frameCount = 0;
     
     while (!glfwWindowShouldClose(g_window)){
@@ -91,8 +91,8 @@ void Game::doMainLoop(){
         skybox->draw();
         
         // Dibuja todos las figuras colisionadoras de los objetos
-        //level->getDynamicsWorld()->debugDrawWorld();
-        //camera->debugDrawer->drawLines();
+        level->getDynamicsWorld()->debugDrawWorld();
+        camera->debugDrawer->drawLines();
 
         level->stepSimulation(1 / (frameCount/deltaTime), 0); 
 

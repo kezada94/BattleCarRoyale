@@ -139,8 +139,14 @@ void MonsterTruck::brake(){
     getCar()->setBrake(btScalar(1.5), 1);   //TODO: PARAM
     getCar()->setBrake(btScalar(1.5), 2);   //TODO: PARAM
     getCar()->setBrake(btScalar(1.5), 3);   //TODO: PARAM
+<<<<<<< HEAD
     if(getCar()->getCurrentSpeedKmHour() > 100.f)
         sound->reproducir(1, AL_FALSE, 1.0);
+=======
+    if(getCar()->getCurrentSpeedKmHour() > 125.f){
+        sound->reproducir(1, AL_FALSE, 1.0);
+    }
+>>>>>>> 7083116badbf48d69fadd7f672375dbcb219fb77
 }
 void MonsterTruck::reverse(){
     //TODO: ADD LIMIT
@@ -173,7 +179,7 @@ void MonsterTruck::fire(){
         
         btVector3 end = start + 500*direction;//TODO: PARAM alcance maximo balas
 
-        //getWorld()->getDebugDrawer()->drawLine(start, end, btVector3(0, 0, 0));
+        getWorld()->getDebugDrawer()->drawLine(start, end, btVector3(0, 0, 0));
         btCollisionWorld::ClosestRayResultCallback RayCallback(start, end);
         getWorld()->rayTest(start, end, RayCallback);
         

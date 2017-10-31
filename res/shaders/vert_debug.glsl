@@ -1,7 +1,7 @@
-#version 410
-layout (location = 0) in vec3 position; //MAC
+#version 130
+//layout (location = 0) in vec3 position; //MAC
 
-//in vec3 position;  //LINUX
+in vec3 position;  //LINUX
 
 uniform mat4 projection;
 uniform mat4 view;

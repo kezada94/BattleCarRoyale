@@ -9,7 +9,6 @@
 class SoundManager {
 private:
     sound* freno;
-    sound* ret;
     sound* fondo;
     sound* acel;
 public:
@@ -17,6 +16,5 @@ public:
     ~SoundManager();
     void musicaFondo();
     void reproducir(int valor,ALboolean l, float pit);
-    void detener();
 };
 #endif
