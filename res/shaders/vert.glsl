@@ -1,14 +1,14 @@
-#version 410
+#version 130
 
-layout(location = 0) in vec3 vertex_position; //
-layout(location = 1) in vec3 vertex_normal;   //* PARA MAC
-layout(location = 2) in vec2 texture_coord;   //
-layout(location = 3) in vec4 vtangent;
+//layout(location = 0) in vec3 vertex_position; //
+//layout(location = 1) in vec3 vertex_normal;   //* PARA MAC
+//layout(location = 2) in vec2 texture_coord;   //
+//layout(location = 3) in vec4 vtangent;
 
-//in vec3 vertex_position;    //
-//in vec3 vertex_normal;      //* PARA LINUX
-//in vec2 texture_coord;      //
-//in vec4 vtangent;				//
+in vec3 vertex_position;    //
+in vec3 vertex_normal;      //* PARA LINUX
+in vec2 texture_coord;      //
+in vec4 vtangent;				//
 uniform mat4 view, proj, model;
 
 out vec3 normalEye;
@@ -21,8 +21,8 @@ out vec3 normal;
 
 void main() {
 	st = texture_coord;
-	test_tan = vtangent;
 	normal = vertex_normal;
+	test_tan = vtangent;
 	normalEye = normalize(vec3(view * model * vec4(vertex_normal, 0.0)));
 	positionEye = vec3(view * model * vec4(vertex_position, 1.0));
 

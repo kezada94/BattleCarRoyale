@@ -15,6 +15,8 @@ ParticleManager::ParticleManager(){
 
 void ParticleManager::genGunshot(btVector3 from, btVector3 to){
     float velocityDir[3]; 
+    float origin[3]={from.x(),from.y(),from.z()};
+    printf("\nvalor x,y,z= %f,%f,%f",origin[0],origin[1],origin[2]);
 	double vt = currentTime;
     btVector3 dir = to-from;
     dir = dir.normalized();
@@ -27,25 +29,25 @@ void ParticleManager::genGunshot(btVector3 from, btVector3 to){
     glBindBuffer (GL_ARRAY_BUFFER, velocity_vbo);
     glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat)*3, &velocityDir, GL_STATIC_DRAW);
     
-    GLuint time_vbo;
-    glGenBuffers (1, &time_vbo);
-    glBindBuffer (GL_ARRAY_BUFFER, time_vbo);
-    glBufferData (GL_ARRAY_BUFFER, sizeof (GLdouble), &vt, GL_STATIC_DRAW);
+    //GLuint time_vbo;
+    //glGenBuffers (1, &time_vbo);
+    //glBindBuffer (GL_ARRAY_BUFFER, time_vbo);
+    //glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat), &vt, GL_STATIC_DRAW);
 
     GLuint origin_vbo;
     glGenBuffers (1, &origin_vbo);
     glBindBuffer (GL_ARRAY_BUFFER, origin_vbo);
-    glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat)*3, &from, GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat)*3, &origin, GL_STATIC_DRAW);
     
     GLuint vao;
     glGenVertexArrays (1, &vao);
     glBindVertexArray (vao);
     glBindBuffer (GL_ARRAY_BUFFER, velocity_vbo);
     glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-    glBindBuffer (GL_ARRAY_BUFFER, time_vbo);
-    glVertexAttribPointer (1, 1, GL_DOUBLE, GL_FALSE, 0, NULL);
+    //glBindBuffer (GL_ARRAY_BUFFER, time_vbo);
+    //glVertexAttribPointer (1, 1, GL_FLOAT, GL_FALSE, 0, NULL);
     glBindBuffer (GL_ARRAY_BUFFER, origin_vbo);
-    glVertexAttribPointer (2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glVertexAttribPointer (1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
     
     float distanc = (to-from).length();
 
@@ -53,8 +55,8 @@ void ParticleManager::genGunshot(btVector3 from, btVector3 to){
 
     glEnableVertexAttribArray (0);
     glEnableVertexAttribArray (1);
-    glEnableVertexAttribArray (2);
-    glBindBuffer (GL_ARRAY_BUFFER, 0);
+    //glEnableVertexAttribArray (2);
+    //glBindBuffer (GL_ARRAY_BUFFER, 0);
     ParticleSystem* par = new ParticleSystem;
     par->startTime = vt;
     par->endTime = vt + t; //TODO: PARAM 1.3 segundos de vida
@@ -72,7 +74,7 @@ void ParticleManager::drawActiveParticles(){
             glActiveTexture( GL_TEXTURE0 );
             glBindTexture( GL_TEXTURE_2D, tex );
             glUseProgram (this->shader_programme);
-            glUniform1d (time_location, currentTime - p->startTime);
+            glUniform1f (time_location, (currentTime - p->startTime));         
             glUniformMatrix4fv(view_location, 1, GL_FALSE, glm::value_ptr(*view));
             glUniformMatrix4fv(proj_location, 1, GL_FALSE, glm::value_ptr(*proj));
             

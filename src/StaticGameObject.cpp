@@ -46,7 +46,7 @@ void StaticGameObject::draw(const GLuint model_mat_location){
     
     glBindVertexArray(this->vao);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
-    glDrawElements(GL_TRIANGLES, 3 * indicesNumber, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES,indicesNumber, GL_UNSIGNED_INT, 0);
 }
 
 btBvhTriangleMeshShape* StaticGameObject::load_mesh (const char* file_name, GLuint& vao, int& vert_no) {

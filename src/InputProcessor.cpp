@@ -102,7 +102,10 @@ void InputProcessor::processInput(){
         }
         if ((glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS)||(axes[5]>0 && axes[5]==GLFW_PRESS)){
             player->accelerate();
-        } 
+        }
+        if ((glfwGetKey(g_window, GLFW_KEY_K) == GLFW_PRESS)||(buttons[2]==GLFW_PRESS)){
+            player->fire();
+        }  
         if ((glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS)||(axes[0]<-0.2)){
             player->turnLeft();
         } 
