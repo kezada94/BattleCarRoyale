@@ -15,7 +15,7 @@ Game::~Game(){
 
 void Game::init(){
     glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);  
-    glfwSwapInterval(0);  
+    glfwSwapInterval(1);  
     glEnable(GL_POINT_SPRITE);
     glEnable(GL_POINT_SMOOTH);
     glEnable(GL_BLEND);

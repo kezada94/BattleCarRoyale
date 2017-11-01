@@ -196,6 +196,7 @@ void MonsterTruck::fire(){
             particleManager->genGunshot(btVector3(start.x() + gunTwo2.x, start.y() + gunTwo2.y, start.z() + gunTwo2.z), end);
         }
         lastShot = currentTime;
+        sound->reproducir(3,AL_FALSE,1.0);
     }
 }
 

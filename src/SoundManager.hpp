@@ -11,6 +11,7 @@ private:
     sound* freno;
     sound* fondo;
     sound* acel;
+    sound* disparo;
 public:
     SoundManager();
     ~SoundManager();
