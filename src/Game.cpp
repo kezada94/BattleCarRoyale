@@ -91,10 +91,10 @@ void Game::doMainLoop(){
         skybox->draw();
         
         // Dibuja todos las figuras colisionadoras de los objetos
-        level->getDynamicsWorld()->debugDrawWorld();
-        camera->debugDrawer->drawLines();
+        //level->getDynamicsWorld()->debugDrawWorld();
+        //camera->debugDrawer->drawLines();
 
-        level->stepSimulation(1 / (frameCount/deltaTime), 0); 
+        level->stepSimulation(1 / 60.f, 0); 
 
         level->updateAllCarsPhysics();    
         camera->update();
