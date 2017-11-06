@@ -47,7 +47,7 @@ void Camera::init(GLuint shaderProg, int width, int height, float fov, CameraMod
     this->projLocation = glGetUniformLocation (shaderProg, "proj");
 
     glUseProgram(shader_programme);
-    projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 1000.0f);
+    projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 10000.0f);
     glUniformMatrix4fv (projLocation, 1, GL_FALSE, &projection[0][0]);    
     debugDrawer->setProj(&projection);    
     particleManager->setProj(&projection);
@@ -65,7 +65,7 @@ void Camera::init(GLuint shaderProg, int width, int height, float fov, CameraMod
 void Camera::update(){
     glUseProgram(shader_programme);    
     if(isProjChanged){
-        projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 1000.0f);
+        projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 10000.0f);
         glUniformMatrix4fv (projLocation, 1, GL_FALSE, &projection[0][0]);   
         isProjChanged = false;
     }
@@ -89,7 +89,7 @@ void Camera::update(){
             camX = -sin(angle) * farOffset;
             camZ = -cos(angle) * farOffset;
 
-            view = glm::lookAt(glm::vec3(camX, upOffset, camZ)+targetPos, targetPos, up);
+            view = glm::lookAt(glm::vec3(camX, upOffset, camZ) + targetPos, glm::vec3(targetPos.x, targetPos.y+10, targetPos.z), up);
             glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);    
             break;
         case CameraModes::FIRST_PERSON:

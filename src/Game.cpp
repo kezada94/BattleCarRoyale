@@ -15,7 +15,7 @@ Game::~Game(){
 
 void Game::init(){
     glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);  
-    glfwSwapInterval(1);  
+    glfwSwapInterval(0);  
     glEnable(GL_POINT_SPRITE);
     glEnable(GL_POINT_SMOOTH);
     glEnable(GL_BLEND);
@@ -40,7 +40,9 @@ void Game::init(){
     level->getDynamicsWorld()->setDebugDrawer(debug);
 
     //Creacion de objetos de la escena
-    StaticGameObject *piso = new StaticGameObject("res/textures/piso/suelo2.obj", "res/textures/piso/what.png", "res/textures/piso/what_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    StaticGameObject *piso = new StaticGameObject("res/suelo/suelo.obj", "res/suelo/suelo.jpg", "res/suelo/suelo_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    StaticGameObject *esfera = new StaticGameObject("res/untitled.obj", "res/tex.png", "res/tex_NRM.png", shader_programme, btVector3(50, 50, 50), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    StaticGameObject *luz = new StaticGameObject("res/untitled.obj", "res/tex.png", "res/tex_NRM.png", shader_programme, btVector3(30, 100, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     Kombi* kombi = new Kombi(btVector3(10, 24, 10), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
     Patriot* patriot = new Patriot(btVector3(0, 24, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
     MonsterTruck* monster = new MonsterTruck(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
@@ -48,7 +50,8 @@ void Game::init(){
     monster->particleManager = particleManager;
     enemiesCount = 2;
     
-    piso->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(30, 45, 30));
+    piso->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(100, 30, 100));
+    esfera->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(30, 30, 30));
     monster->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(2.42f, 2, 2));
     
     //Se agregan los objetos la escena
@@ -56,6 +59,8 @@ void Game::init(){
     level->addGameObject(monster);
     level->addGameObject(patriot);
     level->addGameObject(piso);
+    level->addGameObject(esfera);
+    level->addGameObject(luz);
     
     //Se settea el auto que será el jugador.
     camera->setTarget(monster);
@@ -66,7 +71,7 @@ void Game::init(){
 void Game::doMainLoop(){
     //glLineWidth(7);
     glEnable(GL_LINE_SMOOTH);
-    soundManager->musicaFondo();
+    //soundManager->musicaFondo();
     int frameCount = 0;
     
     while (!glfwWindowShouldClose(g_window)){

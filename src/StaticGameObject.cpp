@@ -8,6 +8,10 @@ StaticGameObject::StaticGameObject(const char* path, const char* texture_path, c
     
     load_texture(shaderprog, texture_path, normal_path);
 
+	glUniform1i(this->tex_location, 0); 
+	glUniform1i(this->normalMapLocation, 1); 
+	
+
     btTransform startTransform;
     startTransform.setIdentity();
 
@@ -39,10 +43,9 @@ void StaticGameObject::draw(const GLuint model_mat_location){
     
     glActiveTexture (GL_TEXTURE0);
 	glBindTexture (GL_TEXTURE_2D, this->texture);
-	glUniform1i (this->tex_location, 0);
+
 	glActiveTexture (GL_TEXTURE1);
 	glBindTexture (GL_TEXTURE_2D, this->normalMap);
-    glUniform1i (this->normalMapLocation, 0);
     
     glBindVertexArray(this->vao);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
@@ -83,7 +86,8 @@ btBvhTriangleMeshShape* StaticGameObject::load_mesh (const char* file_name, GLui
 	GLfloat* normals = NULL; 								// array of vertex normals
 	GLfloat* texcoords = NULL;								// array of texture coordinates
 	int* indices = NULL;								// array of texture coordinates
-	GLfloat *g_vtans = NULL;
+	GLfloat *tangents = NULL;
+	GLfloat *bitangents = NULL;
 	
 
 	if (mesh->HasPositions ()) {
@@ -125,33 +129,16 @@ btBvhTriangleMeshShape* StaticGameObject::load_mesh (const char* file_name, GLui
 	}
 	if ( mesh->HasTangentsAndBitangents() ) {
 		printf( "mesh has tangents\n" );
-		g_vtans = (GLfloat*)malloc( this->vertNumber * 4 * sizeof( GLfloat ) );
+		tangents = (GLfloat*)malloc( this->vertNumber * 3 * sizeof( GLfloat ) );
+		bitangents = (GLfloat*)malloc( this->vertNumber * 3 * sizeof( GLfloat ) );
 		for (int i = 0; i < this->vertNumber; i++) {
-			const aiVector3D *tangent = &( mesh->mTangents[i] );
-			const aiVector3D *bitangent = &( mesh->mBitangents[i] );
-			const aiVector3D *normal = &( mesh->mNormals[i] );
+			tangents[3*i] = mesh->mTangents[i].x;
+			tangents[3*i+1] = mesh->mTangents[i].y;
+			tangents[3*i+2] = mesh->mTangents[i].z;
 
-			// put the three vectors into my vec3 struct format for doing maths
-			glm::vec3 t( tangent->x, tangent->y, tangent->z );
-			glm::vec3 n( normal->x, normal->y, normal->z );
-			glm::vec3 b( bitangent->x, bitangent->y, bitangent->z );
-			// orthogonalise and normalise the tangent so we can use it in something
-			// approximating a T,N,B inverse matrix
-			glm::vec3 t_i = glm::normalize( t - n * glm::dot( n, t ) );
-
-			// get determinant of T,B,N 3x3 matrix by dot*cross method
-			float det = ( glm::dot( glm::cross( n, t ), b ) );
-			if ( det < 0.0f ) {
-				det = -1.0f;
-			} else {
-				det = 1.0f;
-			}
-
-			// push back 4d vector for inverse tangent with determinant
-			g_vtans[i * 4] = t_i.x;
-			g_vtans[i * 4 + 1] = t_i.y;
-			g_vtans[i * 4 + 2] = t_i.z;
-			g_vtans[i * 4 + 3] = det;
+			bitangents[3*i] = mesh->mBitangents[i].x; //quizas sea necesario
+			bitangents[3*i+1] = mesh->mBitangents[i].y; //quizas sea necesario
+			bitangents[3*i+2] = mesh->mBitangents[i].z; //quizas sea necesario
 		}
 	}
     
@@ -224,10 +211,18 @@ btBvhTriangleMeshShape* StaticGameObject::load_mesh (const char* file_name, GLui
 		GLuint tangents_vbo;
 		glGenBuffers( 1, &tangents_vbo );
 		glBindBuffer( GL_ARRAY_BUFFER, tangents_vbo );
-		glBufferData( GL_ARRAY_BUFFER, 4 * this->vertNumber * sizeof( GLfloat ), g_vtans, GL_STATIC_DRAW );
-		glVertexAttribPointer( 3, 4, GL_FLOAT, GL_FALSE, 0, NULL );
+		glBufferData( GL_ARRAY_BUFFER, 3 * this->vertNumber * sizeof( GLfloat ), tangents, GL_STATIC_DRAW );
+		glVertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, 0, NULL );
 		glEnableVertexAttribArray( 3 );
-		free(g_vtans);
+		free(tangents);
+
+		GLuint bitangents_vbo;
+		glGenBuffers( 1, &bitangents_vbo );
+		glBindBuffer( GL_ARRAY_BUFFER, bitangents_vbo );
+		glBufferData( GL_ARRAY_BUFFER, 3 * this->vertNumber * sizeof( GLfloat ), bitangents, GL_STATIC_DRAW );
+		glVertexAttribPointer( 4, 3, GL_FLOAT, GL_FALSE, 0, NULL );
+		glEnableVertexAttribArray( 4 );
+		free(bitangents);
 	}	
 	aiReleaseImport (scene);
 	printf ("mesh loaded\n");
@@ -273,6 +268,8 @@ bool StaticGameObject::load_texture (GLuint shaderprog, const char* texture_path
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		
 	
 		tex_location = glGetUniformLocation (shaderprog, "basic_texture");
 		
@@ -281,13 +278,13 @@ bool StaticGameObject::load_texture (GLuint shaderprog, const char* texture_path
 		if (normal_path != NULL) {
 			x, y, n;
 			force_channels = 4;
-			image_data = stbi_load (texture_path, &x, &y, &n, force_channels);
-			if (!image_data) {
-				fprintf (stderr, "ERROR: could not load %s\n", texture_path);
+			unsigned char* image_data2 = stbi_load (normal_path, &x, &y, &n, force_channels);
+			if (!image_data2) {
+				fprintf (stderr, "ERROR: could not load %s\n", normal_path);
 			}
 		
 			if ((x & (x - 1)) != 0 || (y & (y - 1)) != 0) 
-				fprintf (stderr, "WARNING: texture %s is not power-of-2 dimensions: %i, %i\n", texture_path, x, y);
+				fprintf (stderr, "WARNING: texture %s is not power-of-2 dimensions: %i, %i\n", normal_path, x, y);
 		
 			width_in_bytes = x * 4;
 			top = NULL;
@@ -296,8 +293,8 @@ bool StaticGameObject::load_texture (GLuint shaderprog, const char* texture_path
 			half_height = y / 2;
 		
 			for(int row = 0; row < half_height; row++) {
-				top = image_data + row * width_in_bytes;
-				bottom = image_data + (y - row - 1) * width_in_bytes;
+				top = image_data2 + row * width_in_bytes;
+				bottom = image_data2 + (y - row - 1) * width_in_bytes;
 				for(int col = 0; col < width_in_bytes; col++){
 					temp = *top;
 					*top = *bottom;
@@ -307,19 +304,19 @@ bool StaticGameObject::load_texture (GLuint shaderprog, const char* texture_path
 				}
 			}
 		
+			glActiveTexture(GL_TEXTURE1);			
 			normalMap = 0;
 			glGenTextures(1, &normalMap);
-			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, normalMap);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data2);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		
+			
 			normalMapLocation = glGetUniformLocation (shaderprog, "normal_map");
 
-			free(image_data);			
+			free(image_data2);			
 		}
 		return true;
 	}
