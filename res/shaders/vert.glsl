@@ -9,8 +9,8 @@
 in vec3 vertexPosition_model;    //
 in vec3 vertexNormal_model;      //* PARA LINUX
 in vec2 texture_coord;      //
-in vec4 vertexTangent_model;				//
-in vec4 vertexBitangent_model;
+in vec3 vertexTangent_model;				//
+in vec3 vertexBitangent_model;
 
 float inverse(float m);
 mat2 inverse(mat2 m);
@@ -48,8 +48,8 @@ void main() {
 
 
 	vec3 vertexNormal_eye = (view * model * vec4(normalize(vertexNormal_model), 0)).xyz;
-  vec3 vertexTangent_eye = (view * model * normalize(vertexTangent_model)).xyz;
-  vec3 vertexBitangent_eye = (view * model * normalize(vertexBitangent_model)).xyz;
+  vec3 vertexTangent_eye = (view * model * vec4(normalize(vertexTangent_model), 0)).xyz;
+  vec3 vertexBitangent_eye = (view * model * vec4(normalize(vertexBitangent_model), 0)).xyz;
 
 	mat3 TBN = transpose(mat3(vertexTangent_eye, vertexBitangent_eye, vertexNormal_eye));
 
