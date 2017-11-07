@@ -1,16 +1,16 @@
-#version 410
+#version 130
 
-layout(location = 0) in vec3 vertexPosition_model; //
-layout(location = 1) in vec3 vertexNormal_model;   //* PARA MAC
-layout(location = 2) in vec2 texture_coord;   //
-layout(location = 3) in vec3 vertexTangent_model;
-layout(location = 4) in vec3 vertexBitangent_model;
+//layout(location = 0) in vec3 vertexPosition_model; //
+//layout(location = 1) in vec3 vertexNormal_model;   //* PARA MAC
+//layout(location = 2) in vec2 texture_coord;   //
+//layout(location = 3) in vec3 vertexTangent_model;
+//layout(location = 4) in vec3 vertexBitangent_model;
 
-//in vec3 vertexPosition_model;    //
-//in vec3 vertexNormal_model;      //* PARA LINUX
-//in vec2 texture_coord;      //
-//in vec4 vertexTangent_model;				//
-//in vec4 vertexBitangent_model;
+in vec3 vertexPosition_model;    //
+in vec3 vertexNormal_model;      //* PARA LINUX
+in vec2 texture_coord;      //
+in vec4 vertexTangent_model;				//
+in vec4 vertexBitangent_model;
 
 float inverse(float m);
 mat2 inverse(mat2 m);
@@ -46,9 +46,10 @@ void main() {
 	vec3 lightPosition_eye = (view * vec4(lightPosition_world, 1)).xyz;
 	vec3 lightDirection_eye = lightPosition_eye + cameraDirection_eye;
 
+
 	vec3 vertexNormal_eye = (view * model * vec4(normalize(vertexNormal_model), 0)).xyz;
-    vec3 vertexTangent_eye = (view * model * vec4(normalize(vertexTangent_model), 0)).xyz;
-    vec3 vertexBitangent_eye = (view * model * vec4(normalize(vertexBitangent_model), 0)).xyz;
+  vec3 vertexTangent_eye = (view * model * normalize(vertexTangent_model)).xyz;
+  vec3 vertexBitangent_eye = (view * model * normalize(vertexBitangent_model)).xyz;
 
 	mat3 TBN = transpose(mat3(vertexTangent_eye, vertexBitangent_eye, vertexNormal_eye));
 

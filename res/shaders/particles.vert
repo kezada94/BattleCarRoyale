@@ -1,9 +1,9 @@
-#version 410
-layout (location = 0) in vec3 v_i;                  //
-layout (location = 1) in vec3 origin;               //
+#version 130
+//layout (location = 0) in vec3 v_i;                  //
+//layout (location = 1) in vec3 origin;               //
 
-//in vec3 v_i;            //
-//in vec3 origin;         //
+in vec3 v_i;            //
+in vec3 origin;         //
 
 uniform mat4 V, P;
 uniform float elapsed_system_time;
