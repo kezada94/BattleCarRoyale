@@ -1,22 +1,22 @@
-#version 130
+#version 410
 
-//layout(location = 0) in vec3 vertexPosition_model; //
-//layout(location = 1) in vec3 vertexNormal_model;   //* PARA MAC
-//layout(location = 2) in vec2 texture_coord;   //
-//layout(location = 3) in vec3 vertexTangent_model;
-//layout(location = 4) in vec3 vertexBitangent_model;
+layout(location = 0) in vec3 vertexPosition_model; //
+layout(location = 1) in vec3 vertexNormal_model;   //* PARA MAC
+layout(location = 2) in vec2 texture_coord;   //
+layout(location = 3) in vec3 vertexTangent_model;
+layout(location = 4) in vec3 vertexBitangent_model;
 
-in vec3 vertexPosition_model;    //
-in vec3 vertexNormal_model;      //* PARA LINUX
-in vec2 texture_coord;      //
-in vec3 vertexTangent_model;				//
-in vec3 vertexBitangent_model;
+//in vec3 vertexPosition_model;    //
+//in vec3 vertexNormal_model;      //* PARA LINUX
+//in vec2 texture_coord;      //
+//in vec3 vertexTangent_model;				//
+//in vec3 vertexBitangent_model;
 
-float inverse(float m);
+/*float inverse(float m);
 mat2 inverse(mat2 m);
 mat3 inverse(mat3 m);
 mat4 inverse(mat4 m);
-
+*/
 
 
 
@@ -30,6 +30,9 @@ out vec3 normalEye;
 
 out vec3 EyeDirection_tangent;
 out vec3 LightDirection_tangent;
+out vec3 lightDirection_eye;
+
+vec3 lightDirection_world = vec3(-0.603472, 0.794415, -0.068758); //Sun light (directional)
 
 
 void main() {
@@ -38,18 +41,16 @@ void main() {
 	normalEye = normalize(vec3(view * model * vec4(vertexNormal_model, 0.0)));
 	positionEye = vec3(view * model * vec4(vertexPosition_model, 1.0));
 
-	vec3 lightPosition_world = vec3(30, 100, 0);
 
 	vec3 vertexPosition_eye = ( view * model * vec4(vertexPosition_model, 1)).xyz;
 	vec3 cameraDirection_eye = vec3(0, 0, 0) - vertexPosition_eye;
 
-	vec3 lightPosition_eye = (view * vec4(lightPosition_world, 1)).xyz;
-	vec3 lightDirection_eye = lightPosition_eye + cameraDirection_eye;
+	lightDirection_eye = (view * vec4(lightDirection_world, 0)).xyz;
 
 
 	vec3 vertexNormal_eye = (view * model * vec4(normalize(vertexNormal_model), 0)).xyz;
-  vec3 vertexTangent_eye = (view * model * vec4(normalize(vertexTangent_model), 0)).xyz;
-  vec3 vertexBitangent_eye = (view * model * vec4(normalize(vertexBitangent_model), 0)).xyz;
+    vec3 vertexTangent_eye = (view * model * vec4(normalize(vertexTangent_model), 0)).xyz;
+    vec3 vertexBitangent_eye = (view * model * vec4(normalize(vertexBitangent_model), 0)).xyz;
 
 	mat3 TBN = transpose(mat3(vertexTangent_eye, vertexBitangent_eye, vertexNormal_eye));
 
@@ -59,7 +60,7 @@ void main() {
 	gl_Position = proj * view * model * vec4 (vertexPosition_model, 1.0);
 }
 
-
+/*
 
 float inverse(float m) {
     return 1.0 / m;
@@ -124,3 +125,4 @@ mat4 inverse(mat4 m) {
       a31 * b01 - a30 * b03 - a32 * b00,
       a20 * b03 - a21 * b01 + a22 * b00) / det;
 }
+*/

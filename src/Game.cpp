@@ -41,8 +41,13 @@ void Game::init(){
 
     //Creacion de objetos de la escena
     StaticGameObject *piso = new StaticGameObject("res/suelo/suelo.obj", "res/suelo/suelo.jpg", "res/suelo/suelo_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    StaticGameObject *tuneles = new StaticGameObject("res/tubos/tuneles.obj", "res/tubos/tex.png", "res/tubos/tex_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    StaticGameObject *tubos = new StaticGameObject("res/tuneles/tubos.obj", "res/tuneles/tex.jpg", nullptr, shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    StaticGameObject *pared = new StaticGameObject("res/pared/pared.obj", "res/pared/tex.jpg", "res/pared/tex_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     StaticGameObject *esfera = new StaticGameObject("res/untitled.obj", "res/tex.png", "res/tex_NRM.png", shader_programme, btVector3(50, 50, 50), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     StaticGameObject *luz = new StaticGameObject("res/untitled.obj", "res/tex.png", "res/tex_NRM.png", shader_programme, btVector3(30, 100, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    DynamicGameObject* cono = new DynamicGameObject("res/cono/cono.obj", "res/cono/conotextura.png", shader_programme, btScalar(1), btVector3(10, 50, 10), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    DynamicGameObject* barril = new DynamicGameObject("res/barril/barril.obj", "res/barril/barriltextura.jpg", shader_programme, btScalar(3), btVector3(40, 50, 40), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     Kombi* kombi = new Kombi(btVector3(10, 24, 10), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
     Patriot* patriot = new Patriot(btVector3(0, 24, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
     MonsterTruck* monster = new MonsterTruck(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
@@ -50,10 +55,12 @@ void Game::init(){
     monster->particleManager = particleManager;
     enemiesCount = 2;
     
-    piso->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(100, 30, 100));
+    piso->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(40, 40, 40));
+    tuneles->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(40, 40, 40));
+    tubos->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(40, 40,40));
+    pared->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(40, 40, 40));
     esfera->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(30, 30, 30));
     monster->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(2.42f, 2, 2));
-    
     //Se agregan los objetos la escena
     level->addGameObject(kombi);
     level->addGameObject(monster);
@@ -61,12 +68,16 @@ void Game::init(){
     level->addGameObject(piso);
     level->addGameObject(esfera);
     level->addGameObject(luz);
+    level->addGameObject(tuneles);
+    level->addGameObject(tubos);
+    level->addGameObject(pared);
+    level->addGameObject(cono);
     
     //Se settea el auto que será el jugador.
-    camera->setTarget(monster);
-    level->setPlayer(monster);
+    camera->setTarget(kombi);
+    level->setPlayer(kombi);
 
-    inputProcessor = new InputProcessor(g_window, camera, monster);
+    inputProcessor = new InputProcessor(g_window, camera, kombi);
 }
 void Game::doMainLoop(){
     //glLineWidth(7);

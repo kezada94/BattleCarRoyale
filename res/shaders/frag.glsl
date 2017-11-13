@@ -1,4 +1,4 @@
-#version 130 //130 linux - 410 mac
+#version 410 //130 linux - 410 mac
 
 in vec3 normalEye;
 in vec3 normal;
@@ -7,6 +7,7 @@ in vec3 positionEye;
 
 in vec3 EyeDirection_tangent;
 in vec3 LightDirection_tangent;
+in vec3 lightDirection_eye;
 
 out vec4 frag_colour;
 
@@ -17,16 +18,13 @@ uniform mat4 view;
 void main() {
 
 	vec3 normal_tan = texture (normal_map, st).rgb;
-	
+
 	normal_tan = normalize (normal_tan * 2.0 - 1.0);
 	
 
 
-	// Diffuse factor done in eye space
-	vec3 lightPositionEye = vec3(view * vec4(30, 100, 0, 1));
-	vec3 distanceToLightEye = lightPositionEye - positionEye;
-	vec3 directionToLightEye = normalize(distanceToLightEye);
-	float diffuse = clamp(dot(normalEye, directionToLightEye), 0, 1);
+	// Diffuse factor done in eye space	
+	float diffuse = clamp(dot(normalEye, lightDirection_eye), 0, 1);
 
 	// Eye vector (towards the camera)
 	vec3 E = normalize(EyeDirection_tangent);
