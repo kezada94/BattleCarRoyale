@@ -1,4 +1,6 @@
 #include "Game.hpp"
+#include "stb_image.h"
+
 #include <iostream>
 
 Game::Game(){
@@ -15,7 +17,7 @@ Game::~Game(){
 
 void Game::init(){
     glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);  
-    glfwSwapInterval(0);  
+    glfwSwapInterval(1);  
     glEnable(GL_POINT_SPRITE);
     glEnable(GL_POINT_SMOOTH);
     glEnable(GL_BLEND);
@@ -23,7 +25,7 @@ void Game::init(){
     shader_programme = create_programme_from_files (VERTEX_SHADER_FILE, FRAGMENT_SHADER_FILE);
 	glUseProgram (shader_programme);
     model_mat_location  = glGetUniformLocation (shader_programme, "model");
-    
+    level->init(shader_programme);
     soundManager = new SoundManager();
     particleManager = new ParticleManager();
     skybox = new Skybox();
@@ -35,13 +37,13 @@ void Game::init(){
     camera->particleManager = particleManager;
     camera->skybox = skybox;
     
-    camera->init(shader_programme, g_gl_width, g_gl_height, fov, CameraModes::THIRD_PERSON);    
+    camera->init(shader_programme, g_gl_width, g_gl_height, fov, CameraModes::FIRST_PERSON);    
 
     level->getDynamicsWorld()->setDebugDrawer(debug);
 
     //Creacion de objetos de la escena
     StaticGameObject *piso = new StaticGameObject("res/suelo/suelo.obj", "res/suelo/suelo.jpg", "res/suelo/suelo_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    StaticGameObject *tuneles = new StaticGameObject("res/tubos/tuneles.obj", "res/tubos/tex.png", "res/tubos/tex_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    StaticGameObject *tuneles = new StaticGameObject("res/tunel/tunel.obj", "res/tunel/tetete.png", "res/tunel/tetete_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     StaticGameObject *tubos = new StaticGameObject("res/tuneles/tubos.obj", "res/tuneles/tex.jpg", nullptr, shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     StaticGameObject *pared = new StaticGameObject("res/pared/pared.obj", "res/pared/tex.jpg", "res/pared/tex_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     StaticGameObject *esfera = new StaticGameObject("res/untitled.obj", "res/tex.png", "res/tex_NRM.png", shader_programme, btVector3(50, 50, 50), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
@@ -59,8 +61,9 @@ void Game::init(){
     tuneles->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(40, 40, 40));
     tubos->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(40, 40,40));
     pared->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(40, 40, 40));
-    esfera->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(30, 30, 30));
+    //esfera->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(30, 30, 30));
     monster->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(2.42f, 2, 2));
+
     //Se agregan los objetos la escena
     level->addGameObject(kombi);
     level->addGameObject(monster);
@@ -72,15 +75,45 @@ void Game::init(){
     level->addGameObject(tubos);
     level->addGameObject(pared);
     level->addGameObject(cono);
+    level->addGameObject(barril);
     
     //Se settea el auto que será el jugador.
-    camera->setTarget(kombi);
-    level->setPlayer(kombi);
+    camera->setTarget(monster);
+    level->setPlayer(monster);
 
-    inputProcessor = new InputProcessor(g_window, camera, kombi);
+    inputProcessor = new InputProcessor(g_window, camera, monster);
 }
+
+void Game::pantallaInicio(){
+
+    gltInit();
+    GLTtext *text1 = gltCreateText();
+    gltSetText(text1, "Hello World!");
+
+    StaticGameObject* image = new StaticGameObject("res/imagen/image.obj", "res/imagen/image.jpg", nullptr, shader_programme, btVector3(0, 0, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    while (!glfwWindowShouldClose(g_window) && glfwGetKey(g_window, GLFW_KEY_ENTER) == GLFW_RELEASE){
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //inputProcessor->processInput();
+        
+        glUseProgram(shader_programme);
+        image->draw(model_mat_location);
+        skybox->draw();
+
+        gltColor(1.f, 1.f, 1.f, 1.f);
+        gltDrawText2D(text1, 1.f, 1.f, 1.f);
+        glfwSwapBuffers(g_window);
+        glfwPollEvents();
+    }
+    //gltDeleteText(text1);
+    
+    //gltTerminate();
+
+}
+
 void Game::doMainLoop(){
     //glLineWidth(7);
+    camera->isProjChanged = true;
     glEnable(GL_LINE_SMOOTH);
     //soundManager->musicaFondo();
     int frameCount = 0;
@@ -110,7 +143,7 @@ void Game::doMainLoop(){
         //level->getDynamicsWorld()->debugDrawWorld();
         //camera->debugDrawer->drawLines();
 
-        level->stepSimulation(1 / 60.f, 0); 
+        level->stepSimulation(1 / 30.f, 0); 
 
         level->updateAllCarsPhysics();    
         camera->update();

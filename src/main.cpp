@@ -41,7 +41,7 @@ int main(){
     juego->init();
 
     lastTime = glfwGetTime();
-    
+    juego->pantallaInicio();    
     juego->doMainLoop();
     glfwTerminate();
 

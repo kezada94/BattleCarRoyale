@@ -43,7 +43,7 @@ private:
     float yaw;//angulo de giro en Z
     float pitch;//angulo de giro en Y
 
-    bool isProjChanged;
+    
     bool isViewChanged;
 
     CameraModes mode;
@@ -53,6 +53,7 @@ public:
     ParticleManager* particleManager;    
     GLDebugDrawer* debugDrawer; //LAZY
     Skybox* skybox;
+    bool isProjChanged;
     
     Camera();
     ~Camera();

@@ -39,7 +39,7 @@ void Kombi::initialize(btDiscreteDynamicsWorld* world){
     btVector3 wheelDirection(0.0f, -1.0f, 0.0f);
     btVector3 wheelAxis(-1.0f, 0.0f, 0.0f);
     btScalar suspensionRestLength(0.1f);    //TODO: PARAM
-    btScalar wheelRadius(1.f);              //TOCO: PARAM 
+    btScalar wheelRadius(1.5f);              //TOCO: PARAM 
     vehicle->addWheel(btVector3(-2.f, -1.33f, 3.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);//TODO: PARAM
     vehicle->addWheel(btVector3(2.f, -1.33f, 3.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true); //TODO: PARAM
     vehicle->addWheel(btVector3(2.f, -1.33f, -4.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);  //TODO: PARAM
@@ -50,8 +50,8 @@ void Kombi::initialize(btDiscreteDynamicsWorld* world){
     for (int i = 0; i < getCar()->getNumWheels(); i++)
     {        
         btWheelInfo& wheel = getCar()->getWheelInfo(i);
-        wheel.m_wheelsDampingRelaxation = 11.7f;    //TODO: PARAM
-        wheel.m_wheelsDampingCompression = 10.7f;   //TODO: PARAM
+        //wheel.m_wheelsDampingRelaxation = 11.7f;    //TODO: PARAM
+        //wheel.m_wheelsDampingCompression = 10.7f;   //TODO: PARAM
         wheel.m_frictionSlip = btScalar(10000.);     //TODO: PARAM
         wheel.m_rollInfluence = btScalar(0.f);    //TODO: PARAM
         //wheel.m_maxSuspensionTravelCm = 15.f;       //TODO: PARAM

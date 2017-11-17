@@ -342,7 +342,7 @@ bool GameObject::load_texture (GLuint shaderprog, const char* texture_path, GLui
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	tex_location = glGetUniformLocation (shaderprog, "basic_texture");
-
+	//LIBERAR IMAGE DATA
 	return true;
 }
 

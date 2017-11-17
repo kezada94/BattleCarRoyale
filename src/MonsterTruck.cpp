@@ -54,8 +54,11 @@ void MonsterTruck::initialize(btDiscreteDynamicsWorld* world){
         wheel.m_rollInfluence = btScalar(0.f);    //TODO: PARAM
         wheel.m_maxSuspensionTravelCm = 100.f;       //TODO: PARAM
     }
-
     setIsAlive(true);
+
+    frontLight1 = new Spotlight(glm::vec3(0.59f, 2.13f, 2.88f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0, 0, -1.f), 15.f);
+    frontLight2 = new Spotlight(glm::vec3(-0.59f, 2.13f, 2.88f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0, 0, -1.f), 15.f);
+    
 }
 
 void MonsterTruck::updatePhysics(){
@@ -93,7 +96,6 @@ void MonsterTruck::updatePhysics(){
 
 void MonsterTruck::draw(GLuint model_mat_location){
     btTransform trans;
-    glm::mat4 model;
     this->getRigidBody()->getMotionState()->getWorldTransform(trans);
         
     model = glm::translate(glm::mat4(), glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
@@ -114,11 +116,11 @@ void MonsterTruck::draw(GLuint model_mat_location){
         trans = this->getCar()->getWheelInfo(i).m_worldTransform;
         glm::quat hele = glm::angleAxis(trans.getRotation().getAngle(), glm::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
         glm::mat4 model2 = glm::toMat4(hele);
-        model = glm::translate(glm::mat4(), glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
+        glm::mat4 model3 = glm::translate(glm::mat4(), glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
         
-        model = model * model2;
-        model = glm::scale(model, glm::vec3(escala.getX(), escala.getY(), escala.getZ()));
-        glUniformMatrix4fv(model_mat_location, 1, GL_FALSE, &model[0][0]);
+        model3 = model3 * model2;
+        model3 = glm::scale(model3, glm::vec3(escala.getX(), escala.getY(), escala.getZ()));
+        glUniformMatrix4fv(model_mat_location, 1, GL_FALSE, &model3[0][0]);
 
         glActiveTexture (GL_TEXTURE0);
         glBindTexture (GL_TEXTURE_2D, wheel_tex);
@@ -183,17 +185,21 @@ void MonsterTruck::fire(){
             if (targ != nullptr)
                 targ->setHealth(targ->getHealth()-1.0f);
         }
-        btVector3 gunOne = btVector3(3.1f, -0.5f, 3.5f);
-        btVector3 gunTwo = btVector3(-3.1f, -0.5f, 3.5f);
+        glm::vec4 gunOne = glm::vec4(1.35f, 2.34f, 2.52f, 1.f);
+        glm::vec4 gunTwo = glm::vec4(-1.35f, 2.34f, 2.52f, 1.f);
+        
+        
+
         //TODO: OPTIMIZE AND INSTANTIATE
-        glm::vec3 gunOne1 = glm::rotate(glm::vec3(gunOne.x(), gunOne.y(), gunOne.z()), trans.getRotation().getAngle(), glm::vec3(trans.getRotation().getAxis().x(), trans.getRotation().getAxis().y(), trans.getRotation().getAxis().z()));
-        glm::vec3 gunTwo2 = glm::rotate(glm::vec3(gunTwo.x(), gunTwo.y(), gunTwo.z()), trans.getRotation().getAngle(), glm::vec3(trans.getRotation().getAxis().x(), trans.getRotation().getAxis().y(), trans.getRotation().getAxis().z()));
+        glm::vec3 gunOne1 = model * gunOne;
+        glm::vec3 gunTwo2 = model * gunTwo;
+
         if (RayCallback.hasHit()){
-            particleManager->genGunshot(btVector3(start.x() + gunOne1.x, start.y() + gunOne1.y, start.z() + gunOne1.z), RayCallback.m_hitPointWorld);
-            particleManager->genGunshot(btVector3(start.x() + gunTwo2.x, start.y() + gunTwo2.y, start.z() + gunTwo2.z), RayCallback.m_hitPointWorld);
+            particleManager->genGunshot(btVector3(gunOne1.x, gunOne1.y, gunOne1.z), RayCallback.m_hitPointWorld);
+            particleManager->genGunshot(btVector3(gunTwo2.x, gunTwo2.y, gunTwo2.z), RayCallback.m_hitPointWorld);
         }else{
-            particleManager->genGunshot(btVector3(start.x() + gunOne1.x, start.y() + gunOne1.y, start.z() + gunOne1.z), end);
-            particleManager->genGunshot(btVector3(start.x() + gunTwo2.x, start.y() + gunTwo2.y, start.z() + gunTwo2.z), end);
+            particleManager->genGunshot(btVector3(gunOne1.x, gunOne1.y, gunOne1.z), end);
+            particleManager->genGunshot(btVector3(gunTwo2.x, gunTwo2.y, gunTwo2.z), end);
         }
         lastShot = currentTime;
         sound->reproducir(3,AL_FALSE,1.0);

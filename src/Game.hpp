@@ -21,6 +21,7 @@
 #include "GLDebugDrawer.hpp"
 #include "SoundManager.hpp"
 #include "Skybox.hpp"
+#include "gltext.h"
 
 #include <algorithm>
 #include <ostream>
@@ -62,6 +63,7 @@ public:
     ~Game();
 
     void init();
+    void pantallaInicio();
     void doMainLoop();
 
     void win();

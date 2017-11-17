@@ -5,8 +5,8 @@ void init(){
 	start_gl ();
 	glEnable (GL_DEPTH_TEST); // enable depth-testing
 	glDepthFunc (GL_LESS); // depth-testing interprets a smaller value as "closer"
-	glEnable (GL_CULL_FACE); // cull face
-	glCullFace (GL_BACK); // cull back face
+	//glEnable (GL_CULL_FACE); // cull face
+	//glCullFace (GL_BACK); // cull back face
 	glFrontFace (GL_CCW); // set counter-clock-wise vertex order to mean the front
     glClearColor (0.2, 0.2, 0.2, 1.0); // grey background to help spot mistakes
     glfwSetFramebufferSizeCallback(g_window, framebuffer_size_callback);

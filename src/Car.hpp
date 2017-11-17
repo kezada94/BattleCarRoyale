@@ -3,6 +3,8 @@
 
 #include "DynamicGameObject.hpp"
 #include "SoundManager.hpp"
+#include "Spotlight.hpp"
+
 
 extern double lastTime;
 extern double deltaTime;
@@ -26,7 +28,13 @@ public:
     Car(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot);
     Car(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll);
     ~Car();
+
     SoundManager* sound;
+    glm::mat4 model;
+    Spotlight* frontLight1;
+    Spotlight* frontLight2;
+    
+
     virtual void initialize(btDiscreteDynamicsWorld* world) = 0;
     virtual void updatePhysics() = 0;
 

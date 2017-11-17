@@ -5,6 +5,7 @@
 #include <cmath>
 #include "SoundManager.hpp"
 #include "ParticleManager.hpp"
+#include "Spotlight.hpp"
 #include <glm/gtx/rotate_vector.hpp>
 
 
@@ -13,10 +14,12 @@ private:
     GLuint wheel_vao, wheel_tex, wheel_texLocation;
     int wheel_vert;
     SoundManager* soundManager;
+
+    
     
 public:
     ParticleManager* particleManager;
-
+    
     MonsterTruck(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world);
     MonsterTruck(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world);
     ~MonsterTruck();

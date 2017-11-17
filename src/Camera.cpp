@@ -24,12 +24,12 @@ void Camera::getPitchFromQuat(const btQuaternion q1, float& pitch) {
 //btbvtrianglemeshshape
 Camera::Camera() 
     : isViewChanged(true), 
-    isProjChanged(true), 
+    isProjChanged(false), 
     target(nullptr), 
     upOffset(15.0f), 
     up(glm::vec3(0, 1, 0)), 
     front(glm::vec3(0.0f, 0.0f, -1.0f)),
-    position(glm::vec3(0.0f, 0.0f, 3.0f)),
+    position(glm::vec3(0.0f, 0.0f, 0.75f)),
     farOffset(30.0f), 
     zoomSpeed(0.5f){}
 
@@ -53,7 +53,7 @@ void Camera::init(GLuint shaderProg, int width, int height, float fov, CameraMod
     particleManager->setProj(&projection);
     skybox->setProj(&projection);
 
-    view = glm::lookAt(glm::vec3(), glm::vec3(), up);
+    view = glm::lookAt(position, position + front, up);
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
     debugDrawer->setView(&view);   
     particleManager->setView(&view);
