@@ -1,4 +1,4 @@
-#version 410
+#version 130
 
 out vec4 frag_colour;
 uniform sampler2D tex; // optional. enable point-sprite coords to use

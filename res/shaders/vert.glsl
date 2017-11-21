@@ -1,16 +1,16 @@
-#version 410
+#version 130
 
-layout(location = 0) in vec3 vertexPosition_model; //
-layout(location = 1) in vec3 vertexNormal_model;   //* PARA MAC
-layout(location = 2) in vec2 texture_coord;   //
-layout(location = 3) in vec3 vertexTangent_model;
-layout(location = 4) in vec3 vertexBitangent_model;
+//layout(location = 0) in vec3 vertexPosition_model; //
+//layout(location = 1) in vec3 vertexNormal_model;   //* PARA MAC
+//layout(location = 2) in vec2 texture_coord;   //
+//layout(location = 3) in vec3 vertexTangent_model;
+//layout(location = 4) in vec3 vertexBitangent_model;
 
-//in vec3 vertexPosition_model;    //
-//in vec3 vertexNormal_model;      //* PARA LINUX
-//in vec2 texture_coord;           //
-//in vec3 vertexTangent_model;     //
-//in vec3 vertexBitangent_model;
+in vec3 vertexPosition_model;    //
+in vec3 vertexNormal_model;      //* PARA LINUX
+in vec2 texture_coord;           //
+in vec3 vertexTangent_model;     //
+in vec3 vertexBitangent_model;
 
 /*float inverse(float m);
 mat2 inverse(mat2 m);

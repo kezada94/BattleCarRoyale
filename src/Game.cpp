@@ -1,5 +1,5 @@
 #include "Game.hpp"
-#include "stb_image.h"
+#include "SOIL/SOIL.h"
 
 #include <iostream>
 
@@ -85,12 +85,192 @@ void Game::init(){
 }
 
 void Game::pantallaInicio(){
+    glewInit();
+    const char *vertex_shader =
+        "#version 130\n"
+        "in vec3 position;\n"
+        "in vec3 color\n;"
+        "in vec2 texCoord;\n"
+        "\n"
+        "out vec3 ourColor;\n"
+        "out vec2 TexCoord;\n"
+        "\n"
+        "void main()\n"
+        "{\n"
+        "gl_Position = vec4(position, 1.0f);\n"
+        "ourColor = color;\n"
+        // We swap the y-axis by substracing our coordinates from 1. This is done because most images have the top y-axis inversed with OpenGL's top y-axis.
+        // TexCoord = texCoord;
+        "TexCoord = vec2(texCoord.x, 1.0 - texCoord.y);\n"
+        "}\n";
+    const char *fragment_shader =
+        "#version 130\n"
+        "in vec3 ourColor;\n"
+        "in vec2 TexCoord;\n"
+        "\n"
+        "out vec4 color;\n"
+        "\n"
+        // Texture samplers
+        "uniform sampler2D ourTexture1;\n"
+        "\n"
+        "void main()\n"
+        "{\n"
+        // Linearly interpolate between both textures (second texture is only slightly combined)
+        "color = texture(ourTexture1, TexCoord);\n"
+        "}\n";
+    /* GL shader objects for vertex and fragment shader [components] */
+    GLuint vs, fs;
+    /* GL shader programme object [combined, to link] */
+    GLuint shader_programme;
+
+    vs = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vs, 1, &vertex_shader, NULL);
+    glCompileShader(vs);
+    fs = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fs, 1, &fragment_shader, NULL);
+    glCompileShader(fs);
+    shader_programme = glCreateProgram();
+    glAttachShader(shader_programme, fs);
+    glAttachShader(shader_programme, vs);
+    glLinkProgram(shader_programme);
+    GLfloat vertices[] =
+        {
+            // Positions          // Colors           // Texture Coords
+            1.f, 1.f, 0.0f,      1.0f, 0.0f, 0.0f,      0.85f,  0.97f,  // Top Right
+            1.f, -0.8, 0.0f,      0.0f, 1.0f, 0.0f,     0.85f,  0.05f,  // Bottom Right
+            -1.f, -0.8, 0.0f,     0.0f, 0.0f, 1.0f,     0.12f, 0.05f, // Bottom Left
+            -1.f, 1.f, 0.0f,      1.0f, 1.0f, 0.0f,     0.12f, 0.97f   // Top Left
+        };
+    GLuint indices[] =
+        {
+            // Note that we start from 0!
+            0, 1, 3, // First Triangle
+            1, 2, 3  // Second Triangle
+        };
+    // gen and bind VAO
+    GLuint VBO, VAO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // Position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)0);
+    glEnableVertexAttribArray(0);
+    // Color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+    // Texture Coordinate attribute
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)(6 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(2);
+
+    glBindVertexArray(0); // Unbind VAO
+
+    GLuint texture;
+
+    int width, height;
+
+    // ===================
+    // Texture
+    // ===================
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    // Set our texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // Set texture filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // Load, create texture and generate mipmaps
+    unsigned char *image = SOIL_load_image("res/imagen/fondo.jpg", &width, &height, 0, SOIL_LOAD_RGBA);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    SOIL_free_image_data(image);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     gltInit();
     GLTtext *text1 = gltCreateText();
-    gltSetText(text1, "Hello World!");
+    gltSetText(text1, "Presione Enter para Continuar!!");
+    /*glClearColor(0.f, 0.f, 0.f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //
+    //// Draw the triangle
+    glUseProgram(shader_programme);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glUniform1i(shader_programme, 0);
 
-    StaticGameObject* image = new StaticGameObject("res/imagen/image.obj", "res/imagen/image.jpg", nullptr, shader_programme, btVector3(0, 0, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    // Draw container
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);*/
+    float t = 0;
+    int c = 0;
+    while (!glfwWindowShouldClose(g_window) && glfwGetKey(g_window, GLFW_KEY_ENTER) == GLFW_RELEASE)
+    {
+        // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
+        // Render
+        //Clear the colorbuffer
+
+        glClearColor(0.f, 0.f, 0.f, 0.f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //
+        //// Draw the triangle
+        glUseProgram(shader_programme);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glUniform1i(shader_programme, 0);
+
+        // Draw container
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+        gltColor(1.f, 1.f, 1.f, 0.f);
+        if (t >= 750)
+        {
+            c = 1;
+        }
+        else if (t <= 0)
+        {
+            c = 0;
+        }
+        if (c == 0)
+        {
+            t += 1.5f;
+        }
+        else
+        {
+            t -= 1.5f;
+        }
+        gltDrawText2D(text1, (t), (g_gl_height/1.09), 2.f);
+        // Swap the screen buffers
+        glfwSwapBuffers(g_window);
+        glfwPollEvents();
+    }
+    gltDeleteText(text1);
+
+    gltTerminate();
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+    //Terminate GLFW, clearing any resources allocated by GLFW.
+
+}
+
+/*void Game::pantallaInicio(){
+
+    gltInit();
+    GLTtext *text1 = gltCreateText();
+    gltSetText(text1, "Presione Enter para Continuar");
+
+    StaticGameObject* image = new StaticGameObject("res/imagen/image.obj", "res/imagen/fondo.jpg", nullptr, shader_programme, btVector3(0, 0, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     while (!glfwWindowShouldClose(g_window) && glfwGetKey(g_window, GLFW_KEY_ENTER) == GLFW_RELEASE){
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -101,15 +281,15 @@ void Game::pantallaInicio(){
         skybox->draw();
 
         gltColor(1.f, 1.f, 1.f, 1.f);
-        gltDrawText2D(text1, 1.f, 1.f, 1.f);
+        gltDrawText2D(text1, 400.f, 650.f, 2.f);
         glfwSwapBuffers(g_window);
         glfwPollEvents();
     }
-    //gltDeleteText(text1);
+    gltDeleteText(text1);
     
-    //gltTerminate();
+    gltTerminate();
 
-}
+}*/
 
 void Game::doMainLoop(){
     //glLineWidth(7);
