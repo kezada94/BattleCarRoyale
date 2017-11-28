@@ -1,9 +1,10 @@
 #include "StaticGameObject.hpp"
 #include "stb_image.h"
 
-StaticGameObject::StaticGameObject(const char* path, const char* texture_path, const char* normal_path, GLuint shaderprog, btVector3 startPos, btQuaternion startRot)
+StaticGameObject::StaticGameObject(const char* path, const char* texture_path, const char* normal_path, GLuint shaderprog, btVector3 startPos, btQuaternion startRot, glm::vec3 specular, GLuint specular_loc)
 : GameObject() {
-    
+    this->specular = specular;
+    this->specular_loc = specular_loc;
     btBvhTriangleMeshShape* colShape = load_mesh(path, vao, vertNumber);
     
     load_texture(shaderprog, texture_path, normal_path);
@@ -29,7 +30,7 @@ StaticGameObject::StaticGameObject(const char* path, const char* texture_path, c
 }
         
 StaticGameObject::~StaticGameObject(){}
-    
+
 void StaticGameObject::draw(const GLuint model_mat_location){
     btTransform trans;
     glm::mat4 model;
@@ -40,7 +41,8 @@ void StaticGameObject::draw(const GLuint model_mat_location){
     btVector3 escala = getRigidBody()->getCollisionShape()->getLocalScaling();
     model = glm::scale(model, glm::vec3(escala.getX(), escala.getY(), escala.getZ()));
     glUniformMatrix4fv(model_mat_location, 1, GL_FALSE, &model[0][0]);
-    
+    glUniform3fv(specular_loc, 1, &specular[0]);
+
     glActiveTexture (GL_TEXTURE0);
 	glBindTexture (GL_TEXTURE_2D, this->texture);
 

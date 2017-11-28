@@ -1,16 +1,16 @@
-#version 130
+#version 410
 
-//layout(location = 0) in vec3 vertexPosition_model; //
-//layout(location = 1) in vec3 vertexNormal_model;   //* PARA MAC
-//layout(location = 2) in vec2 texture_coord;   //
-//layout(location = 3) in vec3 vertexTangent_model;
-//layout(location = 4) in vec3 vertexBitangent_model;
+layout(location = 0) in vec3 vertexPosition_model; //
+layout(location = 1) in vec3 vertexNormal_model;   //* PARA MAC
+layout(location = 2) in vec2 texture_coord;   //
+layout(location = 3) in vec3 vertexTangent_model;
+layout(location = 4) in vec3 vertexBitangent_model;
 
-in vec3 vertexPosition_model;    //
-in vec3 vertexNormal_model;      //* PARA LINUX
-in vec2 texture_coord;           //
-in vec3 vertexTangent_model;     //
-in vec3 vertexBitangent_model;
+//in vec3 vertexPosition_model;    //
+//in vec3 vertexNormal_model;      //* PARA LINUX
+//in vec2 texture_coord;           //
+//in vec3 vertexTangent_model;     //
+//in vec3 vertexBitangent_model;
 
 /*float inverse(float m);
 mat2 inverse(mat2 m);
@@ -20,7 +20,7 @@ mat4 inverse(mat4 m);
 const vec3 lightDirection_world = vec3(-0.603472, 0.794415, -0.068758); //Sun light (directional)
 const int MAX_LIGHTS = 5;
 
-uniform mat4 view, proj, model;
+uniform mat4 view, proj, model, depthView, depthProj;
 
 uniform vec3 lightPos[MAX_LIGHTS]; //world
 uniform vec3 lightDir[MAX_LIGHTS]; //world
@@ -32,6 +32,8 @@ out vec2 st;
 out vec3 normal;
 out vec3 positionEye;
 out vec3 normalEye;
+out vec4 shadowCoord;
+
 
 out vec3 EyeDirection_tangent;
 out vec3 LightDirection_tangent;
@@ -48,6 +50,8 @@ out vec3 LightPositionSpots_eye[MAX_LIGHTS];
 void main() {
 	st = texture_coord;
 	normal = vertexNormal_model;
+
+	shadowCoord = depthProj * depthView * model * vec4(vertexPosition_model,1);
 
 	normalEye = vec3(view * model * vec4(vertexNormal_model, 0.0));
 	positionEye = vec3(view * model * vec4(vertexPosition_model, 1.0));

@@ -1,4 +1,4 @@
-#version 130
+#version 410
 in vec2 TexCoord;
 out vec4 color;
 // Texture samplers

@@ -37,7 +37,18 @@ private:
     GLuint pwrLoc;
     GLuint lightAngle;    
     GLuint numberLoc;
-    
+    GLuint depthProj;
+    GLuint depthView;
+
+
+    GLuint shadow_shader;
+    GLuint depthTexture;
+
+    GLuint shadowMapID;
+    GLuint depthProjID;
+    GLuint depthViewID;
+    GLuint depthModelID;
+    GLuint FramebufferName;
 
 
 public:

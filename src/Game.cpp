@@ -1,5 +1,5 @@
 #include "Game.hpp"
-#include "SOIL/SOIL.h"
+#include "stb_image.h"
 
 #include <iostream>
 
@@ -17,15 +17,16 @@ Game::~Game(){
 
 void Game::init(){
     glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);  
-    glfwSwapInterval(1);  
+    //glfwSwapInterval(1);  
     glEnable(GL_POINT_SPRITE);
     glEnable(GL_POINT_SMOOTH);
     glEnable(GL_BLEND);
     
     shader_programme = create_programme_from_files (VERTEX_SHADER_FILE, FRAGMENT_SHADER_FILE);
-	glUseProgram (shader_programme);
     model_mat_location  = glGetUniformLocation (shader_programme, "model");
+    specular_loc = glGetUniformLocation (shader_programme, "ks");
     level->init(shader_programme);
+	glUseProgram (shader_programme);
     soundManager = new SoundManager();
     particleManager = new ParticleManager();
     skybox = new Skybox();
@@ -42,12 +43,12 @@ void Game::init(){
     level->getDynamicsWorld()->setDebugDrawer(debug);
 
     //Creacion de objetos de la escena
-    StaticGameObject *piso = new StaticGameObject("res/suelo/suelo.obj", "res/suelo/suelo.jpg", "res/suelo/suelo_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    StaticGameObject *tuneles = new StaticGameObject("res/tunel/tunel.obj", "res/tunel/tetete.png", "res/tunel/tetete_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    StaticGameObject *tubos = new StaticGameObject("res/tuneles/tubos.obj", "res/tuneles/tex.jpg", nullptr, shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    StaticGameObject *pared = new StaticGameObject("res/pared/pared.obj", "res/pared/tex.jpg", "res/pared/tex_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    StaticGameObject *esfera = new StaticGameObject("res/untitled.obj", "res/tex.png", "res/tex_NRM.png", shader_programme, btVector3(50, 50, 50), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    StaticGameObject *luz = new StaticGameObject("res/untitled.obj", "res/tex.png", "res/tex_NRM.png", shader_programme, btVector3(30, 100, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
+    StaticGameObject *piso = new StaticGameObject("res/suelo/suelo.obj", "res/suelo/suelo.jpg", "res/suelo/suelo_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(0, 0, 0), specular_loc);
+    StaticGameObject *tuneles = new StaticGameObject("res/tunel/tunel.obj", "res/tunel/tetete.png", "res/tunel/tetete_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(.5f, .5f, 0.5f), specular_loc);
+    StaticGameObject *tubos = new StaticGameObject("res/tuneles/tubos.obj", "res/tuneles/tex.jpg", nullptr, shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(.5f, .5f, 0.5f), specular_loc);
+    StaticGameObject *pared = new StaticGameObject("res/pared/pared.obj", "res/pared/tex.jpg", "res/pared/tex_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(.5f, .5f, 0.5f), specular_loc);
+    StaticGameObject *esfera = new StaticGameObject("res/untitled.obj", "res/tex.png", "res/tex_NRM.png", shader_programme, btVector3(50, 50, 50), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(0, 0, 0), specular_loc);
+    StaticGameObject *luz = new StaticGameObject("res/untitled.obj", "res/tex.png", "res/tex_NRM.png", shader_programme, btVector3(30, 100, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(0, 0, 0), specular_loc);
     DynamicGameObject* cono = new DynamicGameObject("res/cono/cono.obj", "res/cono/conotextura.png", shader_programme, btScalar(1), btVector3(10, 50, 10), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     DynamicGameObject* barril = new DynamicGameObject("res/barril/barril.obj", "res/barril/barriltextura.jpg", shader_programme, btScalar(3), btVector3(40, 50, 40), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
     Kombi* kombi = new Kombi(btVector3(10, 24, 10), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
@@ -86,42 +87,79 @@ void Game::init(){
 
 void Game::pantallaInicio(){
     glewInit();
-    const char *vertex_shader =
-        "#version 130\n"
-        "in vec3 position;\n"
-        "in vec3 color\n;"
-        "in vec2 texCoord;\n"
-        "\n"
-        "out vec3 ourColor;\n"
-        "out vec2 TexCoord;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "gl_Position = vec4(position, 1.0f);\n"
-        "ourColor = color;\n"
-        // We swap the y-axis by substracing our coordinates from 1. This is done because most images have the top y-axis inversed with OpenGL's top y-axis.
-        // TexCoord = texCoord;
-        "TexCoord = vec2(texCoord.x, 1.0 - texCoord.y);\n"
-        "}\n";
-    const char *fragment_shader =
-        "#version 130\n"
-        "in vec3 ourColor;\n"
-        "in vec2 TexCoord;\n"
-        "\n"
-        "out vec4 color;\n"
-        "\n"
-        // Texture samplers
-        "uniform sampler2D ourTexture1;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        // Linearly interpolate between both textures (second texture is only slightly combined)
-        "color = texture(ourTexture1, TexCoord);\n"
-        "}\n";
+
+    #ifdef __linux__
+        const char *vertex_shader =
+            "#version 130\n"
+            "in vec3 position;\n"
+            "in vec3 color\n;"
+            "in vec2 texCoord;\n"
+            "\n"
+            "out vec3 ourColor;\n"
+            "out vec2 TexCoord;\n"
+            "\n"
+            "void main()\n"
+            "{\n"
+            "gl_Position = vec4(position.x, position.y, position.z, 1.0f);\n"
+            "ourColor = color;\n"
+            // We swap the y-axis by substracing our coordinates from 1. This is done because most images have the top y-axis inversed with OpenGL's top y-axis.
+            // TexCoord = texCoord;
+            "TexCoord = vec2(texCoord.x, 1.0 - texCoord.y);\n"
+            "}\n";
+        const char *fragment_shader =
+            "#version 130\n"
+            "in vec3 ourColor;\n"
+            "in vec2 TexCoord;\n"
+            "\n"
+            "out vec4 color;\n"
+            "\n"
+            // Texture samplers
+            "uniform sampler2D ourTexture1;\n"
+            "\n"
+            "void main()\n"
+            "{\n"
+            // Linearly interpolate between both textures (second texture is only slightly combined)
+            "color = texture(ourTexture1, TexCoord);\n"
+            "}\n";
+    #else
+         const char *vertex_shader =
+            "#version 410\n"
+            "layout(location = 0) in vec3 position;\n"
+            "layout(location = 1) in vec3 color\n;"
+            "layout(location = 2) in vec2 texCoord;\n"
+            "\n"
+            "out vec3 ourColor;\n"
+            "out vec2 TexCoord;\n"
+            "\n"
+            "void main()\n"
+            "{\n"
+            "gl_Position = vec4(position.x, position.y, position.z+0.1, 1.0f);\n"
+            "ourColor = color;\n"
+            // We swap the y-axis by substracing our coordinates from 1. This is done because most images have the top y-axis inversed with OpenGL's top y-axis.
+            // TexCoord = texCoord;
+            "TexCoord = vec2(texCoord.x, 1.0 - texCoord.y);\n"
+            "}\n";
+        const char *fragment_shader =
+            "#version 410\n"
+            "in vec3 ourColor;\n"
+            "in vec2 TexCoord;\n"
+            "\n"
+            "out vec4 color;\n"
+            "\n"
+            // Texture samplers
+            "uniform sampler2D ourTexture1;\n"
+            "\n"
+            "void main()\n"
+            "{\n"
+            // Linearly interpolate between both textures (second texture is only slightly combined)
+            "color = texture(ourTexture1, TexCoord);\n"
+            "}\n";
+
+    #endif
     /* GL shader objects for vertex and fragment shader [components] */
     GLuint vs, fs;
     /* GL shader programme object [combined, to link] */
-    GLuint shader_programme;
+    GLuint shader_text;
 
     vs = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vs, 1, &vertex_shader, NULL);
@@ -129,17 +167,17 @@ void Game::pantallaInicio(){
     fs = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fs, 1, &fragment_shader, NULL);
     glCompileShader(fs);
-    shader_programme = glCreateProgram();
-    glAttachShader(shader_programme, fs);
-    glAttachShader(shader_programme, vs);
-    glLinkProgram(shader_programme);
+    shader_text = glCreateProgram();
+    glAttachShader(shader_text, fs);
+    glAttachShader(shader_text, vs);
+    glLinkProgram(shader_text);
     GLfloat vertices[] =
         {
             // Positions          // Colors           // Texture Coords
-            1.f, 1.f, 0.0f,      1.0f, 0.0f, 0.0f,      0.85f,  0.97f,  // Top Right
-            1.f, -0.8, 0.0f,      0.0f, 1.0f, 0.0f,     0.85f,  0.05f,  // Bottom Right
-            -1.f, -0.8, 0.0f,     0.0f, 0.0f, 1.0f,     0.12f, 0.05f, // Bottom Left
-            -1.f, 1.f, 0.0f,      1.0f, 1.0f, 0.0f,     0.12f, 0.97f   // Top Left
+            -1.f, 1.f, 0.0f,      1.0f, 0.0f, 0.0f,      0.85f,  0.97f,  // Top Right
+            -1.f, -0.8, 0.0f,      0.0f, 1.0f, 0.0f,     0.85f,  0.05f,  // Bottom Right
+            1.f, -0.8, 0.0f,     0.0f, 0.0f, 1.0f,     0.12f, 0.05f, // Bottom Left
+            1.f, 1.f, 0.0f,      1.0f, 1.0f, 0.0f,     0.12f, 0.97f   // Top Left
         };
     GLuint indices[] =
         {
@@ -189,10 +227,8 @@ void Game::pantallaInicio(){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // Load, create texture and generate mipmaps
-    unsigned char *image = SOIL_load_image("res/imagen/fondo.jpg", &width, &height, 0, SOIL_LOAD_RGBA);
+    unsigned char *image = stbi_load("res/imagen/fondo.jpg", &width, &height, 0, 4);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    SOIL_free_image_data(image);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     gltInit();
@@ -202,10 +238,10 @@ void Game::pantallaInicio(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     //
     //// Draw the triangle
-    glUseProgram(shader_programme);
+    glUseProgram(shader_text);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glUniform1i(shader_programme, 0);
+    glUniform1i(shader_text, 0);
 
     // Draw container
     glBindVertexArray(VAO);
@@ -219,20 +255,20 @@ void Game::pantallaInicio(){
         // Render
         //Clear the colorbuffer
 
-        glClearColor(0.f, 0.f, 0.f, 0.f);
+        glClearColor(0.f, 0.f, 7.f, 0.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //
         //// Draw the triangle
-        glUseProgram(shader_programme);
+        glUseProgram(shader_text);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
-        glUniform1i(shader_programme, 0);
+        glUniform1i(shader_text, 0);
 
         // Draw container
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
-        gltColor(1.f, 1.f, 1.f, 0.f);
+        gltColor(1.f, 1.f, 1.f, 1.f);
         if (t >= 750)
         {
             c = 1;
@@ -249,7 +285,7 @@ void Game::pantallaInicio(){
         {
             t -= 1.5f;
         }
-        gltDrawText2D(text1, (t), (g_gl_height/1.09), 2.f);
+        gltDrawText2D(text1, (t), 500.f, 2.f);
         // Swap the screen buffers
         glfwSwapBuffers(g_window);
         glfwPollEvents();
@@ -264,38 +300,11 @@ void Game::pantallaInicio(){
 
 }
 
-/*void Game::pantallaInicio(){
-
-    gltInit();
-    GLTtext *text1 = gltCreateText();
-    gltSetText(text1, "Presione Enter para Continuar");
-
-    StaticGameObject* image = new StaticGameObject("res/imagen/image.obj", "res/imagen/fondo.jpg", nullptr, shader_programme, btVector3(0, 0, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    while (!glfwWindowShouldClose(g_window) && glfwGetKey(g_window, GLFW_KEY_ENTER) == GLFW_RELEASE){
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //inputProcessor->processInput();
-        
-        glUseProgram(shader_programme);
-        image->draw(model_mat_location);
-        skybox->draw();
-
-        gltColor(1.f, 1.f, 1.f, 1.f);
-        gltDrawText2D(text1, 400.f, 650.f, 2.f);
-        glfwSwapBuffers(g_window);
-        glfwPollEvents();
-    }
-    gltDeleteText(text1);
-    
-    gltTerminate();
-
-}*/
-
 void Game::doMainLoop(){
     //glLineWidth(7);
-    camera->isProjChanged = true;
     glEnable(GL_LINE_SMOOTH);
     //soundManager->musicaFondo();
+    camera->setMode(CameraModes::THIRD_PERSON);
     int frameCount = 0;
     
     while (!glfwWindowShouldClose(g_window)){
@@ -316,9 +325,14 @@ void Game::doMainLoop(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Dibuja todos los objetos de la escena
+        glViewport(0,0, 1366, 768/2); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+
         level->drawAllGameObjects(model_mat_location, shader_programme);
         skybox->draw();
         
+        glViewport(0,768/2, 1366, 768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+        level->drawAllGameObjects(model_mat_location, shader_programme);
+        skybox->draw();
         // Dibuja todos las figuras colisionadoras de los objetos
         //level->getDynamicsWorld()->debugDrawWorld();
         //camera->debugDrawer->drawLines();
@@ -326,8 +340,9 @@ void Game::doMainLoop(){
         level->stepSimulation(1 / 30.f, 0); 
 
         level->updateAllCarsPhysics();    
-        camera->update();
-        particleManager->drawActiveParticles();        
+        glUseProgram(shader_programme);
+        camera->update(level->getDynamicsWorld());
+        particleManager->drawActiveParticles();
         
         glfwSwapBuffers(g_window);
         glfwPollEvents();

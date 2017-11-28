@@ -56,6 +56,7 @@ private:
 
     GLuint shader_programme;
     int model_mat_location;
+    int specular_loc;
     int enemiesCount;    
 
 public:

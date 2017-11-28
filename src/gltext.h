@@ -409,6 +409,8 @@ GLT_API void gltViewport(GLsizei width, GLsizei height)
 
 #define _gltDrawText() \
 	glUseProgram(_gltText2DShader); \
+	glEnable (GL_BLEND); \
+	glBlendFunc (GL_ONE, GL_ONE); \ 
 	\
 	glActiveTexture(GL_TEXTURE0); \
 	glBindTexture(GL_TEXTURE_2D, _gltText2DFontTexture); \
@@ -417,7 +419,9 @@ GLT_API void gltViewport(GLsizei width, GLsizei height)
 	\
 	glBindVertexArray(text->_vao); \
 	glDrawArrays(GL_TRIANGLES, 0, text->vertexCount); \
-	glBindVertexArray(0);
+	glBindVertexArray(0); \
+	glDisable (GL_BLEND); \
+
 
 
 GLT_API void gltDrawText(GLTtext *text, const GLfloat mvp[16])
@@ -883,23 +887,24 @@ GLT_API void gltTerminate(void)
 	gltInitialized = GL_FALSE;
 }
 
+#ifdef __linux__
 
 static const GLchar* _gltText2DVertexShaderSource =
-"#version 130\n"
-"\n"
-"in vec2 position;\n"
-"in vec2 texCoord;\n"
-"\n"
-"uniform mat4 mvp;\n"
-"\n"
-"out vec2 fTexCoord;\n"
-"\n"
-"void main()\n"
-"{\n"
-"	fTexCoord = texCoord;\n"
-"	\n"
-"	gl_Position = mvp * vec4(position, 0.0, 1.0);\n"
-"}\n";
+	"#version 130\n"
+	"\n"
+	"in vec2 position;\n"
+	"in vec2 texCoord;\n"
+	"\n"
+	"uniform mat4 mvp;\n"
+	"\n"
+	"out vec2 fTexCoord;\n"
+	"\n"
+	"void main()\n"
+	"{\n"
+	"	fTexCoord = texCoord;\n"
+	"	\n"
+	"	gl_Position = mvp * vec4(position, 0.0, 1.0);\n"
+	"}\n";
 
 
 static const GLchar* _gltText2DFragmentShaderSource =
@@ -915,8 +920,52 @@ static const GLchar* _gltText2DFragmentShaderSource =
 "\n"
 "void main()\n"
 "{\n"
-"	fragColor = texture(diffuse, fTexCoord) * color;\n"
+	"vec4 col = texture(diffuse, fTexCoord) * color;\n"
+	"if (col == vec4(0, 0, 0, 1.0f)){\n"
+	"fragColor = vec4(0, 0, 0, 0)\n"
+	"}else{\n"
+	"fragColor = col}\n"
 "}\n";
+#else
+
+static const GLchar* _gltText2DVertexShaderSource =
+	"#version 410\n"
+	"\n"
+	"in vec2 position;\n"
+	"in vec2 texCoord;\n"
+	"\n"
+	"uniform mat4 mvp;\n"
+	"\n"
+	"out vec2 fTexCoord;\n"
+	"\n"
+	"void main()\n"
+	"{\n"
+	"	fTexCoord = texCoord;\n"
+	"	\n"
+	"	gl_Position = mvp * vec4(position, 0.0, 1.0);\n"
+	"}\n";
+
+
+static const GLchar* _gltText2DFragmentShaderSource =
+"#version 410\n"
+"\n"
+"out vec4 fragColor;\n"
+"\n"
+"uniform sampler2D diffuse;\n"
+"\n"
+"uniform vec4 color = vec4(1.0, 1.0, 1.0, 1.0);\n"
+"\n"
+"in vec2 fTexCoord;\n"
+"\n"
+"void main()\n"
+"{\n"
+	"vec4 col = texture(diffuse, fTexCoord) * color;\n"
+	"if (col.x < 0.1 && col.y < 0.1 && col.z < 0.1){\n"
+	"fragColor = vec4(0, 0, 0, 0);\n"
+	"}else{\n"
+	"fragColor = col;}\n"
+	"}\n";
+#endif
 
 
 GLT_API GLboolean _gltCreateText2DShader(void)

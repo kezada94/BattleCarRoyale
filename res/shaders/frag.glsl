@@ -1,4 +1,4 @@
-#version 130 //130 linux - 410 mac
+#version 410 //130 linux - 410 mac
 
 const int MAX_LIGHTS = 5;
 
@@ -6,6 +6,8 @@ in vec3 normalEye;
 in vec3 normal;
 in vec2 st;
 in vec3 positionEye;
+in vec4 shadowCoord;
+
 
 in vec3 EyeDirection_tangent;
 in vec3 LightDirection_tangent;
@@ -20,11 +22,13 @@ out vec4 frag_colour;
 
 uniform sampler2D basic_texture;
 uniform sampler2D normal_map;
+uniform sampler2DShadow shadow_map;
 uniform mat4 view;
 
 uniform vec3 lightPwr[MAX_LIGHTS];
 uniform vec3 lightAngle[MAX_LIGHTS];
 uniform int nLights;
+uniform vec3 ks;
 
 vec4 diffuse = vec4(0, 0, 0, 1);
 float specular;
@@ -32,6 +36,9 @@ vec4 ambient = vec4(0.1, 0.1, 0.1, 1);
 
 
 void main() {
+
+	float visibility = texture( shadow_map, vec3(shadowCoord.xy, (shadowCoord.z)/shadowCoord.w) );
+
 
 	vec3 normal_tan = texture (normal_map, st).rgb;
 	normal_tan = normalize (normal_tan * 2.0 - 1.0);
@@ -64,7 +71,8 @@ void main() {
 			attenuation = clamp(abs(lightToSurfaceAngle - lightAngle[i].x)/4, 0, 1);
 		}
 		diffuse += attenuation * clamp(	dot(normalize(normalEye), direccionluz) * vec4(1,1,1, 1) , 0, 1) / (dis*0.1);
+		
 	}
 
-	frag_colour = (texel * ambient) + (texel * diffuse) + (pow(cosAlpha, 100));
+	frag_colour = (texel * ambient) + ((texel * diffuse) + vec4(ks,1)*specular);
 }

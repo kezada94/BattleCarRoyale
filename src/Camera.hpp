@@ -58,9 +58,9 @@ public:
     Camera();
     ~Camera();
 
-    void update();
+    void update(btDiscreteDynamicsWorld* world);
     void init(GLuint shader_prog, int width, int height, float fov, CameraModes m);
-    void getPitchFromQuat(const btQuaternion q1, float& pitch);     
+    void getPitchFromQuat(const btQuaternion q1, float& pitch, float& attitude, float& bank);     
     void zoomIn();
     void zoomOut();   
 

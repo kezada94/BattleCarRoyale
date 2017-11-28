@@ -4,7 +4,7 @@
     Thanks to Martin John Baker for this useful piece of code.
         http://www.euclideanspace.com/
 */
-void Camera::getPitchFromQuat(const btQuaternion q1, float& pitch) {
+void Camera::getPitchFromQuat(const btQuaternion q1, float& pitch, float& attitude, float& bank) {
     float sqw = q1.w()*q1.w();
     float sqx = q1.x()*q1.x();
     float sqy = q1.y()*q1.y();
@@ -13,13 +13,20 @@ void Camera::getPitchFromQuat(const btQuaternion q1, float& pitch) {
 	float test = q1.x()*q1.y() + q1.z()*q1.w();
 	if (test > 0.499*unit) { // singularity at north pole
 		pitch = 2 * atan2(q1.x(),q1.w());
+        attitude = M_PI/2;
+		bank = 0;
 		return;
 	}
 	if (test < -0.499*unit) { // singularity at south pole
 		pitch = -2 * atan2(q1.x(),q1.w());
+        attitude = -M_PI/2;
+		bank = 0;
 		return;
 	}
     pitch = atan2(2*q1.y()*q1.w()-2*q1.x()*q1.z() , sqx - sqy - sqz + sqw);
+    attitude = asin(2*test/unit);
+	bank = atan2(2*q1.x()*q1.w()-2*q1.y()*q1.z() , -sqx + sqy - sqz + sqw);
+
 }
 //btbvtrianglemeshshape
 Camera::Camera() 
@@ -62,7 +69,7 @@ void Camera::init(GLuint shaderProg, int width, int height, float fov, CameraMod
 }
 
 
-void Camera::update(){
+void Camera::update(btDiscreteDynamicsWorld* world){
     glUseProgram(shader_programme);    
     if(isProjChanged){
         projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 10000.0f);
@@ -70,11 +77,16 @@ void Camera::update(){
         isProjChanged = false;
     }
     float angle;    
+    float attitude;    
+    float bank;    
     float camX;
     float camZ;
     btTransform trans;    
     glm::vec3 targetPos;
-    
+    glm::vec3 posicionCamara;
+    btCollisionWorld::ClosestRayResultCallback* RayCallback;
+    glm::vec3 diff;
+
     switch(mode){
         case CameraModes::THIRD_PERSON:
             if(target == nullptr){
@@ -82,15 +94,26 @@ void Camera::update(){
                 return;
             }
             target->getRigidBody()->getMotionState()->getWorldTransform(trans);
-            getPitchFromQuat(trans.getRotation(), angle);
+            getPitchFromQuat(trans.getRotation(), angle, attitude, bank);
             
             targetPos = glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
-            
             camX = -sin(angle) * farOffset;
             camZ = -cos(angle) * farOffset;
 
-            view = glm::lookAt(glm::vec3(camX, upOffset, camZ) + targetPos, glm::vec3(targetPos.x, targetPos.y+10, targetPos.z), up);
+            posicionCamara = glm::vec3(camX, upOffset, camZ) + targetPos;
+
+            RayCallback = new btCollisionWorld::ClosestRayResultCallback(btVector3(targetPos.x, targetPos.y + 10, targetPos.z), btVector3(posicionCamara.x, posicionCamara.y, posicionCamara.z));
+
+            world->rayTest(btVector3(targetPos.x, targetPos.y+10, targetPos.z), btVector3(posicionCamara.x, posicionCamara.y, posicionCamara.z), *RayCallback);
+            if(RayCallback->hasHit()) {
+                posicionCamara = glm::vec3(RayCallback->m_hitPointWorld.x(), RayCallback->m_hitPointWorld.y(), RayCallback->m_hitPointWorld.z());
+                diff = (targetPos - posicionCamara) * (float)1.f/5.f;
+                posicionCamara += diff;
+            }
+            
+            view = glm::lookAt(posicionCamara, targetPos + glm::vec3(0, 10, 0), up);
             glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);    
+
             break;
         case CameraModes::FIRST_PERSON:
             view = glm::lookAt(position, position + front, up);
