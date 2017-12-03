@@ -6,6 +6,7 @@
 Game::Game(){
     level = new Scene();
     camera = new Camera();
+    camera2 = new Camera();
 }
 Game::~Game(){
     delete level;
@@ -37,8 +38,13 @@ void Game::init(){
     camera->debugDrawer = debug;
     camera->particleManager = particleManager;
     camera->skybox = skybox;
-    
-    camera->init(shader_programme, g_gl_width, g_gl_height, fov, CameraModes::FIRST_PERSON);    
+    camera->init(shader_programme, g_gl_width/2, g_gl_height, fov, CameraModes::FIRST_PERSON);    
+
+    camera2->debugDrawer = debug;
+
+    camera2->particleManager = particleManager;
+    camera2->skybox = skybox;
+    camera2->init(shader_programme, g_gl_width/2, g_gl_height, fov, CameraModes::FIRST_PERSON);  
 
     level->getDynamicsWorld()->setDebugDrawer(debug);
 
@@ -49,13 +55,14 @@ void Game::init(){
     StaticGameObject *pared = new StaticGameObject("res/pared/pared.obj", "res/pared/tex.jpg", "res/pared/tex_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(.5f, .5f, 0.5f), specular_loc);
     StaticGameObject *esfera = new StaticGameObject("res/untitled.obj", "res/tex.png", "res/tex_NRM.png", shader_programme, btVector3(50, 50, 50), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(0, 0, 0), specular_loc);
     StaticGameObject *luz = new StaticGameObject("res/untitled.obj", "res/tex.png", "res/tex_NRM.png", shader_programme, btVector3(30, 100, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(0, 0, 0), specular_loc);
-    DynamicGameObject* cono = new DynamicGameObject("res/cono/cono.obj", "res/cono/conotextura.png", shader_programme, btScalar(1), btVector3(10, 50, 10), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    DynamicGameObject* barril = new DynamicGameObject("res/barril/barril.obj", "res/barril/barriltextura.jpg", shader_programme, btScalar(3), btVector3(40, 50, 40), btQuaternion((btVector3(1, 0, 0)), btScalar(0)));
-    Kombi* kombi = new Kombi(btVector3(10, 24, 10), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
-    Patriot* patriot = new Patriot(btVector3(0, 24, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
-    MonsterTruck* monster = new MonsterTruck(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld());
+    DynamicGameObject* cono = new DynamicGameObject("res/cono/cono.obj", "res/cono/conotextura.png", nullptr, shader_programme, btScalar(1), btVector3(10, 50, 10), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(0, 0, 0), specular_loc);
+    DynamicGameObject* barril = new DynamicGameObject("res/barril/barril.obj", "res/barril/barriltextura.jpg", nullptr, shader_programme, btScalar(3), btVector3(40, 50, 40), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(0, 0, 0), specular_loc);
+    Patriot* patriot = new Patriot(btVector3(0, 24, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+    MonsterTruck* monster = new MonsterTruck(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
     monster->setSoundManager(soundManager);
     monster->particleManager = particleManager;
+    patriot->setSoundManager(soundManager);
+    patriot->particleManager = particleManager;
     enemiesCount = 2;
     
     piso->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(40, 40, 40));
@@ -66,7 +73,6 @@ void Game::init(){
     monster->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(2.42f, 2, 2));
 
     //Se agregan los objetos la escena
-    level->addGameObject(kombi);
     level->addGameObject(monster);
     level->addGameObject(patriot);
     level->addGameObject(piso);
@@ -80,9 +86,11 @@ void Game::init(){
     
     //Se settea el auto que será el jugador.
     camera->setTarget(monster);
+    camera2->setTarget(patriot);
+
     level->setPlayer(monster);
 
-    inputProcessor = new InputProcessor(g_window, camera, monster);
+    inputProcessor = new InputProcessor(g_window, camera, monster, patriot);
 }
 
 void Game::pantallaInicio(){
@@ -292,6 +300,7 @@ void Game::pantallaInicio(){
 void Game::doMainLoop(){
     //soundManager->musicaFondo();
     camera->setMode(CameraModes::THIRD_PERSON);
+    camera2->setMode(CameraModes::THIRD_PERSON);
     int frameCount = 0;
     
     while (!glfwWindowShouldClose(g_window)){
@@ -309,13 +318,35 @@ void Game::doMainLoop(){
         inputProcessor->processInput();
         
         glClearColor(0.0f, 0.f, 0.f, 1.0f);
+        
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        //level->renderShadow();
 
         // Dibuja todos los objetos de la escena
         camera->update(level->getDynamicsWorld());
 
-        level->drawAllGameObjects(model_mat_location, shader_programme);
+        skybox->setProj(&camera->projection);
+        skybox->setView(&camera->view);
+        particleManager->setProj(&camera->projection);
+        particleManager->setView(&camera->view);
+
+        level->drawAllGameObjects(model_mat_location, shader_programme, 1);
         skybox->draw();
+        particleManager->drawActiveParticles();
+        camera->debugDrawer->drawLines();
+
+        camera2->update(level->getDynamicsWorld());
+
+        skybox->setProj(&camera2->projection);
+        skybox->setView(&camera2->view);
+        particleManager->setProj(&camera2->projection);
+        particleManager->setView(&camera2->view);
+
+        level->drawAllGameObjects(model_mat_location, shader_programme, 2);
+        skybox->draw();
+        particleManager->drawActiveParticles();
+
         // Dibuja todos las figuras colisionadoras de los objetos
         //level->getDynamicsWorld()->debugDrawWorld();
         //camera->debugDrawer->drawLines();
@@ -324,7 +355,6 @@ void Game::doMainLoop(){
 
         level->updateAllCarsPhysics();    
         glUseProgram(shader_programme);
-        particleManager->drawActiveParticles();
         
         glfwSwapBuffers(g_window);
         glfwPollEvents();

@@ -11,8 +11,8 @@ private:
     int wheel_vert;
 
 public:
-    Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world);
-    Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world);
+    Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world, GLuint specular_loc);
+    Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world, GLuint specular_loc);
     ~Kombi();
 
     void initialize(btDiscreteDynamicsWorld* world);

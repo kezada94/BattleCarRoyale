@@ -1,26 +1,16 @@
 #include "MonsterTruck.hpp"
 
-MonsterTruck::MonsterTruck(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world) 
-    : Car("res/meshes/truck/truck.obj", "res/meshes/truck/blank.jpg", shaderprog, btScalar(10), startPos, startRot) {
+MonsterTruck::MonsterTruck(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world, GLuint specular_loc) 
+    : Car("res/meshes/truck/truck.obj", "res/meshes/truck/blank.jpg", nullptr, shaderprog, btScalar(10), startPos, startRot, glm::vec3(), specular_loc) {
     initialize(world);
 
     load_mesh("res/meshes/truck/wheel.obj", wheel_vao, wheel_vert);    
-    load_texture (shaderprog, "res/meshes/truck/monster_tire.jpg", wheel_tex, wheel_texLocation);    
+    load_texture2 (shaderprog, "res/meshes/truck/monster_tire.jpg", wheel_tex, wheel_texLocation);   
 
-    setHealth(100.f);
+    setHealth(25.f);
     fireRate = 5.f;
 }
 
-MonsterTruck::MonsterTruck(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world)
-    : Car("res/meshes/truck/truck.obj", "res/meshes/truck/blank.jpg", shaderprog, btScalar(10), startPos, startRot, coll) {
-    initialize(world);     
-    
-    load_mesh("res/meshes/truck/wheel.obj", wheel_vao, wheel_vert);    
-    load_texture (shaderprog, "res/meshes/truck/monster_tire.jpg", wheel_tex, wheel_texLocation);   
-    
-    setHealth(100.f);
-    fireRate = 5.f;
-}
     
 MonsterTruck::~MonsterTruck(){}
 

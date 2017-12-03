@@ -56,12 +56,14 @@ void Camera::init(GLuint shaderProg, int width, int height, float fov, CameraMod
     glUseProgram(shader_programme);
     projection = glm::perspective(glm::radians(fov), (float)width / (float)height, 0.1f, 10000.0f);
     glUniformMatrix4fv (projLocation, 1, GL_FALSE, &projection[0][0]);    
+    
     debugDrawer->setProj(&projection);    
     particleManager->setProj(&projection);
     skybox->setProj(&projection);
 
     view = glm::lookAt(position, position + front, up);
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
+    
     debugDrawer->setView(&view);   
     particleManager->setView(&view);
     skybox->setView(&view);
@@ -99,8 +101,8 @@ void Camera::update(btDiscreteDynamicsWorld* world){
             targetPos = glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ());
             camX = -sin(angle) * farOffset;
             camZ = -cos(angle) * farOffset;
-
-            posicionCamara = glm::vec3(camX, upOffset, camZ) + targetPos;
+            //AQUI
+            posicionCamara = glm::vec3(camX*2.f, upOffset*1.5f, camZ*2.f) + targetPos;
 
             RayCallback = new btCollisionWorld::ClosestRayResultCallback(btVector3(targetPos.x, targetPos.y + 10, targetPos.z), btVector3(posicionCamara.x, posicionCamara.y, posicionCamara.z));
 

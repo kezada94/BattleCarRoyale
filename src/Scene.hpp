@@ -55,9 +55,13 @@ public:
     Scene();
     ~Scene();
 
-    void init(GLuint shader);
+    glm::mat4 depthProjectionMatrix;
+    glm::mat4 depthViewMatrix;
 
-    void drawAllGameObjects(const GLuint mat_location, const GLuint shader);
+    void init(GLuint shader);
+    void renderShadow();
+
+    void drawAllGameObjects(const GLuint mat_location, const GLuint shader, int mPlayer);
     void updateAllCarsPhysics();
     void addGameObject(GameObject* obj);
     void addLight(Light* lght);

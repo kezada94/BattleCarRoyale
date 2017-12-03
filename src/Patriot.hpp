@@ -7,11 +7,11 @@
 
 class Patriot : public Car{
 private:
-    GLuint wheel_vao;
+    GLuint wheel_vao, wheel_tex, wheel_texLocation;
     int wheel_vert;
+
 public:
-    Patriot(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world);
-    Patriot(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world);
+    Patriot(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world, GLuint specular_loc);
     ~Patriot();
 
     void initialize(btDiscreteDynamicsWorld* world);

@@ -11,11 +11,16 @@ class InputProcessor{
 private:
     GLFWwindow* window;
     Camera* camera;
-    Car* player;
+    Car* playerOne;
+    Car* playerTwo;
     const unsigned char* buttons;
+    const unsigned char* buttonsTwo;
     const float *axes;
+    const float *axesTwo;
     int count;
+    int countTwo;
     int axesCount;    
+    int axesCountTwo;    
 
     int lastX;
     int lastY;
@@ -25,7 +30,7 @@ private:
     bool isReleased;
 
 public:
-    InputProcessor(GLFWwindow* win, Camera* cam, Car* player);
+    InputProcessor(GLFWwindow* win, Camera* cam, Car* player, Car* player2);
     ~InputProcessor();
     void iniciaSonido();
     void processMouse();

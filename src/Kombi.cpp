@@ -1,32 +1,31 @@
 #include "Kombi.hpp"
 
-Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world) 
-    : Car("res/KOMBI.obj", "res/kombitextura.png", shaderprog, btScalar(10), startPos, startRot) {
+Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world, GLuint specular_loc) 
+    : Car("res/KOMBI.obj", "res/kombitextura.png", nullptr, shaderprog, btScalar(30), startPos, startRot, glm::vec3(), specular_loc) {
     initialize(world);
 
     load_mesh("res/meshes/WHEEL/RUEDAFIN.obj", wheel_vao, wheel_vert);    
-    load_texture (shaderprog, "res/meshes/WHEEL/ruedastext.jpg", wheel_tex, wheel_texLocation);  
+    load_texture2 (shaderprog, "res/meshes/WHEEL/ruedastext.jpg", wheel_tex, wheel_texLocation);  
     
     setHealth(25.f);
-    
+    fireRate = 5.f;
 }
 
-Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world)
-    : Car("res/KOMBI.obj", "res/kombitextura.png", shaderprog, btScalar(10), startPos, startRot, coll) {
+Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world, GLuint specular_loc)
+    : Car("res/KOMBI.obj", "res/kombitextura.png", nullptr, shaderprog, btScalar(30), startPos, startRot, glm::vec3(), specular_loc, coll) {
     initialize(world);     
     
     load_mesh("res/meshes/WHEEL/RUEDAFIN.obj", wheel_vao, wheel_vert);    
-    load_texture (shaderprog, "res/meshes/WHEEL/ruedastext.jpg", wheel_tex, wheel_texLocation);    
+    load_texture2 (shaderprog, "res/meshes/WHEEL/ruedastext.jpg", wheel_tex, wheel_texLocation);    
 
     setHealth(25.f);
-    
+    fireRate = 5.f;
 }
     
 Kombi::~Kombi(){}
 
 void Kombi::initialize(btDiscreteDynamicsWorld* world){
     setWorld(world);
-    
     btRaycastVehicle::btVehicleTuning* tuning = new btRaycastVehicle::btVehicleTuning();
     btVehicleRaycaster* defvehicle = new btDefaultVehicleRaycaster(world);
     getRigidBody()->setActivationState( DISABLE_DEACTIVATION);
@@ -39,26 +38,27 @@ void Kombi::initialize(btDiscreteDynamicsWorld* world){
     btVector3 wheelDirection(0.0f, -1.0f, 0.0f);
     btVector3 wheelAxis(-1.0f, 0.0f, 0.0f);
     btScalar suspensionRestLength(0.1f);    //TODO: PARAM
-    btScalar wheelRadius(1.5f);              //TOCO: PARAM 
+    btScalar wheelRadius(2.f);              //TOCO: PARAM 
     vehicle->addWheel(btVector3(-2.f, -1.33f, 3.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);//TODO: PARAM
     vehicle->addWheel(btVector3(2.f, -1.33f, 3.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true); //TODO: PARAM
     vehicle->addWheel(btVector3(2.f, -1.33f, -4.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);  //TODO: PARAM
     vehicle->addWheel(btVector3(-2.f, -1.33f, -4.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false); //TODO: PARAM
     
     this->setCar(vehicle);
-
     for (int i = 0; i < getCar()->getNumWheels(); i++)
     {        
         btWheelInfo& wheel = getCar()->getWheelInfo(i);
-        //wheel.m_wheelsDampingRelaxation = 11.7f;    //TODO: PARAM
-        //wheel.m_wheelsDampingCompression = 10.7f;   //TODO: PARAM
+        wheel.m_wheelsDampingRelaxation = 11.7f;    //TODO: PARAM
+        wheel.m_wheelsDampingCompression = 10.7f;   //TODO: PARAM
         wheel.m_frictionSlip = btScalar(10000.);     //TODO: PARAM
         wheel.m_rollInfluence = btScalar(0.f);    //TODO: PARAM
-        //wheel.m_maxSuspensionTravelCm = 15.f;       //TODO: PARAM
-        
+        wheel.m_maxSuspensionTravelCm = 45.f;       //TODO: PARAM
     }
     setIsAlive(true);
     
+    frontLight1 = new Spotlight(glm::vec3(0.59f, 2.13f, 2.88f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0, 0, -1.f), 15.f);
+    frontLight2 = new Spotlight(glm::vec3(-0.59f, 2.13f, 2.88f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0, 0, -1.f), 15.f);
+
 }
 
 void Kombi::updatePhysics(){
@@ -85,18 +85,24 @@ void Kombi::updatePhysics(){
     getCar()->setBrake(0, 1);
     getCar()->setBrake(0, 2);
     getCar()->setBrake(0, 3);
-
+    if(getCar()->getCurrentSpeedKmHour() > 0.f){ 
+        sound->reproducir(2,AL_TRUE,(getCar()->getCurrentSpeedKmHour()*0.01)+0.05);
+    }else if(getCar()->getCurrentSpeedKmHour() < 0.f){
+        sound->reproducir(2,AL_TRUE,((getCar()->getCurrentSpeedKmHour()*0.01)+0.05)*-1);
+    }
     this->getCar()->applyEngineForce(0, 0); //TODO: Param
     this->getCar()->applyEngineForce(0, 1);
 }
 
 void Kombi::draw(GLuint model_mat_location){
     btTransform trans;
-    glm::mat4 model;
     this->getRigidBody()->getMotionState()->getWorldTransform(trans);
         
     model = glm::translate(glm::mat4(), glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
     model = glm::rotate(model, trans.getRotation().getAngle(), glm::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ() ));
+    btVector3 escala = getRigidBody()->getCollisionShape()->getLocalScaling();
+    model = glm::scale(model, glm::vec3(escala.getX(), escala.getY(), escala.getZ()));
+
     glUniformMatrix4fv(model_mat_location, 1, GL_FALSE, &model[0][0]);
         
     glActiveTexture (GL_TEXTURE0);
@@ -110,11 +116,11 @@ void Kombi::draw(GLuint model_mat_location){
         trans = this->getCar()->getWheelInfo(i).m_worldTransform;
         glm::quat hele = glm::angleAxis(trans.getRotation().getAngle(), glm::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ()));
         glm::mat4 model2 = glm::toMat4(hele);
-        model = glm::translate(glm::mat4(), glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
-        
-        //glm::mat4 model2 = glm::rotate(model, -trans.getRotation().getAngle(), glm::vec3(trans.getRotation().getAxis().getX(), trans.getRotation().getAxis().getY(), trans.getRotation().getAxis().getZ() ));
-        model = model * model2;
-        glUniformMatrix4fv(model_mat_location, 1, GL_FALSE, &model[0][0]);
+        glm::mat4 model3 = glm::translate(glm::mat4(), glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
+
+        model3 = model3 * model2;
+        model3 = glm::scale(model3, glm::vec3(escala.getX(), escala.getY(), escala.getZ()));
+        glUniformMatrix4fv(model_mat_location, 1, GL_FALSE, &model3[0][0]);
 
         glActiveTexture (GL_TEXTURE0);
         glBindTexture (GL_TEXTURE_2D, wheel_tex);
@@ -126,7 +132,7 @@ void Kombi::draw(GLuint model_mat_location){
 }
 
 void Kombi::accelerate(){
-    if(getCar()->getCurrentSpeedKmHour() < 100.f){
+    if(getCar()->getCurrentSpeedKmHour() < 150.f){
         this->getCar()->applyEngineForce(85, 0); //TODO: Param
         this->getCar()->applyEngineForce(85, 1);
     }
@@ -137,6 +143,9 @@ void Kombi::brake(){
     getCar()->setBrake(btScalar(1.5), 1);   //TODO: PARAM
     getCar()->setBrake(btScalar(1.5), 2);   //TODO: PARAM
     getCar()->setBrake(btScalar(1.5), 3);   //TODO: PARAM
+    if(getCar()->getCurrentSpeedKmHour() > 125.f){
+        sound->reproducir(1, AL_FALSE, 1.0);
+    }
 }
 void Kombi::reverse(){
     this->getCar()->applyEngineForce(-50,0);    //TODO: Param
@@ -158,12 +167,46 @@ void Kombi::turnLeft(){
     setTurned(true);   
 }
 
-void Kombi::fire(){}
+void Kombi::fire(){
+    if (lastShot + (1/fireRate) < currentTime){
+        btTransform trans;
+        this->getRigidBody()->getMotionState()->getWorldTransform(trans);
+        btVector3 start = trans.getOrigin() + btVector3(0, 5, 0); //TODO: PARAM
+        btQuaternion q = trans.getRotation();
+        btVector3 direction = btVector3(2 * (q.x()*q.z() + q.w()*q.y()), 2 * (q.y()*q.z() - q.w()*q.x()), 1 - 2 * (q.x()*q.x() + q.y()*q.y()));
+        
+        btVector3 end = start + 500*direction;//TODO: PARAM alcance maximo balas
+
+        getWorld()->getDebugDrawer()->drawLine(start, end, btVector3(0, 0, 0));
+        btCollisionWorld::ClosestRayResultCallback RayCallback(start, end);
+        getWorld()->rayTest(start, end, RayCallback);
+        
+        if(RayCallback.hasHit()) {
+            Car* targ = (Car*)RayCallback.m_collisionObject->getUserPointer();
+            if (targ != nullptr)
+                targ->setHealth(targ->getHealth()-1.0f);
+        }
+        glm::vec4 gunOne = glm::vec4(2.35f, 2.34f, 2.52f, 1.f);
+        glm::vec4 gunTwo = glm::vec4(-2.35f, 2.34f, 2.52f, 1.f);
+        
+
+
+        //TODO: OPTIMIZE AND INSTANTIATE
+        glm::vec3 gunOne1 = model * gunOne;
+        glm::vec3 gunTwo2 = model * gunTwo;
+
+        if (RayCallback.hasHit()){
+            particleManager->genGunshot(btVector3(gunOne1.x, gunOne1.y, gunOne1.z), RayCallback.m_hitPointWorld);
+            particleManager->genGunshot(btVector3(gunTwo2.x, gunTwo2.y, gunTwo2.z), RayCallback.m_hitPointWorld);
+        }else{
+            particleManager->genGunshot(btVector3(gunOne1.x, gunOne1.y, gunOne1.z), end);
+            particleManager->genGunshot(btVector3(gunTwo2.x, gunTwo2.y, gunTwo2.z), end);
+        }
+        lastShot = currentTime;
+        sound->reproducir(3,AL_FALSE,1.0);
+    }
+}
 
 void Kombi::spawn(){}
 void Kombi::despawn(btDiscreteDynamicsWorld* world){
-    btCollisionShape* col = getRigidBody()->getCollisionShape();
-    btRigidBody* rb = getRigidBody();
-
-    world->removeCollisionObject(rb);
 }

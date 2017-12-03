@@ -4,6 +4,7 @@
 #include "DynamicGameObject.hpp"
 #include "SoundManager.hpp"
 #include "Spotlight.hpp"
+#include "ParticleManager.hpp"
 
 
 extern double lastTime;
@@ -25,15 +26,16 @@ protected:
     double lastShot;
     
 public:
-    Car(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot);
-    Car(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll);
+    Car(const char* path, const char* texture_path, const char* normal_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, glm::vec3 specular, GLuint specular_loc);
+    Car(const char* path, const char* texture_path, const char* normal_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, glm::vec3 specular, GLuint specular_loc, btCollisionShape* coll);
     ~Car();
 
-    SoundManager* sound;
     glm::mat4 model;
     Spotlight* frontLight1;
     Spotlight* frontLight2;
     
+    SoundManager* sound;
+    ParticleManager* particleManager;
 
     virtual void initialize(btDiscreteDynamicsWorld* world) = 0;
     virtual void updatePhysics() = 0;

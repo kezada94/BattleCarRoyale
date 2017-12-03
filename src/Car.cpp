@@ -1,10 +1,14 @@
 #include "Car.hpp"
 
-Car::Car(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot)
-    : DynamicGameObject(path, texture_path, shaderprog, masa, startPos, startRot) {}
+Car::Car(const char* path, const char* texture_path, const char* normal_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, glm::vec3 specular, GLuint specular_loc)
+    : DynamicGameObject(path, texture_path, normal_path, shaderprog, masa, startPos, startRot, specular, specular_loc) {
+        lastShot = 0.f;
+    }
 
-Car::Car(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll) 
-    : DynamicGameObject(path, texture_path, shaderprog, masa, startPos, startRot, coll) {}
+Car::Car(const char* path, const char* texture_path, const char* normal_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, glm::vec3 specular, GLuint specular_loc, btCollisionShape* coll) 
+    : DynamicGameObject(path, texture_path, normal_path, shaderprog, masa, startPos, startRot, specular, specular_loc, coll) {
+        lastShot = 0.f;        
+    }
 
 Car::~Car(){}
 

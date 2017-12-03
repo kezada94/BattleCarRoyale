@@ -2,6 +2,7 @@
 #define GAME_OBJECT_H
 
 #include "Tools.hpp"
+#include <glm/glm.hpp>
 
 class GameObject{
 
@@ -15,14 +16,20 @@ protected:
     
     bool load_mesh (const char* file_name, GLuint& vao, int& vert_no, btCollisionShape** col);
     bool load_mesh (const char* file_name, GLuint& vao, int& vert_no);    
-    bool load_texture (GLuint shaderprog, const char* texture_path, GLuint& texture, GLuint tex_location);
+    bool load_texture (GLuint shaderprog, const char* texture_path, const char* normal_path); 
+    bool load_texture2 (GLuint shaderprog, const char* texture_path, GLuint& texture, GLuint tex_location);       
+
     
 public:
     GLuint tex_location;
+    unsigned int normalMap;
+    unsigned int normalMapLocation;
+    glm::vec3 specular;
+    GLuint specular_loc;
 
     GameObject();
-    GameObject(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot);
-    GameObject(const char* path, const char* texture_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, btCollisionShape* coll);
+    GameObject(const char* path, const char* texture_path, const char* normal_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, glm::vec3 specular, GLuint specular_loc);
+    GameObject(const char* path, const char* texture_path, const char* normal_path, GLuint shaderprog, btScalar masa, btVector3 startPos, btQuaternion startRot, glm::vec3 specular, GLuint specular_loc, btCollisionShape* coll);
     
     ~GameObject();
 

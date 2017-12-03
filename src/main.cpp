@@ -27,7 +27,7 @@ typedef std::vector<Car*> CarList;
 int g_gl_width = 1366;
 int g_gl_height = 768;
 GLFWwindow* g_window = NULL;
-float fov = 68.0f;
+float fov = 34.0f;
 
 double lastTime;
 double deltaTime;

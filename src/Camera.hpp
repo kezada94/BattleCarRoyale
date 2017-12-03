@@ -28,9 +28,6 @@ private:
     glm::vec3 front;
     glm::vec3 up;
 
-    glm::mat4 projection;
-    glm::mat4 view;
-    
     float upOffset;
     float farOffset;
     float zoomSpeed;
@@ -54,6 +51,9 @@ public:
     GLDebugDrawer* debugDrawer; //LAZY
     Skybox* skybox;
     bool isProjChanged;
+    glm::mat4 projection;
+    glm::mat4 view;
+    
     
     Camera();
     ~Camera();

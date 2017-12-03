@@ -57,7 +57,37 @@ void Scene::init(GLuint shader){
 
 }
 
-void Scene::drawAllGameObjects(const GLuint mat_location, const GLuint shader){
+void Scene::renderShadow(){
+
+    glm::vec3 lightpos1(player->model * glm::vec4(player->frontLight1->getLocation(), 1));
+
+
+    glUseProgram(shadow_shader);        
+    glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+	glViewport(0,0,1024,1024); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Use our shader
+    glm::vec3 lightDirection_world = glm::vec3(0.603472, -0.794415, 0.068758); //Sun light (directional)
+    //glm::vec3 lightDirection_world = glm::normalize(glm::vec3(0, -1, 0)); //Sun light (directional)
+    // Compute the MVP matrix from the light's point of view
+    depthProjectionMatrix = glm::ortho<float>(-300,300,-300,300,-100,500);
+    depthViewMatrix = glm::lookAt(lightpos1+glm::vec3(0,10,5), lightpos1+glm::vec3(0,10,5)+lightDirection_world, glm::vec3(0,1,0));
+
+    glUniformMatrix4fv(depthViewID, 1, GL_FALSE, &depthViewMatrix[0][0]);
+    glUniformMatrix4fv(depthProjID, 1, GL_FALSE, &depthProjectionMatrix[0][0]);
+    for (int i = 0; i < objects->size(); i++){
+        objects->get(i)->draw(depthModelID);
+    }
+    for (int i = 0; i < cars.size(); i++){
+        if (cars[i]->getIsAlive()){
+            cars[i]->draw(depthModelID);
+        }
+    }
+}
+
+void Scene::drawAllGameObjects(const GLuint mat_location, const GLuint shader, int mPlayer){
 
 
     glUseProgram(shader);
@@ -86,44 +116,20 @@ void Scene::drawAllGameObjects(const GLuint mat_location, const GLuint shader){
 
     
 
-		glUseProgram(shadow_shader);        
-        glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-		glViewport(0,0,1024,1024); // Render on the whole framebuffer, complete from the lower left corner to the upper right
-
-		// We don't use bias in the shader, but instead we draw back faces, 
-		// which are already separated from the front faces by a small distance 
-		//glCullFace(GL_FRONT);
-		// Clear the screen
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Use our shader
-        glm::vec3 lightDirection_world = glm::vec3(0.603472, -0.794415, 0.068758); //Sun light (directional)
-        //glm::vec3 lightDirection_world = glm::normalize(glm::vec3(0, -1, 0)); //Sun light (directional)
-        glm::vec3 dir = glm::vec3(direction.x()*25, direction.y()*25, direction.z()*25);
-        // Compute the MVP matrix from the light's point of view
-        glm::mat4 depthProjectionMatrix = glm::ortho<float>(-300,300,-300,300,-100,500);
-        glm::mat4 depthViewMatrix = glm::lookAt(lightpos1+dir+glm::vec3(0,10,5), lightpos1+dir+glm::vec3(0,10,5)+lightDirection_world, glm::vec3(0,1,0));
-
-        glUniformMatrix4fv(depthViewID, 1, GL_FALSE, &depthViewMatrix[0][0]);
-        glUniformMatrix4fv(depthProjID, 1, GL_FALSE, &depthProjectionMatrix[0][0]);
-        for (int i = 0; i < objects->size(); i++){
-            objects->get(i)->draw(depthModelID);
-        }
-        for (int i = 0; i < cars.size(); i++){
-            if (cars[i]->getIsAlive()){
-                cars[i]->draw(depthModelID);
-            }
-        }
+		
         // Send our transformation to the currently bound shader,
         // in the "MVP" uniform
 
-		glCullFace(GL_BACK);
+	glCullFace(GL_BACK);
     
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glUseProgram(shader);
 
-    glViewport(0,0, 1366, 768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
-
+    if (mPlayer == 1){
+        glViewport(0, 0, 1366/2, 768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+    }else{
+        glViewport(1366/2, 0, 1366/2, 768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+    }
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, depthTexture);
     glUniform1i(shadowMapID, 4);

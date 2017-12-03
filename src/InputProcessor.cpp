@@ -1,9 +1,10 @@
 #include "InputProcessor.hpp"
 
-InputProcessor::InputProcessor(GLFWwindow *win, Camera *cam, Car *player)
+InputProcessor::InputProcessor(GLFWwindow *win, Camera *cam, Car *player, Car* player2)
     : window(win),
       camera(cam),
-      player(player),
+      playerOne(player),
+      playerTwo(player2),
       firstMouse(true),
       isReleased(false),
       isWireframe(false)
@@ -67,6 +68,8 @@ void InputProcessor::processInput()
 {
     buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
     axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
+    buttonsTwo = glfwGetJoystickButtons(GLFW_JOYSTICK_2, &countTwo);
+    axesTwo = glfwGetJoystickAxes(GLFW_JOYSTICK_2, &axesCountTwo);
 
     processMouse();
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -118,30 +121,30 @@ void InputProcessor::processInput()
     {
         if ((glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS) || (axes[5] > 0 && axes[5] == GLFW_PRESS))
         {
-            player->accelerate();
+            playerOne->accelerate();
         }
         if ((glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS) || (axes[0] < -0.2))
         {
-            player->turnLeft();
+            playerOne->turnLeft();
         }
         if ((glfwGetKey(g_window, GLFW_KEY_RIGHT) == GLFW_PRESS) || (axes[0] > 0.2))
         {
-            player->turnRight();
+            playerOne->turnRight();
         }
         if ((glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS) || (axes[4] > 0 && axes[4] == GLFW_PRESS))
         {
-            if (player->getCar()->getCurrentSpeedKmHour() > 1.f)
+            if (playerOne->getCar()->getCurrentSpeedKmHour() > 1.f)
             {
-                player->brake();
+                playerOne->brake();
             }
             else
             {
-                player->reverse();
+                playerOne->reverse();
             }
         }
         if (glfwGetKey(g_window, GLFW_KEY_K) == GLFW_PRESS || buttons[13] == GLFW_PRESS)
         {
-            player->fire();
+            playerOne->fire();
         }
     }
     else
@@ -153,36 +156,36 @@ void InputProcessor::processInput()
 
         if (glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS)
         {
-            player->accelerate();
+            playerOne->accelerate();
         }
         if (glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS)
         {
-            player->turnLeft();
+            playerOne->turnLeft();
         }
         if (glfwGetKey(g_window, GLFW_KEY_RIGHT) == GLFW_PRESS)
         {
-            player->turnRight();
+            playerOne->turnRight();
         }
         if (glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS)
         {
-            if (player->getCar()->getCurrentSpeedKmHour() > 1.f)
+            if (playerOne->getCar()->getCurrentSpeedKmHour() > 1.f)
             {
-                player->brake();
+                playerOne->brake();
             }
             else
             {
-                player->reverse();
+                playerOne->reverse();
             }
         }
         if (glfwGetKey(g_window, GLFW_KEY_K) == GLFW_PRESS)
         {
-            player->fire();
+            playerOne->fire();
         }
     }
 
     if (glfwGetKey(g_window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-        player->brake();
+        playerOne->brake();
     }
 
     if (glfwGetKey(g_window, GLFW_KEY_U) == GLFW_PRESS)
@@ -193,4 +196,87 @@ void InputProcessor::processInput()
     {
         camera->zoomOut();
     }
+
+
+    if (axesTwo != nullptr)
+    {
+        if ((glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS) || (axesTwo[5] > 0 && axesTwo[5] == GLFW_PRESS))
+        {
+            playerTwo->accelerate();
+        }
+        if ((glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS) || (axesTwo[0] < -0.2))
+        {
+            playerTwo->turnLeft();
+        }
+        if ((glfwGetKey(g_window, GLFW_KEY_RIGHT) == GLFW_PRESS) || (axesTwo[0] > 0.2))
+        {
+            playerTwo->turnRight();
+        }
+        if ((glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS) || (axesTwo[4] > 0 && axesTwo[4] == GLFW_PRESS))
+        {
+            if (playerTwo->getCar()->getCurrentSpeedKmHour() > 1.f)
+            {
+                playerTwo->brake();
+            }
+            else
+            {
+                playerTwo->reverse();
+            }
+        }
+        if (glfwGetKey(g_window, GLFW_KEY_Q) == GLFW_PRESS || buttons[13] == GLFW_PRESS)
+        {
+            playerTwo->fire();
+        }
+    }
+    else
+    {
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_RELEASE)
+        {
+            isReleased = true;
+        }
+
+        if (glfwGetKey(g_window, GLFW_KEY_W) == GLFW_PRESS)
+        {
+            playerTwo->accelerate();
+        }
+        if (glfwGetKey(g_window, GLFW_KEY_A) == GLFW_PRESS)
+        {
+            playerTwo->turnLeft();
+        }
+        if (glfwGetKey(g_window, GLFW_KEY_D) == GLFW_PRESS)
+        {
+            playerTwo->turnRight();
+        }
+        if (glfwGetKey(g_window, GLFW_KEY_S) == GLFW_PRESS)
+        {
+            if (playerTwo->getCar()->getCurrentSpeedKmHour() > 1.f)
+            {
+                playerTwo->brake();
+            }
+            else
+            {
+                playerTwo->reverse();
+            }
+        }
+        if (glfwGetKey(g_window, GLFW_KEY_Q) == GLFW_PRESS)
+        {
+            playerTwo->fire();
+        }
+    }
+
+    if (glfwGetKey(g_window, GLFW_KEY_F) == GLFW_PRESS)
+    {
+        playerTwo->brake();
+    }
+
+    if (glfwGetKey(g_window, GLFW_KEY_U) == GLFW_PRESS)
+    {
+        camera->zoomIn();
+    }
+    if (glfwGetKey(g_window, GLFW_KEY_J) == GLFW_PRESS)
+    {
+        camera->zoomOut();
+    }
+
+    
 }
