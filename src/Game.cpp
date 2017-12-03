@@ -20,7 +20,7 @@ void Game::init(){
     //glfwSwapInterval(1);  
     glEnable(GL_POINT_SPRITE);
     glEnable(GL_POINT_SMOOTH);
-    glEnable(GL_BLEND);
+    //glEnable(GL_BLEND);
     
     shader_programme = create_programme_from_files (VERTEX_SHADER_FILE, FRAGMENT_SHADER_FILE);
     model_mat_location  = glGetUniformLocation (shader_programme, "model");
@@ -90,6 +90,7 @@ void Game::pantallaInicio(){
 
     #ifdef __linux__
         const char *vertex_shader =
+            
             "#version 130\n"
             "in vec3 position;\n"
             "in vec3 color\n;"
@@ -100,7 +101,7 @@ void Game::pantallaInicio(){
             "\n"
             "void main()\n"
             "{\n"
-            "gl_Position = vec4(position.x, position.y, position.z, 1.0f);\n"
+            "gl_Position = vec4(position.x, position.y, position.z+0.1, 1.0f);\n"
             "ourColor = color;\n"
             // We swap the y-axis by substracing our coordinates from 1. This is done because most images have the top y-axis inversed with OpenGL's top y-axis.
             // TexCoord = texCoord;
@@ -175,8 +176,8 @@ void Game::pantallaInicio(){
         {
             // Positions          // Colors           // Texture Coords
             -1.f, 1.f, 0.0f,      1.0f, 0.0f, 0.0f,      0.85f,  0.97f,  // Top Right
-            -1.f, -0.8, 0.0f,      0.0f, 1.0f, 0.0f,     0.85f,  0.05f,  // Bottom Right
-            1.f, -0.8, 0.0f,     0.0f, 0.0f, 1.0f,     0.12f, 0.05f, // Bottom Left
+            -1.f, -1.0, 0.0f,      0.0f, 1.0f, 0.0f,     0.85f,  0.05f,  // Bottom Right
+            1.f, -1.0, 0.0f,     0.0f, 0.0f, 1.0f,     0.12f, 0.05f, // Bottom Left
             1.f, 1.f, 0.0f,      1.0f, 1.0f, 0.0f,     0.12f, 0.97f   // Top Left
         };
     GLuint indices[] =
@@ -234,19 +235,7 @@ void Game::pantallaInicio(){
     gltInit();
     GLTtext *text1 = gltCreateText();
     gltSetText(text1, "Presione Enter para Continuar!!");
-    /*glClearColor(0.f, 0.f, 0.f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //
-    //// Draw the triangle
-    glUseProgram(shader_text);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glUniform1i(shader_text, 0);
 
-    // Draw container
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);*/
     float t = 0;
     int c = 0;
     while (!glfwWindowShouldClose(g_window) && glfwGetKey(g_window, GLFW_KEY_ENTER) == GLFW_RELEASE)
@@ -301,14 +290,12 @@ void Game::pantallaInicio(){
 }
 
 void Game::doMainLoop(){
-    //glLineWidth(7);
-    glEnable(GL_LINE_SMOOTH);
     //soundManager->musicaFondo();
     camera->setMode(CameraModes::THIRD_PERSON);
     int frameCount = 0;
     
     while (!glfwWindowShouldClose(g_window)){
-
+        
         currentTime = glfwGetTime();
         frameCount++;        
         deltaTime = currentTime - lastTime;
@@ -325,12 +312,8 @@ void Game::doMainLoop(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Dibuja todos los objetos de la escena
-        glViewport(0,0, 1366, 768/2); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+        camera->update(level->getDynamicsWorld());
 
-        level->drawAllGameObjects(model_mat_location, shader_programme);
-        skybox->draw();
-        
-        glViewport(0,768/2, 1366, 768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
         level->drawAllGameObjects(model_mat_location, shader_programme);
         skybox->draw();
         // Dibuja todos las figuras colisionadoras de los objetos
@@ -341,7 +324,6 @@ void Game::doMainLoop(){
 
         level->updateAllCarsPhysics();    
         glUseProgram(shader_programme);
-        camera->update(level->getDynamicsWorld());
         particleManager->drawActiveParticles();
         
         glfwSwapBuffers(g_window);

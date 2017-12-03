@@ -1,16 +1,16 @@
-#version 410
+#version 130
 
 in vec3 vp;
 
 uniform mat4 P, V;
 out vec3 texcoords;
 
-/*
+
 float inverse(float m);
 mat2 inverse(mat2 m);
 mat3 inverse(mat3 m);
 mat4 inverse(mat4 m);
-*/
+
 void main () {
 	texcoords = vp;
 	vec3 cam_pos_wor = (inverse(V) * vec4 (0.0, 0.0, 0.0, 1.0)).xyz; //saco la posicion de la camara para q el skybox siempre este a la misma distancia del ojo
@@ -18,7 +18,7 @@ void main () {
 }
 
 
-/*
+
 float inverse(float m) {
     return 1.0 / m;
 }
@@ -82,4 +82,3 @@ mat4 inverse(mat4 m) {
       a31 * b01 - a30 * b03 - a32 * b00,
       a20 * b03 - a21 * b01 + a22 * b00) / det;
 }
-*/

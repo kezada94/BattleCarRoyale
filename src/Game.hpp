@@ -49,6 +49,7 @@ class Game : public ILogicProcessor{
 private:
     Scene* level;
     Camera* camera;
+    Camera* camera2;
     InputProcessor* inputProcessor;
     SoundManager* soundManager;
     ParticleManager* particleManager;

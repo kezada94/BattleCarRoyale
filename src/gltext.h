@@ -921,11 +921,11 @@ static const GLchar* _gltText2DFragmentShaderSource =
 "void main()\n"
 "{\n"
 	"vec4 col = texture(diffuse, fTexCoord) * color;\n"
-	"if (col == vec4(0, 0, 0, 1.0f)){\n"
-	"fragColor = vec4(0, 0, 0, 0)\n"
+	"if (col.x < 0.1 && col.y < 0.1 && col.z < 0.1){\n"
+	"fragColor = vec4(0, 0, 0, 0);\n"
 	"}else{\n"
-	"fragColor = col}\n"
-"}\n";
+	"fragColor = col;}\n"
+	"}\n";
 #else
 
 static const GLchar* _gltText2DVertexShaderSource =

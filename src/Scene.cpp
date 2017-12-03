@@ -28,7 +28,7 @@ void Scene::init(GLuint shader){
     numberLoc = glGetUniformLocation(shader, "nLights");
     depthProj = glGetUniformLocation(shader, "depthProj");
     depthView = glGetUniformLocation(shader, "depthView");
-    shadowMapID = glGetUniformLocation(shader, "shadow_map");
+    shadowMapID = glGetUniformLocation(shader, "shadowMap");
 
     shadow_shader = create_programme_from_files("res/shaders/shadow.vert","res/shaders/shadow.frag");
 
@@ -48,17 +48,18 @@ void Scene::init(GLuint shader){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
 
     glDrawBuffer(GL_NONE); // No color buffer is drawn to.
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
 }
 
 void Scene::drawAllGameObjects(const GLuint mat_location, const GLuint shader){
+
+
     glUseProgram(shader);
     btTransform trans;
     player->getRigidBody()->getMotionState()->getWorldTransform(trans);
@@ -91,20 +92,17 @@ void Scene::drawAllGameObjects(const GLuint mat_location, const GLuint shader){
 
 		// We don't use bias in the shader, but instead we draw back faces, 
 		// which are already separated from the front faces by a small distance 
-		// (if your geometry is made this way)
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
-
+		//glCullFace(GL_FRONT);
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Use our shader
         glm::vec3 lightDirection_world = glm::vec3(0.603472, -0.794415, 0.068758); //Sun light (directional)
         //glm::vec3 lightDirection_world = glm::normalize(glm::vec3(0, -1, 0)); //Sun light (directional)
-
+        glm::vec3 dir = glm::vec3(direction.x()*25, direction.y()*25, direction.z()*25);
         // Compute the MVP matrix from the light's point of view
-        glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10,10,-10,10,-10,20);
-        glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(0,10,0), glm::vec3(0,10,0)+lightDirection_world, glm::vec3(0,1,0));
+        glm::mat4 depthProjectionMatrix = glm::ortho<float>(-300,300,-300,300,-100,500);
+        glm::mat4 depthViewMatrix = glm::lookAt(lightpos1+dir+glm::vec3(0,10,5), lightpos1+dir+glm::vec3(0,10,5)+lightDirection_world, glm::vec3(0,1,0));
 
         glUniformMatrix4fv(depthViewID, 1, GL_FALSE, &depthViewMatrix[0][0]);
         glUniformMatrix4fv(depthProjID, 1, GL_FALSE, &depthProjectionMatrix[0][0]);
@@ -119,22 +117,22 @@ void Scene::drawAllGameObjects(const GLuint mat_location, const GLuint shader){
         // Send our transformation to the currently bound shader,
         // in the "MVP" uniform
 
+		glCullFace(GL_BACK);
     
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glUseProgram(shader);
 
+    glViewport(0,0, 1366, 768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, depthTexture);
+    glUniform1i(shadowMapID, 4);
+    
     glUniformMatrix4fv(depthView, 1, GL_FALSE, &depthViewMatrix[0][0]);
     glUniformMatrix4fv(depthProj, 1, GL_FALSE, &depthProjectionMatrix[0][0]);
-
-    #ifdef __linux__
-    	glViewport(0,0, 1366, 768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
-    #else
-    	glViewport(0,0, 1366, 768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
-    #endif
-
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, depthTexture);
-    glUniform1i(shadowMapID, 2);
+    
+    //glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, &depthViewMatrix[0][0]);
+    //glUniformMatrix4fv(glGetUniformLocation(shader, "proj"), 1, GL_FALSE, &depthProjectionMatrix[0][0]);
     
     for (int i = 0; i < objects->size(); i++){
         objects->get(i)->draw(mat_location);

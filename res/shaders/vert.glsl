@@ -1,22 +1,22 @@
-#version 410
+#version 130
 
-layout(location = 0) in vec3 vertexPosition_model; //
-layout(location = 1) in vec3 vertexNormal_model;   //* PARA MAC
-layout(location = 2) in vec2 texture_coord;   //
-layout(location = 3) in vec3 vertexTangent_model;
-layout(location = 4) in vec3 vertexBitangent_model;
+//layout(location = 0) in vec3 vertexPosition_model; //
+//layout(location = 1) in vec3 vertexNormal_model;   //* PARA MAC
+//layout(location = 2) in vec2 texture_coord;   //
+//layout(location = 3) in vec3 vertexTangent_model;
+//layout(location = 4) in vec3 vertexBitangent_model;
 
-//in vec3 vertexPosition_model;    //
-//in vec3 vertexNormal_model;      //* PARA LINUX
-//in vec2 texture_coord;           //
-//in vec3 vertexTangent_model;     //
-//in vec3 vertexBitangent_model;
+in vec3 vertexPosition_model;    //
+in vec3 vertexNormal_model;      //* PARA LINUX
+in vec2 texture_coord;           //
+in vec3 vertexTangent_model;     //
+in vec3 vertexBitangent_model;
 
-/*float inverse(float m);
+float inverse(float m);
 mat2 inverse(mat2 m);
 mat3 inverse(mat3 m);
 mat4 inverse(mat4 m);
-*/
+
 const vec3 lightDirection_world = vec3(-0.603472, 0.794415, -0.068758); //Sun light (directional)
 const int MAX_LIGHTS = 5;
 
@@ -81,7 +81,7 @@ void main() {
 	gl_Position = proj * view * model * vec4 (vertexPosition_model, 1.0);
 }
 
-/*
+
 
 float inverse(float m) {
     return 1.0 / m;
@@ -146,4 +146,3 @@ mat4 inverse(mat4 m) {
       a31 * b01 - a30 * b03 - a32 * b00,
       a20 * b03 - a21 * b01 + a22 * b00) / det;
 }
-*/
