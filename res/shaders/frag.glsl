@@ -81,10 +81,9 @@ void main() {
 	float dotp = dot(normalize(normalEye), lightDirection_eye);
 	diffuse += vec4(1, 1, 1, 1) * clamp(dotp, 0, 1);
 
-	if(dotp > 0.5){
-	shadow_factor = eval_shadow (coord_lightspace);
-
-	}
+	//if(dotp > 0.5){
+		shadow_factor = eval_shadow (coord_lightspace);
+	//}
 
 	// Eye vector (towards the camera)
 	vec3 E = normalize(EyeDirection_tangent);
@@ -108,7 +107,7 @@ void main() {
 			attenuation = clamp(abs(lightToSurfaceAngle - lightAngle[i].x)/4, 0, 1);
 		}
 		diffuse += attenuation * clamp(	dot(normalize(normalEye), direccionluz) * vec4(1,1,1, 1) , 0, 1) / (dis*0.4);
-		float att = 1.0*attenuation;
+		float att = 1.0*attenuation/(dis*0.1);
 		shadow_factor = clamp(att+shadow_factor, 0, 1);
 	}
 	frag_colour = ambient*texel+(shadow_factor)*((texel * diffuse) + vec4(ks,1)*specular);

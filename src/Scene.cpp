@@ -72,8 +72,8 @@ void Scene::renderShadow(){
     glm::vec3 lightDirection_world = glm::vec3(0.603472, -0.794415, 0.068758); //Sun light (directional)
     //glm::vec3 lightDirection_world = glm::normalize(glm::vec3(0, -1, 0)); //Sun light (directional)
     // Compute the MVP matrix from the light's point of view
-    depthProjectionMatrix = glm::ortho<float>(-300,300,-300,300,-100,500);
-    depthViewMatrix = glm::lookAt(lightpos1+glm::vec3(0,10,5), lightpos1+glm::vec3(0,10,5)+lightDirection_world, glm::vec3(0,1,0));
+    depthProjectionMatrix = glm::ortho<float>(-450,450,-400,400,-500,500);
+    depthViewMatrix = glm::lookAt(glm::vec3(0,50,5), glm::vec3(0,50,5)+lightDirection_world, glm::vec3(0,1,0));
 
     glUniformMatrix4fv(depthViewID, 1, GL_FALSE, &depthViewMatrix[0][0]);
     glUniformMatrix4fv(depthProjID, 1, GL_FALSE, &depthProjectionMatrix[0][0]);

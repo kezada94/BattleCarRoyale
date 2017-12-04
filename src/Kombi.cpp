@@ -1,7 +1,7 @@
 #include "Kombi.hpp"
 
 Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world, GLuint specular_loc) 
-    : Car("res/KOMBI.obj", "res/kombitextura.png", nullptr, shaderprog, btScalar(30), startPos, startRot, glm::vec3(), specular_loc) {
+    : Car("res/KOMBI.obj", "res/kombitextura.png", nullptr, shaderprog, btScalar(30), startPos, startRot, glm::vec3(1,1,1), specular_loc) {
     initialize(world);
 
     load_mesh("res/meshes/WHEEL/RUEDAFIN.obj", wheel_vao, wheel_vert);    
@@ -12,7 +12,7 @@ Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDis
 }
 
 Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world, GLuint specular_loc)
-    : Car("res/KOMBI.obj", "res/kombitextura.png", nullptr, shaderprog, btScalar(30), startPos, startRot, glm::vec3(), specular_loc, coll) {
+    : Car("res/KOMBI.obj", "res/kombitextura.png", nullptr, shaderprog, btScalar(30), startPos, startRot, glm::vec3(1,1,1), specular_loc, coll) {
     initialize(world);     
     
     load_mesh("res/meshes/WHEEL/RUEDAFIN.obj", wheel_vao, wheel_vert);    

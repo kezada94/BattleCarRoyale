@@ -1,7 +1,7 @@
 #include "Patriot.hpp"
 
 Patriot::Patriot(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world, GLuint specular_loc) 
-    : Car("res/patriot.obj", "res/Ambulance.png", nullptr, shaderprog, btScalar(10), startPos, startRot, glm::vec3(), specular_loc) {
+    : Car("res/patriot.obj", "res/Ambulance.png", nullptr, shaderprog, btScalar(10), startPos, startRot, glm::vec3(1,1,1), specular_loc) {
         initialize(world);
 
         load_mesh("res/textures/rueda/rueda.obj", wheel_vao, wheel_vert);

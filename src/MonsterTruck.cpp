@@ -1,7 +1,7 @@
 #include "MonsterTruck.hpp"
 
 MonsterTruck::MonsterTruck(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world, GLuint specular_loc) 
-    : Car("res/meshes/truck/truck.obj", "res/meshes/truck/blank.jpg", nullptr, shaderprog, btScalar(10), startPos, startRot, glm::vec3(), specular_loc) {
+    : Car("res/meshes/truck/truck.obj", "res/meshes/truck/blank.jpg", nullptr, shaderprog, btScalar(10), startPos, startRot, glm::vec3(1,1,1), specular_loc) {
     initialize(world);
 
     load_mesh("res/meshes/truck/wheel.obj", wheel_vao, wheel_vert);    

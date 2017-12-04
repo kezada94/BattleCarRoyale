@@ -53,12 +53,12 @@ void Game::init(){
 
     //Creacion de objetos de la escena
     StaticGameObject *piso = new StaticGameObject("res/suelo/suelo.obj", "res/suelo/suelo.jpg", "res/suelo/suelo_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(0, 0, 0), specular_loc);
-    StaticGameObject *tuneles = new StaticGameObject("res/tunel/tunel.obj", "res/tunel/tetete.png", "res/tunel/tetete_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(.5f, .5f, 0.5f), specular_loc);
-    StaticGameObject *tubos = new StaticGameObject("res/tuneles/tubos.obj", "res/tuneles/tex.jpg", nullptr, shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(.5f, .5f, 0.5f), specular_loc);
+    StaticGameObject *tuneles = new StaticGameObject("res/tunel/tunel.obj", "res/tunel/tex.png", "res/tunel/tex_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(.5f, .5f, 0.5f), specular_loc);
+    StaticGameObject *tubos = new StaticGameObject("res/cuadrados/cuadrados.obj", "res/cuadrados/Metal.jpg", "res/cuadrados/Metal_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(.5f, .5f, 0.5f), specular_loc);
     StaticGameObject *pared = new StaticGameObject("res/pared/pared.obj", "res/pared/tex.jpg", "res/pared/tex_NRM.png", shader_programme, btVector3(0, -10, 0), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(.5f, .5f, 0.5f), specular_loc);
     
-    DynamicGameObject* cono = new DynamicGameObject("res/cono/cono.obj", "res/cono/conotextura.png", nullptr, shader_programme, btScalar(1), btVector3(10, 50, 10), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(0, 0, 0), specular_loc);
-    DynamicGameObject* barril = new DynamicGameObject("res/barril/barril.obj", "res/barril/barriltextura.jpg", nullptr, shader_programme, btScalar(3), btVector3(40, 50, 40), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(0, 0, 0), specular_loc);
+    DynamicGameObject* cono = new DynamicGameObject("res/cono/cono.obj", "res/cono/conotextura.png", "res/cono/conotextura_NRM.png", shader_programme, btScalar(1), btVector3(10, 50, 10), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(1, 1, 1), specular_loc);
+    DynamicGameObject* barril = new DynamicGameObject("res/barril/barril.obj", "res/barril/barriltextura.jpg", "res/barril/barriltextura_NRM.png", shader_programme, btScalar(3), btVector3(40, 50, 40), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(1, 1, 1), specular_loc);
     
     int c = rand()%3;
         switch(c){
