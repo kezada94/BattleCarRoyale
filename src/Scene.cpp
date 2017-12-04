@@ -174,14 +174,23 @@ btDiscreteDynamicsWorld* Scene::getDynamicsWorld(){
     return this->dynamicsWorld;
 }
 
-void Scene::setPlayer(Car* play){
+void Scene::setPlayerOne(Car* play){
     this->player = play;
 }
 
-Car* Scene::getPlayer(){
+Car* Scene::getPlayerOne(){
     return this->player;
 }
-CarList Scene::getCars(){
-    return this->cars;
+
+void Scene::setPlayerTwo(Car* play){
+    this->player2 = play;
+}
+
+Car* Scene::getPlayerTwo(){
+    return this->player2;
+}
+
+CarList* Scene::getCars(){
+    return &this->cars;
 }
 

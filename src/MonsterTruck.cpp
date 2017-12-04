@@ -198,5 +198,9 @@ void MonsterTruck::fire(){
 
 void MonsterTruck::spawn(){}
 void MonsterTruck::despawn(btDiscreteDynamicsWorld* world){
+    btCollisionShape* col = getRigidBody()->getCollisionShape();
+    btRigidBody* rb = getRigidBody();
 
+    world->removeCollisionObject(rb);
+    world->removeAction(car);
 }

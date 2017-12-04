@@ -45,7 +45,7 @@ extern float fov;
 //typedef std::vector<Car*> CarList;
 
 
-class Game : public ILogicProcessor{
+class Game {
 private:
     Scene* level;
     Camera* camera;
@@ -58,7 +58,9 @@ private:
     GLuint shader_programme;
     int model_mat_location;
     int specular_loc;
-    int enemiesCount;    
+    int enemiesCount;
+
+    int win;
 
 public:
     Game();
@@ -68,8 +70,7 @@ public:
     void pantallaInicio();
     void doMainLoop();
 
-    void win();
-    void loose();
+    void showWinnerScreen();
 
     void checkStatus();
 };

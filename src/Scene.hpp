@@ -31,6 +31,7 @@ private:
     CarList cars;
     LightList lights;
     Car* player;
+    Car* player2;
 
     GLuint posLoc;
     GLuint dirLoc;
@@ -70,9 +71,11 @@ public:
     SceneGameObjectLists* getObjects();
     btDiscreteDynamicsWorld* getDynamicsWorld();
 
-    void setPlayer(Car* play);
+    void setPlayerOne(Car* play);
+    void setPlayerTwo(Car* play);
 
-    Car* getPlayer();
-    CarList getCars();
+    Car* getPlayerOne();
+    Car* getPlayerTwo();
+    CarList* getCars();
 };
 #endif

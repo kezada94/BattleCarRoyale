@@ -201,5 +201,10 @@ void Patriot::fire(){
 
 void Patriot::spawn(){}
 void Patriot::despawn(btDiscreteDynamicsWorld* world){
+    btCollisionShape* col = getRigidBody()->getCollisionShape();
+    btRigidBody* rb = getRigidBody();
+
+    world->removeCollisionObject(rb);
+        world->removeAction(car);
 
 }

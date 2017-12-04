@@ -19,9 +19,9 @@ private:
     bool isAlive;
     bool turned;
     
-    btRaycastVehicle* car;
     btDiscreteDynamicsWorld* world;
 protected:
+    btRaycastVehicle* car;
     float fireRate;     // (shots/seconds)
     double lastShot;
     
