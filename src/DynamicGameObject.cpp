@@ -26,10 +26,11 @@ void DynamicGameObject::draw(const GLuint model_mat_location){
 
     glActiveTexture (GL_TEXTURE0);
 	glBindTexture (GL_TEXTURE_2D, this->texture);
+    glUniform1i (tex_location, 0);
 
 	glActiveTexture (GL_TEXTURE1);
 	glBindTexture (GL_TEXTURE_2D, this->normalMap);
-    
+    glUniform1i (normalMapLocation, 1);
     glBindVertexArray(this->getVao());
     glDrawArrays(GL_TRIANGLES, 0, this->getVertNumber()); 
 }
