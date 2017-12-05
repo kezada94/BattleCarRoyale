@@ -39,10 +39,10 @@ void Kombi::initialize(btDiscreteDynamicsWorld* world){
     btVector3 wheelAxis(-1.0f, 0.0f, 0.0f);
     btScalar suspensionRestLength(0.1f);    //TODO: PARAM
     btScalar wheelRadius(2.f);              //TOCO: PARAM 
-    vehicle->addWheel(btVector3(-2.f, -1.33f, 3.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);//TODO: PARAM
-    vehicle->addWheel(btVector3(2.f, -1.33f, 3.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true); //TODO: PARAM
-    vehicle->addWheel(btVector3(2.f, -1.33f, -4.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);  //TODO: PARAM
-    vehicle->addWheel(btVector3(-2.f, -1.33f, -4.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false); //TODO: PARAM
+    vehicle->addWheel(btVector3(-2.5f, -1.33f, 3.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);//TODO: PARAM
+    vehicle->addWheel(btVector3(2.5f, -1.33f, 3.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true); //TODO: PARAM
+    vehicle->addWheel(btVector3(2.5f, -1.33f, -4.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);  //TODO: PARAM
+    vehicle->addWheel(btVector3(-2.5f, -1.33f, -4.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false); //TODO: PARAM
     
     this->setCar(vehicle);
     for (int i = 0; i < getCar()->getNumWheels(); i++)
@@ -148,8 +148,10 @@ void Kombi::brake(){
     }
 }
 void Kombi::reverse(){
-    this->getCar()->applyEngineForce(-50,0);    //TODO: Param
-    this->getCar()->applyEngineForce(-50,1);    //TODO: PARAM
+    if(getCar()->getCurrentSpeedKmHour() > -100.f){
+        this->getCar()->applyEngineForce(-50,0);    //TODO: Param
+        this->getCar()->applyEngineForce(-50,1); 
+    }       //TODO: PARAM
 }
 
 void Kombi::turnRight(){

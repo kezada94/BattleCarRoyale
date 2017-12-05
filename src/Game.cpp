@@ -60,7 +60,7 @@ void Game::init(){
     DynamicGameObject* cono = new DynamicGameObject("res/cono/cono.obj", "res/cono/conotextura.png", "res/cono/conotextura_NRM.png", shader_programme, btScalar(1), btVector3(10, 50, 10), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(1, 1, 1), specular_loc);
     DynamicGameObject* barril = new DynamicGameObject("res/barril/barril.obj", "res/barril/barriltextura.jpg", "res/barril/barriltextura_NRM.png", shader_programme, btScalar(3), btVector3(40, 50, 40), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(1, 1, 1), specular_loc);
     
-    int c = rand()%3;
+    int c = 2;
         switch(c){
             case 0:
                 p1 = (Car*) new Kombi(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
@@ -72,8 +72,14 @@ void Game::init(){
             case 2:
                 p1 = (Car*) new Patriot(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
                 break;
+            case 3:
+                p1 = (Car*) new Bus(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                break;
+            case 4:
+                p1 = (Car*) new Auto(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                break;
         }
-        c = rand()%3;
+        c = rand()%4;
         switch(c){
             case 0:
                 p2 = (Car*) new Kombi(btVector3(0, 24, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
@@ -84,6 +90,12 @@ void Game::init(){
                 break;
             case 2:
                 p2 = (Car*) new Patriot(btVector3(0, 24, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                break;
+            case 3:
+                p2 = (Car*) new Bus(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                break;
+            case 4:
+                p2 = (Car*) new Auto(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
                 break;
         }
 
@@ -650,7 +662,7 @@ void Game::showWinnerScreen(){
         delete p1;
         delete p2;
 
-        int c = rand()%3;
+        int c = 1;
         switch(c){
             case 0:
                 p1 = (Car*) new Kombi(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
@@ -662,8 +674,14 @@ void Game::showWinnerScreen(){
             case 2:
                 p1 = (Car*) new Patriot(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
                 break;
+            case 3:
+                p1 = (Car*) new Bus(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                break;
+            case 4:
+                p1 = (Car*) new Auto(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                break;
         }
-        c = rand()%3;
+        c = rand()%4;
         switch(c){
             case 0:
                 p2 = (Car*) new Kombi(btVector3(0, 24, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
@@ -674,6 +692,12 @@ void Game::showWinnerScreen(){
                 break;
             case 2:
                 p2 = (Car*) new Patriot(btVector3(0, 24, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                break;
+            case 3:
+                p2 = (Car*) new Bus(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                break;
+            case 4:
+                p2 = (Car*) new Auto(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
                 break;
         }
 

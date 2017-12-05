@@ -1,20 +1,20 @@
-#include "Patriot.hpp"
+#include "Bus.hpp"
 
-Patriot::Patriot(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld *world, GLuint specular_loc)
-    : Car("res/patriot.obj", "res/Ambulance.png", "res/Ambulance_NRM.png", shaderprog, btScalar(10), startPos, startRot, glm::vec3(1, 1, 1), specular_loc)
+Bus::Bus(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld *world, GLuint specular_loc)
+    : Car("res/bus/busob.obj", "res/bus/bustext.png", "res/bus/busnorm.png", shaderprog, btScalar(10), startPos, startRot, glm::vec3(1, 1, 1), specular_loc)
 {
     initialize(world);
 
     load_mesh("res/meshes/truck/wheel.obj", wheel_vao, wheel_vert);
     load_texture2(shaderprog, "res/meshes/truck/monster_tire.jpg", wheel_tex, wheel_texLocation);
 
-    setHealth(25.f);
+    setHealth(35.f);
     fireRate = 5.f;
 }
 
-Patriot::~Patriot() {}
+Bus::~Bus() {}
 
-void Patriot::initialize(btDiscreteDynamicsWorld *world)
+void Bus::initialize(btDiscreteDynamicsWorld *world)
 {
     setWorld(world);
     btRaycastVehicle::btVehicleTuning *tuning = new btRaycastVehicle::btVehicleTuning();
@@ -28,12 +28,13 @@ void Patriot::initialize(btDiscreteDynamicsWorld *world)
 
     btVector3 wheelDirection(0.0f, -1.0f, 0.0f);
     btVector3 wheelAxis(-1.0f, 0.0f, 0.0f);
-    btScalar suspensionRestLength(0.3f);    //TODO: PARAM
-    btScalar wheelRadius(1.f);              //TOCO: PARAM 
-    vehicle->addWheel(btVector3(-3.7f, 0.8f, 10.f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);  //TODO: PARAM
-    vehicle->addWheel(btVector3(3.7f, 0.8f, 10.f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true); //TODO: PARAM
-    vehicle->addWheel(btVector3(-3.7f, 0.8f, -4.5f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);//TODO: PARAM
-    vehicle->addWheel(btVector3(3.7f, 0.8f, -4.5f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false); //TODO: PARAM
+    btScalar suspensionRestLength(0.2f);                                                                                                                 //TODO: PARAM
+    btScalar wheelRadius(2.f);                                                                                                                           //TOCO: PARAM
+    vehicle->addWheel(btVector3(-3.4f, 2.72f, 10.4f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);   //TODO: PARAM
+    vehicle->addWheel(btVector3(2.5f, 2.72f, 10.4f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);   //TODO: PARAM
+    vehicle->addWheel(btVector3(-3.4f, 2.72f, -9.0f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);    //TODO: PARAM
+    vehicle->addWheel(btVector3(2.5f, 2.72f, -9.0f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);  //TODO: PARAM
+
     this->setCar(vehicle);
     for (int i = 0; i < getCar()->getNumWheels(); i++)
     {
@@ -50,7 +51,7 @@ void Patriot::initialize(btDiscreteDynamicsWorld *world)
     frontLight2 = new Spotlight(glm::vec3(-0.59f, 2.13f, 2.88f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0, 0, -1.f), 15.f);
 }
 
-void Patriot::updatePhysics()
+void Bus::updatePhysics()
 {
     if (!getTurned())
     {
@@ -95,7 +96,7 @@ void Patriot::updatePhysics()
     this->getCar()->applyEngineForce(0, 1);
 }
 
-void Patriot::draw(GLuint model_mat_location)
+void Bus::draw(GLuint model_mat_location)
 {
     btTransform trans;
     this->getRigidBody()->getMotionState()->getWorldTransform(trans);
@@ -133,7 +134,7 @@ void Patriot::draw(GLuint model_mat_location)
         glDrawArrays(GL_TRIANGLES, 0, wheel_vert);
     }
 }
-void Patriot::accelerate()
+void Bus::accelerate()
 {
     if (getCar()->getCurrentSpeedKmHour() < 150.f)
     {
@@ -141,7 +142,7 @@ void Patriot::accelerate()
         this->getCar()->applyEngineForce(85, 1);
     }
 }
-void Patriot::brake()
+void Bus::brake()
 {
     getCar()->setBrake(btScalar(1.5), 0); //TODO: PARAM
     getCar()->setBrake(btScalar(1.5), 1); //TODO: PARAM
@@ -152,14 +153,15 @@ void Patriot::brake()
         sound->reproducir(1, AL_FALSE, 1.0);
     }
 }
-void Patriot::reverse()
+void Bus::reverse()
 {
-    //TODO: ADD LIMIT
-    this->getCar()->applyEngineForce(-50, 0); //TODO: Param
-    this->getCar()->applyEngineForce(-50, 1); //TODO: PARAM
+    if(getCar()->getCurrentSpeedKmHour() > -100.f){
+        this->getCar()->applyEngineForce(-50,0);    //TODO: Param
+        this->getCar()->applyEngineForce(-50,1); 
+    }   
 }
 
-void Patriot::turnRight()
+void Bus::turnRight()
 {
     if (getCar()->getSteeringValue(0) > -0.4f && getCar()->getSteeringValue(1) > -0.4f)
     {
@@ -168,7 +170,7 @@ void Patriot::turnRight()
     }
     setTurned(true);
 }
-void Patriot::turnLeft()
+void Bus::turnLeft()
 {
     if (getCar()->getSteeringValue(0) < 0.4f && getCar()->getSteeringValue(1) < 0.4f)
     {
@@ -178,7 +180,7 @@ void Patriot::turnLeft()
     setTurned(true);
 }
 
-void Patriot::fire()
+void Bus::fire()
 {
     if (lastShot + (1 / fireRate) < currentTime)
     {
@@ -189,7 +191,7 @@ void Patriot::fire()
         btVector3 direction = btVector3(2 * (q.x() * q.z() + q.w() * q.y()), 2 * (q.y() * q.z() - q.w() * q.x()), 1 - 2 * (q.x() * q.x() + q.y() * q.y()));
 
         btVector3 end = start + 500 * direction; //TODO: PARAM alcance maximo balas
-        end = end + btVector3(0,-10,0);
+
         getWorld()->getDebugDrawer()->drawLine(start, end, btVector3(0, 0, 0));
         btCollisionWorld::ClosestRayResultCallback RayCallback(start, end);
         getWorld()->rayTest(start, end, RayCallback);
@@ -200,8 +202,8 @@ void Patriot::fire()
             if (targ != nullptr)
                 targ->setHealth(targ->getHealth() - 1.0f);
         }
-        glm::vec4 gunOne = glm::vec4(3.35f, 2.34f, 2.52f, 1.f);
-        glm::vec4 gunTwo = glm::vec4(-3.35f, 2.34f, 2.52f, 1.f);
+        glm::vec4 gunOne = glm::vec4(4.35f, 7.5f, 11.f, 1.f);
+        glm::vec4 gunTwo = glm::vec4(-4.35f, 7.5f, 11.f, 1.f);
 
         //TODO: OPTIMIZE AND INSTANTIATE
         glm::vec3 gunOne1 = model * gunOne;
@@ -222,8 +224,8 @@ void Patriot::fire()
     }
 }
 
-void Patriot::spawn() {}
-void Patriot::despawn(btDiscreteDynamicsWorld *world)
+void Bus::spawn() {}
+void Bus::despawn(btDiscreteDynamicsWorld *world)
 {
     btCollisionShape *col = getRigidBody()->getCollisionShape();
     btRigidBody *rb = getRigidBody();
