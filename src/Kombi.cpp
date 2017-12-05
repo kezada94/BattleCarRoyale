@@ -38,11 +38,19 @@ void Kombi::initialize(btDiscreteDynamicsWorld* world){
     btVector3 wheelDirection(0.0f, -1.0f, 0.0f);
     btVector3 wheelAxis(-1.0f, 0.0f, 0.0f);
     btScalar suspensionRestLength(0.1f);    //TODO: PARAM
+<<<<<<< HEAD
     btScalar wheelRadius(1.5f);              //TOCO: PARAM 
     vehicle->addWheel(btVector3(-4.f, -1.8f, 5.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);//TODO: PARAM
     vehicle->addWheel(btVector3(4.f, -1.8f, 5.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true); //TODO: PARAM
     vehicle->addWheel(btVector3(4.f, -1.8f, -6.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);  //TODO: PARAM
     vehicle->addWheel(btVector3(-4.f, -1.8f, -6.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false); //TODO: PARAM
+=======
+    btScalar wheelRadius(2.f);              //TOCO: PARAM 
+    vehicle->addWheel(btVector3(-2.5f, -1.33f, 3.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);//TODO: PARAM
+    vehicle->addWheel(btVector3(2.5f, -1.33f, 3.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true); //TODO: PARAM
+    vehicle->addWheel(btVector3(2.5f, -1.33f, -4.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);  //TODO: PARAM
+    vehicle->addWheel(btVector3(-2.5f, -1.33f, -4.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false); //TODO: PARAM
+>>>>>>> 24865bc3f180cb031429b8f15f38d1cf2a9b3023
     
     this->setCar(vehicle);
     for (int i = 0; i < getCar()->getNumWheels(); i++)
@@ -148,8 +156,10 @@ void Kombi::brake(){
     }
 }
 void Kombi::reverse(){
-    this->getCar()->applyEngineForce(-50,0);    //TODO: Param
-    this->getCar()->applyEngineForce(-50,1);    //TODO: PARAM
+    if(getCar()->getCurrentSpeedKmHour() > -100.f){
+        this->getCar()->applyEngineForce(-50,0);    //TODO: Param
+        this->getCar()->applyEngineForce(-50,1); 
+    }       //TODO: PARAM
 }
 
 void Kombi::turnRight(){

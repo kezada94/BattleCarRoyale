@@ -1,7 +1,8 @@
 #include "MonsterTruck.hpp"
 
-MonsterTruck::MonsterTruck(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world, GLuint specular_loc) 
-    : Car("res/meshes/truck/truck.obj", "res/meshes/truck/blank.jpg", nullptr, shaderprog, btScalar(10), startPos, startRot, glm::vec3(1,1,1), specular_loc) {
+MonsterTruck::MonsterTruck(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld *world, GLuint specular_loc)
+    : Car("res/meshes/truck/truck.obj", "res/meshes/truck/blank.jpg", "res/meshes/truck/blank_NRM.png", shaderprog, btScalar(10), startPos, startRot, glm::vec3(1, 1, 1), specular_loc)
+{
     initialize(world);
 
     load_mesh("res/meshes/truck/wheel.obj", wheel_vao, wheel_vert);    
@@ -136,9 +137,10 @@ void MonsterTruck::brake(){
     }
 }
 void MonsterTruck::reverse(){
-    //TODO: ADD LIMIT
-    this->getCar()->applyEngineForce(-50,0);    //TODO: Param
-    this->getCar()->applyEngineForce(-50,1);    //TODO: PARAM
+    if(getCar()->getCurrentSpeedKmHour() > -100.f){
+        this->getCar()->applyEngineForce(-50,0);    //TODO: Param
+        this->getCar()->applyEngineForce(-50,1); 
+    }   //TODO: PARAM
 }
 
 void MonsterTruck::turnRight(){

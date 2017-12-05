@@ -131,7 +131,7 @@ void InputProcessor::processInput()
         {
             playerOne->turnRight();
         }
-        if ((glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS) || (axes[4] > 0 && axes[4] == GLFW_PRESS))
+        if ((glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS) || (axes[2] > 0 && axes[2] == GLFW_PRESS))
         {
             if (playerOne->getCar()->getCurrentSpeedKmHour() > 1.f)
             {
@@ -142,7 +142,7 @@ void InputProcessor::processInput()
                 playerOne->reverse();
             }
         }
-        if (glfwGetKey(g_window, GLFW_KEY_K) == GLFW_PRESS || buttons[13] == GLFW_PRESS)
+        if (glfwGetKey(g_window, GLFW_KEY_K) == GLFW_PRESS || buttons[0] == GLFW_PRESS)
         {
             playerOne->fire();
         }
@@ -212,7 +212,7 @@ void InputProcessor::processInput()
         {
             playerTwo->turnRight();
         }
-        if ((glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS) || (axesTwo[4] > 0 && axesTwo[4] == GLFW_PRESS))
+        if ((glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS) || (axesTwo[2] > 0 && axesTwo[2] == GLFW_PRESS))
         {
             if (playerTwo->getCar()->getCurrentSpeedKmHour() > 1.f)
             {
@@ -223,7 +223,7 @@ void InputProcessor::processInput()
                 playerTwo->reverse();
             }
         }
-        if (glfwGetKey(g_window, GLFW_KEY_Q) == GLFW_PRESS || buttons[13] == GLFW_PRESS)
+        if (glfwGetKey(g_window, GLFW_KEY_Q) == GLFW_PRESS || buttonsTwo[2] == GLFW_PRESS)
         {
             playerTwo->fire();
         }
