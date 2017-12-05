@@ -67,11 +67,15 @@ void main() {
 
 	mat3 TBN = transpose(mat3(vertexTangent_eye, vertexBitangent_eye, vertexNormal_eye));
 
-    for(int i=0; i < 2; i++){
+    for(int i=0; i < 4; i++){
         LightDirectionSpots_tangent[i] = TBN * vec3(view * vec4(lightDir[i], 0));
         LightPositionSpots_tangent[i] = TBN * vec3(view * vec4(lightPos[i], 1));
 
-        LightDirectionSpots_eye[i] = vec3(view * vec4(lightDir[i], 0));
+        if (i<2)
+            LightDirectionSpots_eye[i] = vec3(view * vec4(lightDir[0], 0));
+        else
+            LightDirectionSpots_eye[i] = vec3(view * vec4(lightDir[1], 0));
+        
         LightPositionSpots_eye[i] = vec3(view * vec4(lightPos[i], 1));
     }
 

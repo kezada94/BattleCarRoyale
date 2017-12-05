@@ -1,7 +1,7 @@
 #include "Kombi.hpp"
 
 Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDiscreteDynamicsWorld* world, GLuint specular_loc) 
-    : Car("res/KOMBI.obj", "res/kombitextura.png", nullptr, shaderprog, btScalar(30), startPos, startRot, glm::vec3(1,1,1), specular_loc) {
+    : Car("res/KOMBI.obj", "res/kombitextura.png", nullptr, shaderprog, btScalar(5), startPos, startRot, glm::vec3(1,1,1), specular_loc) {
     initialize(world);
 
     load_mesh("res/meshes/WHEEL/RUEDAFIN.obj", wheel_vao, wheel_vert);    
@@ -12,7 +12,7 @@ Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btDis
 }
 
 Kombi::Kombi(btVector3 startPos, btQuaternion startRot, GLuint shaderprog, btCollisionShape* coll, btDiscreteDynamicsWorld* world, GLuint specular_loc)
-    : Car("res/KOMBI.obj", "res/kombitextura.png", nullptr, shaderprog, btScalar(30), startPos, startRot, glm::vec3(1,1,1), specular_loc, coll) {
+    : Car("res/KOMBI.obj", "res/kombitextura.png", nullptr, shaderprog, btScalar(5), startPos, startRot, glm::vec3(1,1,1), specular_loc, coll) {
     initialize(world);     
     
     load_mesh("res/meshes/WHEEL/RUEDAFIN.obj", wheel_vao, wheel_vert);    
@@ -38,21 +38,21 @@ void Kombi::initialize(btDiscreteDynamicsWorld* world){
     btVector3 wheelDirection(0.0f, -1.0f, 0.0f);
     btVector3 wheelAxis(-1.0f, 0.0f, 0.0f);
     btScalar suspensionRestLength(0.1f);    //TODO: PARAM
-    btScalar wheelRadius(2.f);              //TOCO: PARAM 
-    vehicle->addWheel(btVector3(-2.f, -1.33f, 3.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);//TODO: PARAM
-    vehicle->addWheel(btVector3(2.f, -1.33f, 3.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true); //TODO: PARAM
-    vehicle->addWheel(btVector3(2.f, -1.33f, -4.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);  //TODO: PARAM
-    vehicle->addWheel(btVector3(-2.f, -1.33f, -4.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false); //TODO: PARAM
+    btScalar wheelRadius(1.5f);              //TOCO: PARAM 
+    vehicle->addWheel(btVector3(-4.f, -1.8f, 5.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true);//TODO: PARAM
+    vehicle->addWheel(btVector3(4.f, -1.8f, 5.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, true); //TODO: PARAM
+    vehicle->addWheel(btVector3(4.f, -1.8f, -6.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false);  //TODO: PARAM
+    vehicle->addWheel(btVector3(-4.f, -1.8f, -6.3f), wheelDirection, wheelAxis, suspensionRestLength, wheelRadius, *tuning, false); //TODO: PARAM
     
     this->setCar(vehicle);
     for (int i = 0; i < getCar()->getNumWheels(); i++)
     {        
         btWheelInfo& wheel = getCar()->getWheelInfo(i);
-        wheel.m_wheelsDampingRelaxation = 11.7f;    //TODO: PARAM
-        wheel.m_wheelsDampingCompression = 10.7f;   //TODO: PARAM
-        wheel.m_frictionSlip = btScalar(10000.);     //TODO: PARAM
+        wheel.m_wheelsDampingRelaxation = 10.7f;    //TODO: PARAM
+        wheel.m_wheelsDampingCompression = 1.7f;   //TODO: PARAM
+        wheel.m_frictionSlip = btScalar(1000000000.);     //TODO: PARAM
         wheel.m_rollInfluence = btScalar(0.f);    //TODO: PARAM
-        wheel.m_maxSuspensionTravelCm = 45.f;       //TODO: PARAM
+        //wheel.m_maxSuspensionTravelCm = 105.f;       //TODO: PARAM
     }
     setIsAlive(true);
     
@@ -119,7 +119,7 @@ void Kombi::draw(GLuint model_mat_location){
         glm::mat4 model3 = glm::translate(glm::mat4(), glm::vec3(trans.getOrigin().getX(), trans.getOrigin().getY(), trans.getOrigin().getZ()));
 
         model3 = model3 * model2;
-        model3 = glm::scale(model3, glm::vec3(escala.getX(), escala.getY(), escala.getZ()));
+        model3 = glm::scale(model3, glm::vec3(escala.getX()*1.5f, escala.getY()*1.5f, escala.getZ()*1.5f));
         glUniformMatrix4fv(model_mat_location, 1, GL_FALSE, &model3[0][0]);
 
         glActiveTexture (GL_TEXTURE0);

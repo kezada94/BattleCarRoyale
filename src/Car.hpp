@@ -33,6 +33,8 @@ public:
     glm::mat4 model;
     Spotlight* frontLight1;
     Spotlight* frontLight2;
+
+    btVector3 dirr;
     
     SoundManager* sound;
     ParticleManager* particleManager;

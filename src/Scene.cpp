@@ -87,10 +87,48 @@ void Scene::renderShadow(){
     }
 }
 
+
+void set(btQuaternion q1, float &heading, float &attitude, float &bank) {
+    double sqw = q1.w()*q1.w();
+    double sqx = q1.x()*q1.x();
+    double sqy = q1.y()*q1.y();
+    double sqz = q1.z()*q1.z();
+	double unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
+	double test = q1.x()*q1.y() + q1.z()*q1.w();
+	if (test > 0.499*unit) { // singularity at north pole
+		heading = 2 * atan2(q1.x(),q1.w());
+		attitude = M_PI/2;
+		bank = 0;
+		return;
+	}
+	if (test < -0.499*unit) { // singularity at south pole
+		heading = -2 * atan2(q1.x(),q1.w());
+		attitude = -M_PI/2;
+		bank = 0;
+		return;
+	}
+    heading = atan2(2*q1.y()*q1.w()-2*q1.x()*q1.z() , sqx - sqy - sqz + sqw);
+	attitude = asin(2*test/unit);
+	bank = atan2(2*q1.x()*q1.w()-2*q1.y()*q1.z() , -sqx + sqy - sqz + sqw);
+}
+
+
 void Scene::drawAllGameObjects(const GLuint mat_location, const GLuint shader, int mPlayer){
 
-
     glUseProgram(shader);
+    
+    btTransform trans2;
+    player2->getRigidBody()->getMotionState()->getWorldTransform(trans2);
+
+    glm::vec3 lightpos3(player2->model * glm::vec4(player2->frontLight1->getLocation(), 1));
+    glm::vec3 lightpos4(player2->model * glm::vec4(player2->frontLight2->getLocation(), 1));
+
+    glm::vec3 lightpwr3(player2->model * glm::vec4(player2->frontLight1->getIntensity(), 1));
+    glm::vec3 lightpwr4(player2->model * glm::vec4(player2->frontLight2->getIntensity(), 1));
+
+    btQuaternion q2 = trans2.getRotation();
+    btVector3 direction2 = btVector3(2 * (q2.x()*q2.z() + q2.w()*q2.y()), 2 * (q2.y()*q2.z() - q2.w()*q2.x()), 1 - 2 * (q2.x()*q2.x() + q2.y()*q2.y()));
+
     btTransform trans;
     player->getRigidBody()->getMotionState()->getWorldTransform(trans);
 
@@ -102,17 +140,16 @@ void Scene::drawAllGameObjects(const GLuint mat_location, const GLuint shader, i
 
     btQuaternion q = trans.getRotation();
     btVector3 direction = btVector3(2 * (q.x()*q.z() + q.w()*q.y()), 2 * (q.y()*q.z() - q.w()*q.x()), 1 - 2 * (q.x()*q.x() + q.y()*q.y()));
-    
 
-    glm::vec3 positions[2] = {lightpos1, lightpos2};
-    btVector3 directions[2] = {direction, direction};
-    glm::vec3 angles[2] = {glm::vec3(30.f, 0.f, 0.f), glm::vec3(30.f, 0.f, 0.f)};
-    glm::vec3 power[2] = {lightpwr1, lightpwr2};
-    glUniform3fv(posLoc, 2, (const GLfloat*)positions);
+    glm::vec3 positions[4] = {lightpos1, lightpos2, lightpos3, lightpos4};
+    glm::vec3 directions[2] = {glm::vec3(direction.x(), direction.y(), direction.z()), glm::vec3(direction2.x(), direction2.y(), direction2.z())};
+    glm::vec3 angles[4] = {glm::vec3(30.f, 0.f, 0.f), glm::vec3(30.f, 0.f, 0.f), glm::vec3(30.f, 0.f, 0.f), glm::vec3(30.f, 0.f, 0.f)};
+    glm::vec3 power[4] = {lightpwr1, lightpwr2, lightpwr3, lightpwr4};
+    glUniform3fv(posLoc, 4, (const GLfloat*)positions);
     glUniform3fv(dirLoc, 2, (const GLfloat*)directions);
-    glUniform3fv(pwrLoc, 2, (const GLfloat*)power);
-    glUniform3fv(lightAngle, 2, (const GLfloat*)angles);
-    glUniform1i(numberLoc, 2);
+    glUniform3fv(pwrLoc, 4, (const GLfloat*)power);
+    glUniform3fv(lightAngle, 4, (const GLfloat*)angles);
+    glUniform1i(numberLoc, 4);
 
     
 

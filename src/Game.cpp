@@ -32,6 +32,7 @@ void Game::init(){
     level->init(shader_programme);
 	glUseProgram (shader_programme);
     soundManager = new SoundManager();
+    soundManager2 = new SoundManager();
     particleManager = new ParticleManager();
     skybox = new Skybox();
 
@@ -60,36 +61,39 @@ void Game::init(){
     DynamicGameObject* cono = new DynamicGameObject("res/cono/cono.obj", "res/cono/conotextura.png", "res/cono/conotextura_NRM.png", shader_programme, btScalar(1), btVector3(10, 50, 10), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(1, 1, 1), specular_loc);
     DynamicGameObject* barril = new DynamicGameObject("res/barril/barril.obj", "res/barril/barriltextura.jpg", "res/barril/barriltextura_NRM.png", shader_programme, btScalar(3), btVector3(40, 50, 40), btQuaternion((btVector3(1, 0, 0)), btScalar(0)), glm::vec3(1, 1, 1), specular_loc);
     
-    int c = rand()%3;
+    int c = 0;//rand()%3;
         switch(c){
             case 0:
-                p1 = (Car*) new Kombi(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                p1 = (Car*) new Kombi(btVector3(20, 5, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                p1->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(1.6, 1.6, 1.6));
+                
                 break;
             case 1:
-                p1 = (Car*) new MonsterTruck(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                p1 = (Car*) new MonsterTruck(btVector3(20, 5, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
                 p1->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(2.42f, 2, 2));
                 break;
             case 2:
-                p1 = (Car*) new Patriot(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                p1 = (Car*) new Patriot(btVector3(20, 5, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
                 break;
         }
         c = rand()%3;
         switch(c){
             case 0:
-                p2 = (Car*) new Kombi(btVector3(0, 24, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                p2 = (Car*) new Kombi(btVector3(0, 5, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                p2->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(1.6, 1.6, 1.6));
                 break;
             case 1:
-                p2 = (Car*) new MonsterTruck(btVector3(0, 24, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                p2 = (Car*) new MonsterTruck(btVector3(0, 5, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
                 p2->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(2.42f, 2, 2));
                 break;
             case 2:
-                p2 = (Car*) new Patriot(btVector3(0, 24, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                p2 = (Car*) new Patriot(btVector3(0, 5, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
                 break;
         }
 
         p1->setSoundManager(soundManager);
         p1->particleManager = particleManager;
-        p2->setSoundManager(soundManager);
+        p2->setSoundManager(soundManager2);
         p2->particleManager = particleManager;
 
         level->addGameObject(p1);
@@ -142,7 +146,7 @@ void Game::pantallaInicio(){
             "ourColor = color;\n"
             // We swap the y-axis by substracing our coordinates from 1. This is done because most images have the top y-axis inversed with OpenGL's top y-axis.
             // TexCoord = texCoord;
-            "TexCoord = vec2(texCoord.x, 1.0 - texCoord.y);\n"
+            "TexCoord = vec2(1.0 - texCoord.x, 1.0 - texCoord.y);\n"
             "}\n";
         const char *fragment_shader =
             "#version 130\n"
@@ -212,10 +216,10 @@ void Game::pantallaInicio(){
     GLfloat vertices[] =
         {
             // Positions          // Colors           // Texture Coords
-            -1.f, 1.f, 0.0f,      1.0f, 0.0f, 0.0f,      0.85f,  0.97f,  // Top Right
-            -1.f, -1.0, 0.0f,      0.0f, 1.0f, 0.0f,     0.85f,  0.05f,  // Bottom Right
-            1.f, -1.0, 0.0f,     0.0f, 0.0f, 1.0f,     0.12f, 0.05f, // Bottom Left
-            1.f, 1.f, 0.0f,      1.0f, 1.0f, 0.0f,     0.12f, 0.97f   // Top Left
+            -1.f, 1.f, 0.0f,      1.0f, 0.0f, 0.0f,      1.f,  1.f,  // Top Right
+            -1.f, -1.0, 0.0f,      0.0f, 1.0f, 0.0f,     1.f,  0.f,  // Bottom Right
+            1.f, -1.0, 0.0f,     0.0f, 0.0f, 1.0f,     0.0f, 0.0f, // Bottom Left
+            1.f, 1.f, 0.0f,      1.0f, 1.0f, 0.0f,     0.0f, 1.f   // Top Left
         };
     GLuint indices[] =
         {
@@ -265,7 +269,7 @@ void Game::pantallaInicio(){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // Load, create texture and generate mipmaps
-    unsigned char *image = stbi_load("res/imagen/fondo.jpg", &width, &height, 0, 4);
+    unsigned char *image = stbi_load("res/imagen/fondo.png", &width, &height, 0, 4);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -453,7 +457,7 @@ void Game::showWinnerScreen(){
             "ourColor = color;\n"
             // We swap the y-axis by substracing our coordinates from 1. This is done because most images have the top y-axis inversed with OpenGL's top y-axis.
             // TexCoord = texCoord;
-            "TexCoord = vec2(texCoord.x, 1.0 - texCoord.y);\n"
+            "TexCoord = vec2(1.0 - texCoord.x, 1.0 - texCoord.y);\n"
             "}\n";
         const char *fragment_shader =
             "#version 130\n"
@@ -523,10 +527,10 @@ void Game::showWinnerScreen(){
     GLfloat vertices[] =
         {
             // Positions          // Colors           // Texture Coords
-            -1.f, 1.f, 0.0f,      1.0f, 0.0f, 0.0f,      0.85f,  0.97f,  // Top Right
-            -1.f, -1.0, 0.0f,      0.0f, 1.0f, 0.0f,     0.85f,  0.05f,  // Bottom Right
-            1.f, -1.0, 0.0f,     0.0f, 0.0f, 1.0f,     0.12f, 0.05f, // Bottom Left
-            1.f, 1.f, 0.0f,      1.0f, 1.0f, 0.0f,     0.12f, 0.97f   // Top Left
+            -1.f, 1.f, 0.0f,      1.0f, 0.0f, 0.0f,      1.f,  1.f,  // Top Right
+            -1.f, -1.0, 0.0f,      0.0f, 1.0f, 0.0f,     1.f,  0.0f,  // Bottom Right
+            1.f, -1.0, 0.0f,     0.0f, 0.0f, 1.0f,     0.0f, 0.0f, // Bottom Left
+            1.f, 1.f, 0.0f,      1.0f, 1.0f, 0.0f,     0.0f, 1.f   // Top Left
         };
     GLuint indices[] =
         {
@@ -578,9 +582,9 @@ void Game::showWinnerScreen(){
     // Load, create texture and generate mipmaps
     unsigned char *image;
     if(win == 1)
-        image = stbi_load("res/imagen/fondo.jpg", &width, &height, 0, 4);
+        image = stbi_load("res/imagen/p1.png", &width, &height, 0, 4);
     else
-        image = stbi_load("res/imagen/fondo.jpg", &width, &height, 0, 4);
+        image = stbi_load("res/imagen/p2.png", &width, &height, 0, 4);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -653,33 +657,33 @@ void Game::showWinnerScreen(){
         int c = rand()%3;
         switch(c){
             case 0:
-                p1 = (Car*) new Kombi(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                p1 = (Car*) new Kombi(btVector3(20, 5, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
                 break;
             case 1:
-                p1 = (Car*) new MonsterTruck(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                p1 = (Car*) new MonsterTruck(btVector3(20, 5, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
                 p1->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(2.42f, 2, 2));
                 break;
             case 2:
-                p1 = (Car*) new Patriot(btVector3(20, 30, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                p1 = (Car*) new Patriot(btVector3(20, 5, 20), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
                 break;
         }
         c = rand()%3;
         switch(c){
             case 0:
-                p2 = (Car*) new Kombi(btVector3(0, 24, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                p2 = (Car*) new Kombi(btVector3(0, 5, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
                 break;
             case 1:
-                p2 = (Car*) new MonsterTruck(btVector3(0, 24, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                p2 = (Car*) new MonsterTruck(btVector3(0, 5, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
                 p2->getRigidBody()->getCollisionShape()->setLocalScaling(btVector3(2.42f, 2, 2));
                 break;
             case 2:
-                p2 = (Car*) new Patriot(btVector3(0, 24, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
+                p2 = (Car*) new Patriot(btVector3(0, 5, 0), btQuaternion(btVector3(1, 0, 0), btScalar(0)), shader_programme, level->getDynamicsWorld(), specular_loc);
                 break;
         }
 
         p1->setSoundManager(soundManager);
         p1->particleManager = particleManager;
-        p2->setSoundManager(soundManager);
+        p2->setSoundManager(soundManager2);
         p2->particleManager = particleManager;
 
         level->addGameObject(p1);

@@ -99,7 +99,12 @@ void main() {
 		float attenuation = 1.0f;
 		vec3 direccionluz = normalize(LightPositionSpots_eye[i] - positionEye);
 		float dis = distance(LightPositionSpots_eye[i], positionEye);
-		float lightToSurfaceAngle = degrees(acos(dot(-direccionluz, normalize(LightDirectionSpots_eye[0]))));
+		float lightToSurfaceAngle;
+		if (i<2)
+			lightToSurfaceAngle = degrees(acos(dot(-direccionluz, normalize(LightDirectionSpots_eye[i]))));
+		else
+			lightToSurfaceAngle = degrees(acos(dot(-direccionluz, normalize(LightDirectionSpots_eye[i]))));
+		
 		if(lightToSurfaceAngle > lightAngle[i].x){
 			attenuation = 0.0;
 			continue;
@@ -110,6 +115,6 @@ void main() {
 		float att = 1.0*attenuation/(dis*0.1);
 		shadow_factor = clamp(att+shadow_factor, 0, 1);
 	}
-	frag_colour = ambient*texel+(shadow_factor)*((texel * diffuse) + vec4(ks,1)*specular);
+	frag_colour = ambient*texel+(shadow_factor)*((texel * diffuse) + texel*specular);
 
 }

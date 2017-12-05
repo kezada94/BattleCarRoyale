@@ -54,6 +54,7 @@ private:
     SoundManager* soundManager;
     ParticleManager* particleManager;
     Skybox* skybox;
+    SoundManager* soundManager2;
 
     GLuint shader_programme;
     int model_mat_location;
